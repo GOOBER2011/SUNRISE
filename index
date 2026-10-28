@@ -1,0 +1,1718 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sunrise | Minimal Workspace</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+          },
+          colors: {
+            sunrise: {
+              pure: 'var(--sunrise-pure, #09090b)',       /* Pure background */
+              charcoal: 'var(--sunrise-charcoal, #121215)',   /* Sidebar background */
+              surface: 'var(--sunrise-surface, #1a1a1e)',    /* Card/Input background */
+              hover: 'var(--sunrise-hover, #22222a)',      /* Hover highlight */
+              border: 'var(--sunrise-border, #222228)',     /* Subtle razor borders */
+              muted: '#8e8e99',      /* Secondary text */
+              white: 'var(--sunrise-white, #ffffff)',      /* Accent text */
+            }
+          },
+          keyframes: {
+            'spin-slow': {
+              '0%': { transform: 'translate(-50%, -50%) rotate(0deg)' },
+              '100%': { transform: 'translate(-50%, -50%) rotate(360deg)' },
+            }
+          },
+          animation: {
+            'spin-slow': 'spin-slow 8s linear infinite',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --sunrise-pure: #09090b;
+      --sunrise-charcoal: #121215;
+      --sunrise-surface: #1a1a1e;
+      --sunrise-hover: #22222a;
+      --sunrise-border: #222228;
+      --sunrise-white: #ffffff;
+    }
+
+    /* Global Cursor Reset - Native Cursor Toggleable via Body Class */
+    body:not(.native-cursor) *, 
+    body:not(.native-cursor) *::before, 
+    body:not(.native-cursor) *::after {
+      cursor: none !important;
+    }
+
+    /* Scrollbar Aesthetics */
+    ::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--sunrise-border, #222228);
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3a3a42;
+    }
+
+    /* Custom Ring Rotation Animation */
+    @keyframes cursorRotate {
+      0% { transform: translate(-50%, -50%) rotate(0deg); }
+      100% { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+
+    .cursor-ring-anim {
+      animation: cursorRotate 6s linear infinite;
+    }
+  </style>
+</head>
+<body class="bg-sunrise-pure text-white font-sans antialiased h-screen overflow-hidden flex select-none relative">
+
+  <!-- ========================================== -->
+  <!-- CUSTOM CURSOR ELEMENTS                     -->
+  <!-- ========================================== -->
+  <!-- Main Cursor Solid Dot -->
+  <div id="cursor-dot" class="fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300"></div>
+  
+  <!-- Rotating Outer Ring with Lerp Delay -->
+  <div id="cursor-ring" class="fixed top-0 left-0 w-8 h-8 border border-white/60 border-dashed rounded-full pointer-events-none z-[9998] cursor-ring-anim transition-transform duration-150 ease-out"></div>
+
+  <!-- ========================================== -->
+  <!-- AUTHENTICATION CONTAINER (LOG IN / SIGN UP)-->
+  <!-- ========================================== -->
+  <div id="auth-container" class="fixed inset-0 z-[100] bg-sunrise-pure flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-sunrise-charcoal border border-sunrise-border rounded-xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+      <!-- Ambient Glow Accent -->
+      <div class="absolute -top-12 -left-12 w-32 h-32 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+
+      <!-- Header / Logo -->
+      <div class="text-center mb-6">
+        <div class="w-12 h-12 rounded-2xl bg-white text-sunrise-pure mx-auto flex items-center justify-center mb-3 shadow-lg shadow-white/10">
+          <i data-lucide="sun" class="w-6 h-6 stroke-[2.5]"></i>
+        </div>
+        <h2 class="text-xl font-bold tracking-tight text-white">Welcome to Sunrise</h2>
+        <p class="text-xs text-sunrise-muted mt-1">Minimal workspace for teams and creators</p>
+      </div>
+
+      <!-- Auth Mode Tabs -->
+      <div class="flex bg-sunrise-pure p-1 rounded-lg border border-sunrise-border mb-6">
+        <button id="tab-login" type="button" onclick="switchAuthTab('login')" class="flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target">
+          Log In
+        </button>
+        <button id="tab-signup" type="button" onclick="switchAuthTab('signup')" class="flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target">
+          Create Account
+        </button>
+      </div>
+
+      <!-- Auth Form -->
+      <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+        
+        <!-- Sign Up Only Fields -->
+        <div id="signup-fields" class="space-y-3 hidden">
+          <div>
+            <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1">Display Name</label>
+            <input type="text" id="auth-display-name" placeholder="Alex" autocomplete="off" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+          </div>
+          <div>
+            <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1">Username</label>
+            <input type="text" id="auth-username" placeholder="alex_dev" autocomplete="off" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+          </div>
+        </div>
+
+        <!-- Common Fields -->
+        <div>
+          <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1">Email Address</label>
+          <input type="email" id="auth-email" required placeholder="alex@sunrise.app" autocomplete="email" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+        </div>
+
+        <div>
+          <div class="flex justify-between items-center mb-1">
+            <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider">Password</label>
+            <a href="#" id="forgot-password-link" onclick="event.preventDefault();" class="text-[10px] text-sunrise-muted hover:text-white transition-colors interactive-target">Forgot?</a>
+          </div>
+          <input type="password" id="auth-password" required placeholder="••••••••" autocomplete="current-password" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-white text-sunrise-pure font-semibold text-xs rounded-lg hover:bg-neutral-200 transition-colors shadow-md shadow-white/5 mt-2 flex items-center justify-center gap-2 interactive-target">
+          <span>Log In</span>
+          <i data-lucide="arrow-right" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+        </button>
+      </form>
+
+      <!-- Divider & Demo / Guest Shortcut -->
+      <div class="relative my-5">
+        <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-sunrise-border"></div></div>
+        <div class="relative flex justify-center text-[10px] uppercase"><span class="bg-sunrise-charcoal px-2 text-sunrise-muted">Or</span></div>
+      </div>
+
+      <button type="button" onclick="continueAsGuest()" class="w-full py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/30 text-white font-medium text-xs rounded-lg transition-all flex items-center justify-center gap-2 interactive-target">
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-white/80"></i>
+        <span>Continue as Demo Guest</span>
+      </button>
+
+      <!-- Note for Supabase readiness -->
+      <p class="text-[10px] text-sunrise-muted/50 text-center mt-4 font-mono">
+        Ready for Supabase Auth integration
+      </p>
+    </div>
+  </div>
+
+  <!-- MAIN APPLICATION CONTAINER -->
+  <div id="main-app" class="flex-1 h-full w-full flex overflow-hidden opacity-0 pointer-events-none transition-opacity duration-300">
+
+  <!-- ========================================== -->
+  <!-- 1. SERVER BAR (LEFTMOST)                   -->
+  <!-- ========================================== -->
+  <aside class="w-16 bg-[#060608] border-r border-sunrise-border flex flex-col items-center py-3 space-y-3 z-30 shrink-0">
+    
+    <!-- Sunrise Primary Brand Logo -->
+    <div class="relative group interactive-target">
+      <!-- Active Pill Indicator -->
+      <div class="absolute -left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-white rounded-r-full transition-all duration-200"></div>
+      
+      <button class="w-11 h-11 rounded-2xl bg-white text-sunrise-pure flex items-center justify-center font-bold shadow-md shadow-white/10 group-hover:rounded-xl transition-all duration-300">
+        <i data-lucide="sun" class="w-5 h-5 stroke-[2.5]"></i>
+      </button>
+      
+      <!-- Tooltip -->
+      <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
+        Sunrise Workspace
+      </div>
+    </div>
+
+    <div class="w-7 h-[1px] bg-sunrise-border/80 my-1"></div>
+
+    <!-- Server List -->
+    <div class="flex-1 space-y-3 w-full flex flex-col items-center overflow-y-auto no-scrollbar">
+      
+      <!-- Server 1 -->
+      <div class="relative group interactive-target">
+        <div class="absolute -left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-0 group-hover:h-5 bg-white/70 rounded-r-full transition-all duration-200"></div>
+        <button class="w-11 h-11 rounded-3xl bg-sunrise-charcoal border border-sunrise-border flex items-center justify-center text-xs font-semibold text-sunrise-muted group-hover:bg-sunrise-hover group-hover:text-white group-hover:rounded-xl transition-all duration-300">
+          DEV
+        </button>
+        <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
+          Developers Lab
+        </div>
+      </div>
+
+      <!-- Add Server Button -->
+      <button class="w-11 h-11 rounded-3xl bg-sunrise-charcoal border border-dashed border-sunrise-border/80 flex items-center justify-center text-sunrise-muted hover:text-white hover:bg-sunrise-hover hover:border-white/40 hover:rounded-xl transition-all duration-300 group relative interactive-target">
+        <i data-lucide="plus" class="w-4 h-4"></i>
+        <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
+          Create Server
+        </div>
+      </button>
+
+    </div>
+
+    <!-- Bottom Settings Icon -->
+    <button class="w-11 h-11 rounded-2xl bg-sunrise-charcoal border border-sunrise-border/60 flex items-center justify-center text-sunrise-muted hover:text-white hover:bg-sunrise-hover transition-all duration-300 relative group interactive-target">
+      <i data-lucide="compass" class="w-4 h-4"></i>
+      <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
+        Explore
+      </div>
+    </button>
+
+  </aside>
+
+  <!-- ========================================== -->
+  <!-- 2. CHANNEL & CATEGORY NAVIGATION          -->
+  <!-- ========================================== -->
+  <aside id="channel-sidebar" class="w-56 bg-sunrise-charcoal border-r border-sunrise-border flex flex-col shrink-0 transition-transform duration-300 absolute md:relative z-20 h-full -translate-x-full md:translate-x-0">
+    
+    <!-- Server Title Header -->
+    <header class="h-13 px-3.5 border-b border-sunrise-border flex items-center justify-between cursor-pointer hover:bg-sunrise-hover/50 transition-colors interactive-target">
+      <div class="flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-white"></div>
+        <h1 class="font-bold text-xs tracking-wider uppercase text-white">Sunrise HQ</h1>
+      </div>
+      <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-sunrise-muted"></i>
+    </header>
+
+    <!-- Channels Navigation List -->
+    <div class="flex-1 overflow-y-auto px-2 py-3 space-y-5">
+      
+      <!-- Category 1: Information -->
+      <div>
+        <div class="flex items-center justify-between text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1 uppercase">
+          <span>Information</span>
+          <i data-lucide="shield-alert" class="w-3 h-3 text-sunrise-muted/60"></i>
+        </div>
+        <nav class="space-y-0.5" id="category-info">
+          <!-- Populated by JS -->
+        </nav>
+      </div>
+
+      <!-- Category 2: Text Channels -->
+      <div>
+        <div class="flex items-center justify-between text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1 uppercase">
+          <span>Channels</span>
+          <button class="hover:text-white transition-colors interactive-target"><i data-lucide="plus" class="w-3 h-3"></i></button>
+        </div>
+        <nav class="space-y-0.5" id="category-channels">
+          <!-- Populated by JS -->
+        </nav>
+      </div>
+
+      <!-- Category 3: Voice Channels -->
+      <div>
+        <div class="flex items-center justify-between text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1 uppercase">
+          <span>Voice</span>
+        </div>
+        <nav class="space-y-0.5">
+          <a href="#" class="flex items-center gap-2 px-2 py-1.5 rounded-md text-sunrise-muted hover:text-white hover:bg-sunrise-hover/60 text-xs font-medium transition-all group interactive-target">
+            <i data-lucide="volume-2" class="w-3.5 h-3.5 group-hover:text-white"></i>
+            <span class="truncate">General Voice</span>
+          </a>
+          <a href="#" class="flex items-center gap-2 px-2 py-1.5 rounded-md text-sunrise-muted hover:text-white hover:bg-sunrise-hover/60 text-xs font-medium transition-all group interactive-target">
+            <i data-lucide="volume-2" class="w-3.5 h-3.5 group-hover:text-white"></i>
+            <span class="truncate">Lounge</span>
+          </a>
+        </nav>
+      </div>
+
+    </div>
+
+    <!-- User Profile Bar (Owner / You) -->
+    <div class="p-2 bg-[#09090b] border-t border-sunrise-border flex items-center justify-between">
+      <div class="flex items-center gap-2 min-w-0">
+        <!-- Circular PFP with Green Online Status -->
+        <div class="relative shrink-0">
+          <div id="user-pfp" class="w-8 h-8 rounded-full bg-sunrise-surface border border-white/20 flex items-center justify-center font-bold text-xs text-white">
+            Y
+          </div>
+          <div class="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-sunrise-pure"></div>
+        </div>
+        
+        <div class="truncate">
+          <div id="user-display-name" class="text-xs font-semibold text-white leading-tight truncate">You</div>
+          <div id="user-handle" class="text-[10px] text-sunrise-muted leading-tight truncate">@you</div>
+        </div>
+      </div>
+
+      <!-- User Audio & Auth Toggles -->
+      <div class="flex items-center gap-0.5 text-sunrise-muted">
+        <button id="mic-btn" onclick="toggleMic()" class="p-1 hover:text-white hover:bg-sunrise-hover rounded transition-colors interactive-target" title="Mute Microphone">
+          <i data-lucide="mic" id="mic-icon" class="w-3.5 h-3.5"></i>
+        </button>
+        <button id="deafen-btn" onclick="toggleDeafen()" class="p-1 hover:text-white hover:bg-sunrise-hover rounded transition-colors interactive-target" title="Deafen Audio">
+          <i data-lucide="headphones" id="deafen-icon" class="w-3.5 h-3.5"></i>
+        </button>
+        <button onclick="openSettingsModal()" class="p-1 hover:text-white hover:bg-sunrise-hover rounded transition-colors interactive-target" title="User Settings">
+          <i data-lucide="settings" class="w-3.5 h-3.5"></i>
+        </button>
+        <button onclick="logout()" class="p-1 hover:text-rose-400 hover:bg-sunrise-hover rounded transition-colors interactive-target" title="Log Out">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ========================================== -->
+  <!-- 3. CHAT CANVAS & FEED                      -->
+  <!-- ========================================== -->
+  <main class="flex-1 flex flex-col min-w-0 bg-sunrise-pure">
+    
+    <!-- Channel Header Bar -->
+    <header class="h-13 px-4 border-b border-sunrise-border flex items-center justify-between bg-sunrise-charcoal/40 backdrop-blur-md shrink-0">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <button onclick="toggleMobileMenu()" class="md:hidden p-1 text-sunrise-muted hover:text-white interactive-target">
+          <i data-lucide="menu" class="w-4 h-4"></i>
+        </button>
+
+        <i data-lucide="hash" class="w-4 h-4 text-sunrise-muted shrink-0"></i>
+        <h2 id="current-channel-title" class="font-bold text-xs text-white truncate tracking-wide">general</h2>
+        
+        <div class="hidden sm:block h-3.5 w-[1px] bg-sunrise-border mx-1"></div>
+        <p id="current-channel-desc" class="hidden sm:block text-xs text-sunrise-muted truncate font-normal">
+          General discussion and team updates
+        </p>
+      </div>
+
+      <!-- Action Icons -->
+      <div class="flex items-center gap-2 text-sunrise-muted">
+        <button class="p-1.5 hover:text-white rounded transition-colors interactive-target" title="Pinned Messages">
+          <i data-lucide="pin" class="w-4 h-4"></i>
+        </button>
+
+        <button onclick="toggleMemberList()" class="p-1.5 hover:text-white rounded transition-colors interactive-target" title="Toggle Member Sidebar">
+          <i data-lucide="users" class="w-4 h-4"></i>
+        </button>
+      </div>
+    </header>
+
+    <!-- Chat Messages Scroll Container -->
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+      <!-- Dynamic Content Rendered Here -->
+    </div>
+
+    <!-- Message Input Bar -->
+    <div class="p-3 bg-sunrise-pure border-t border-sunrise-border shrink-0">
+      <form id="message-form" onsubmit="handleSendMessage(event)" class="bg-sunrise-surface border border-sunrise-border focus-within:border-white/40 rounded-lg p-2 flex items-center gap-2 transition-all">
+        
+        <button type="button" class="p-1 text-sunrise-muted hover:text-white rounded transition-colors interactive-target">
+          <i data-lucide="plus" class="w-4 h-4"></i>
+        </button>
+
+        <input type="text" 
+               id="message-input" 
+               placeholder="Message #general" 
+               autocomplete="off"
+               class="flex-1 bg-transparent text-xs text-white placeholder-sunrise-muted focus:outline-none px-1">
+
+        <button type="submit" class="p-1.5 bg-white text-sunrise-pure hover:bg-sunrise-muted transition-colors rounded font-medium flex items-center justify-center interactive-target">
+          <i data-lucide="arrow-up" class="w-3.5 h-3.5 stroke-[3]"></i>
+        </button>
+      </form>
+    </div>
+
+  </main>
+
+  <!-- ========================================== -->
+  <!-- 4. RIGHT MEMBER SIDEBAR                    -->
+  <!-- ========================================== -->
+  <aside id="member-sidebar" class="w-52 bg-sunrise-charcoal border-l border-sunrise-border hidden lg:flex flex-col shrink-0 p-3 overflow-y-auto">
+    
+    <!-- Online Members Group -->
+    <div>
+      <h3 class="text-[10px] font-bold text-sunrise-muted uppercase tracking-widest mb-2 px-1">
+        Online — <span id="online-count">1</span>
+      </h3>
+      
+      <!-- Single Owner Profile (No Dummy Users) -->
+      <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sunrise-hover/60 cursor-pointer transition-colors group interactive-target">
+        <div class="relative shrink-0">
+          <div id="member-user-pfp" class="w-7 h-7 rounded-full bg-sunrise-surface border border-white/20 flex items-center justify-center font-bold text-xs text-white">
+            Y
+          </div>
+          <div class="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-sunrise-charcoal"></div>
+        </div>
+        
+        <div class="truncate min-w-0 flex-1">
+          <div class="flex items-center justify-between">
+            <span id="member-user-display-name" class="text-xs font-semibold text-white/90 group-hover:text-white truncate">You</span>
+            <span class="text-[9px] font-bold px-1 py-0.2 bg-white/10 border border-white/20 text-white rounded">OWNER</span>
+          </div>
+          <div id="member-user-handle" class="text-[10px] text-sunrise-muted truncate">@you</div>
+        </div>
+      </div>
+    </div>
+
+  </aside>
+
+  </div> <!-- END #main-app -->
+
+  <!-- ========================================== -->
+  <!-- 5. USER SETTINGS MODAL                     -->
+  <!-- ========================================== -->
+  <div id="settings-modal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-200">
+    <!-- Toast Notification -->
+    <div id="settings-toast" class="fixed top-6 right-6 z-[210] bg-white text-sunrise-pure font-semibold text-xs px-4 py-2.5 rounded-lg shadow-xl flex items-center gap-2 translate-y-[-20px] opacity-0 transition-all duration-300 pointer-events-none">
+      <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
+      <span id="toast-message">Settings saved successfully!</span>
+    </div>
+
+    <div class="w-full max-w-4xl h-[85vh] max-h-[700px] bg-sunrise-charcoal border border-sunrise-border rounded-2xl shadow-2xl flex overflow-hidden relative">
+      
+      <!-- Close Button -->
+      <button onclick="closeSettingsModal()" class="absolute top-4 right-4 z-20 p-2 text-sunrise-muted hover:text-white hover:bg-sunrise-hover rounded-full transition-colors interactive-target" title="Esc to close">
+        <i data-lucide="x" class="w-5 h-5"></i>
+      </button>
+
+      <!-- Settings Sidebar -->
+      <aside class="w-48 sm:w-56 bg-sunrise-pure border-r border-sunrise-border p-4 flex flex-col justify-between shrink-0">
+        <div>
+          <h2 class="text-xs font-bold uppercase tracking-wider text-sunrise-muted px-2 mb-3">Settings</h2>
+          <nav class="space-y-1">
+            <button id="set-tab-profile" onclick="switchSettingsTab('profile')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium bg-sunrise-surface text-white flex items-center gap-2 transition-all interactive-target">
+              <i data-lucide="user" class="w-3.5 h-3.5"></i>
+              <span>User Profile</span>
+            </button>
+            <button id="set-tab-appearance" onclick="switchSettingsTab('appearance')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
+              <div class="flex items-center gap-2">
+                <i data-lucide="palette" class="w-3.5 h-3.5"></i>
+                <span>Appearance</span>
+              </div>
+            </button>
+            <button id="set-tab-cursor" onclick="switchSettingsTab('cursor')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
+              <div class="flex items-center gap-2">
+                <i data-lucide="mouse-pointer" class="w-3.5 h-3.5"></i>
+                <span>Cursor</span>
+              </div>
+            </button>
+            <button id="set-tab-tags" onclick="switchSettingsTab('tags')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
+              <div class="flex items-center gap-2">
+                <i data-lucide="tag" class="w-3.5 h-3.5"></i>
+                <span>Server Tags</span>
+              </div>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 bg-sunrise-surface border border-sunrise-border text-sunrise-muted rounded">SOON</span>
+            </button>
+          </nav>
+        </div>
+
+        <button onclick="logout(); closeSettingsModal();" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-rose-400 hover:bg-rose-500/10 flex items-center gap-2 transition-all interactive-target">
+          <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
+          <span>Log Out</span>
+        </button>
+      </aside>
+
+      <!-- Settings Content Area -->
+      <main class="flex-1 overflow-y-auto p-6 relative">
+        
+        <!-- SECTION 1: USER PROFILE -->
+        <div id="settings-section-profile" class="space-y-6">
+          <div>
+            <h3 class="text-base font-bold text-white">User Profile</h3>
+            <p class="text-xs text-sunrise-muted">Customize how you look across Sunrise workspaces.</p>
+          </div>
+
+          <form onsubmit="saveSettings(event)" class="space-y-5">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
+              
+              <!-- Form Fields -->
+              <div class="space-y-4">
+                <!-- Avatar Settings -->
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Avatar Image</label>
+                  <div class="flex items-center gap-2 mb-2">
+                    <input type="url" id="setting-pfp-url" oninput="updateSettingsPreview()" placeholder="https://example.com/avatar.jpg" class="flex-1 bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+                    <input type="file" id="pfp-file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'pfp')">
+                    <button type="button" onclick="document.getElementById('pfp-file-input').click()" class="px-3 py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/40 text-xs font-semibold rounded-lg text-white transition-all flex items-center gap-1.5 shrink-0 interactive-target">
+                      <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                      <span>Upload</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Avatar Background Fallback Color -->
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Avatar BG Color</label>
+                  <div class="flex items-center gap-2">
+                    <input type="color" id="setting-pfp-bg" oninput="updateSettingsPreview()" value="#1a1a1e" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                    <span class="text-xs text-sunrise-muted font-mono" id="setting-pfp-bg-val">#1a1a1e</span>
+                  </div>
+                </div>
+
+                <!-- Banner Customization -->
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Banner Image</label>
+                  <div class="flex items-center gap-2 mb-2">
+                    <input type="url" id="setting-banner-url" oninput="updateSettingsPreview()" placeholder="https://example.com/banner.jpg" class="flex-1 bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+                    <input type="file" id="banner-file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'banner')">
+                    <button type="button" onclick="document.getElementById('banner-file-input').click()" class="px-3 py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/40 text-xs font-semibold rounded-lg text-white transition-all flex items-center gap-1.5 shrink-0 interactive-target">
+                      <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                      <span>Upload</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Banner Color</label>
+                  <div class="flex items-center gap-2">
+                    <input type="color" id="setting-banner-color" oninput="updateSettingsPreview()" value="#222228" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                    <span class="text-xs text-sunrise-muted font-mono" id="setting-banner-val">#222228</span>
+                  </div>
+                </div>
+
+                <!-- Name Color Picker & Swatches -->
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Display Name Color</label>
+                  <div class="flex items-center gap-3 mb-2">
+                    <input type="color" id="setting-name-color" oninput="updateSettingsPreview()" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                    <span class="text-xs text-sunrise-muted font-mono" id="setting-name-color-val">#ffffff</span>
+                  </div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="setPresetColor('#ffffff')" class="w-6 h-6 rounded-full bg-white border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Pure White"></button>
+                    <button type="button" onclick="setPresetColor('#38bdf8')" class="w-6 h-6 rounded-full bg-sky-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Subtle Cyan"></button>
+                    <button type="button" onclick="setPresetColor('#a78bfa')" class="w-6 h-6 rounded-full bg-violet-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Soft Violet"></button>
+                    <button type="button" onclick="setPresetColor('#fb7185')" class="w-6 h-6 rounded-full bg-rose-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Crimson"></button>
+                    <button type="button" onclick="setPresetColor('#34d399')" class="w-6 h-6 rounded-full bg-emerald-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Emerald"></button>
+                    <button type="button" onclick="setPresetColor('#fbbf24')" class="w-6 h-6 rounded-full bg-amber-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Amber"></button>
+                  </div>
+                </div>
+
+                <!-- User Bio -->
+                <div>
+                  <div class="flex justify-between items-center mb-1.5">
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted">About Me (Bio)</label>
+                    <span class="text-[10px] text-sunrise-muted font-mono" id="bio-char-count">0/120</span>
+                  </div>
+                  <textarea id="setting-bio" maxlength="120" oninput="updateSettingsPreview()" rows="3" placeholder="Tell the world about yourself..." class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg p-2.5 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all resize-none interactive-target"></textarea>
+                </div>
+              </div>
+
+              <!-- Real-time Live Profile Card Preview -->
+              <div>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2">Live Preview</label>
+                <div class="w-full bg-sunrise-pure border border-sunrise-border rounded-xl overflow-hidden shadow-xl">
+                  
+                  <!-- Preview Banner -->
+                  <div id="preview-banner" class="h-24 w-full bg-cover bg-center transition-all relative" style="background-color: #222228;"></div>
+
+                  <!-- Preview Content -->
+                  <div class="px-4 pb-4 pt-0 relative">
+                    <!-- Preview Avatar -->
+                    <div class="relative -mt-10 mb-3 inline-block">
+                      <div id="preview-pfp" class="w-16 h-16 rounded-full bg-sunrise-surface border-4 border-sunrise-pure bg-cover bg-center flex items-center justify-center font-bold text-lg text-white shadow-lg overflow-hidden" style="background-color: #1a1a1e;">
+                        Y
+                      </div>
+                      <div class="absolute bottom-1 right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full ring-2 ring-sunrise-pure"></div>
+                    </div>
+
+                    <!-- User Metadata -->
+                    <div class="space-y-1">
+                      <h4 id="preview-name" class="font-bold text-sm text-white truncate" style="color: #ffffff;">You</h4>
+                      <p id="preview-handle" class="text-xs text-sunrise-muted truncate">@you</p>
+                    </div>
+
+                    <div class="w-full h-[1px] bg-sunrise-border/80 my-3"></div>
+
+                    <!-- Bio Preview -->
+                    <div>
+                      <h5 class="text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1">About Me</h5>
+                      <p id="preview-bio" class="text-xs text-white/90 leading-relaxed font-normal whitespace-pre-line">Building sunrise workspace.</p>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Save Action Button -->
+            <div class="pt-4 border-t border-sunrise-border flex justify-end">
+              <button type="submit" class="px-5 py-2 bg-white text-sunrise-pure font-semibold text-xs rounded-lg hover:bg-neutral-200 transition-colors shadow-lg shadow-white/5 flex items-center gap-2 interactive-target">
+                <i data-lucide="check" class="w-3.5 h-3.5 stroke-[2.5]"></i>
+                <span>Save Changes</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- SECTION 2: APPEARANCE & THEME ENGINE -->
+        <div id="settings-section-appearance" class="space-y-6 hidden">
+          <div>
+            <h3 class="text-base font-bold text-white">Appearance & Theme Engine</h3>
+            <p class="text-xs text-sunrise-muted">Select workspace theme presets or craft your custom color system.</p>
+          </div>
+
+          <!-- Theme Presets Grid -->
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-3">Theme Presets</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              
+              <!-- Preset 1: Charcoal / Monochrome -->
+              <button type="button" onclick="selectThemePreset('charcoal')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#09090b] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#121215]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-white"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Pure Charcoal</h4>
+                <p class="text-[10px] text-sunrise-muted">Monochrome classic</p>
+              </button>
+
+              <!-- Preset 2: Midnight Blue -->
+              <button type="button" onclick="selectThemePreset('midnight')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#0b0e17] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#111625]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#38bdf8]"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Midnight Blue</h4>
+                <p class="text-[10px] text-sunrise-muted">Deep ocean glow</p>
+              </button>
+
+              <!-- Preset 3: Obsidian Emerald -->
+              <button type="button" onclick="selectThemePreset('emerald')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#06120e] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#0e1f18]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#34d399]"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Obsidian Emerald</h4>
+                <p class="text-[10px] text-sunrise-muted">Dark matrix forest</p>
+              </button>
+
+              <!-- Preset 4: Crimson Synth -->
+              <button type="button" onclick="selectThemePreset('crimson')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#14090d] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#1f1016]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#fb7185]"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Crimson Synth</h4>
+                <p class="text-[10px] text-sunrise-muted">Neon rose dark</p>
+              </button>
+
+              <!-- Preset 5: Dark Amethyst -->
+              <button type="button" onclick="selectThemePreset('amethyst')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#0f0b18] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#181226]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#c084fc]"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Dark Amethyst</h4>
+                <p class="text-[10px] text-sunrise-muted">Deep violet velvet</p>
+              </button>
+
+              <!-- Preset 6: Cyberpunk Gold -->
+              <button type="button" onclick="selectThemePreset('gold')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#121008] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#1c180e]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#facc15]"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Cyberpunk Gold</h4>
+                <p class="text-[10px] text-sunrise-muted">Industrial amber glow</p>
+              </button>
+
+            </div>
+          </div>
+
+          <div class="w-full h-[1px] bg-sunrise-border/80 my-4"></div>
+
+          <!-- Custom Color Controls -->
+          <div class="space-y-4">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2">Custom Palette Controls</label>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Canvas Background</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="theme-pure-picker" oninput="updateCustomThemeVar('--sunrise-pure', this.value)" value="#09090b" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="theme-pure-val">#09090b</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Sidebar Surface</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="theme-charcoal-picker" oninput="updateCustomThemeVar('--sunrise-charcoal', this.value)" value="#121215" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="theme-charcoal-val">#121215</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Accent & Highlight</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="theme-white-picker" oninput="updateCustomThemeVar('--sunrise-white', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="theme-white-val">#ffffff</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Cards & Inputs</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="theme-surface-picker" oninput="updateCustomThemeVar('--sunrise-surface', this.value)" value="#1a1a1e" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="theme-surface-val">#1a1a1e</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- SECTION 3: CURSOR CUSTOMIZATION -->
+        <div id="settings-section-cursor" class="space-y-6 hidden">
+          <div>
+            <h3 class="text-base font-bold text-white">Cursor Customization</h3>
+            <p class="text-xs text-sunrise-muted">Modify physics, colors, sizing, and trailing speed for your pointer.</p>
+          </div>
+
+          <!-- Enable/Disable Custom Cursor Toggle -->
+          <div class="p-4 bg-sunrise-surface border border-sunrise-border rounded-xl flex items-center justify-between">
+            <div>
+              <h4 class="text-xs font-bold text-white">Enable Custom Dual Cursor</h4>
+              <p class="text-[10px] text-sunrise-muted mt-0.5">Disabling reverts to standard operating system pointer.</p>
+            </div>
+            <label class="relative inline-flex items-center cursor-pointer interactive-target">
+              <input type="checkbox" id="cursor-toggle" onchange="toggleCustomCursor(this.checked)" checked class="sr-only peer">
+              <div class="w-9 h-5 bg-sunrise-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-white"></div>
+            </label>
+          </div>
+
+          <!-- Cursor Style Presets -->
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2.5">Cursor Presets</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+              <button type="button" onclick="selectCursorPreset('classic')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+                <div class="text-xs font-semibold text-white">Classic White</div>
+                <div class="text-[10px] text-sunrise-muted">Snappy trailing dot</div>
+              </button>
+              <button type="button" onclick="selectCursorPreset('cyber')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+                <div class="text-xs font-semibold text-sky-400">Cyber Neon</div>
+                <div class="text-[10px] text-sunrise-muted">Cyan dot & rose ring</div>
+              </button>
+              <button type="button" onclick="selectCursorPreset('crimson')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+                <div class="text-xs font-semibold text-rose-400">Crimson Glow</div>
+                <div class="text-[10px] text-sunrise-muted">Bold red trailing</div>
+              </button>
+              <button type="button" onclick="selectCursorPreset('emerald')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+                <div class="text-xs font-semibold text-emerald-400">Emerald Pulse</div>
+                <div class="text-[10px] text-sunrise-muted">Vibrant matrix green</div>
+              </button>
+              <button type="button" onclick="selectCursorPreset('minimal')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+                <div class="text-xs font-semibold text-zinc-400">Minimal Dark</div>
+                <div class="text-[10px] text-sunrise-muted">Subtle zinc tone</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Colors & Sliders Grid -->
+          <div class="space-y-4 pt-2">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted">Fine-Tuning Controls</label>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Dot Color -->
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Center Dot Color</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="cursor-dot-color-picker" oninput="updateCursorParam('dotColor', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="cursor-dot-color-val">#ffffff</span>
+                </div>
+              </div>
+
+              <!-- Ring Color -->
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Trailing Ring Color</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="cursor-ring-color-picker" oninput="updateCursorParam('ringColor', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="cursor-ring-color-val">#ffffff</span>
+                </div>
+              </div>
+
+              <!-- Follow Speed Slider -->
+              <div class="col-span-1 sm:col-span-2">
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                  <span>Ring Follow Speed (Lerp)</span>
+                  <span id="cursor-speed-val" class="font-mono text-white">0.45 (Fast)</span>
+                </div>
+                <input type="range" id="cursor-speed-slider" min="0.10" max="0.85" step="0.05" value="0.45" oninput="updateCursorParam('followSpeed', parseFloat(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
+                <div class="flex justify-between text-[9px] text-sunrise-muted/60 mt-0.5">
+                  <span>Delayed Trailing (0.10)</span>
+                  <span>Snappy Response (0.85)</span>
+                </div>
+              </div>
+
+              <!-- Dot Size Slider -->
+              <div>
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                  <span>Center Dot Size</span>
+                  <span id="cursor-dot-size-val" class="font-mono text-white">8px</span>
+                </div>
+                <input type="range" id="cursor-dot-size-slider" min="4" max="20" step="1" value="8" oninput="updateCursorParam('dotSize', parseInt(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
+              </div>
+
+              <!-- Ring Size Slider -->
+              <div>
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                  <span>Outer Ring Size</span>
+                  <span id="cursor-ring-size-val" class="font-mono text-white">32px</span>
+                </div>
+                <input type="range" id="cursor-ring-size-slider" min="16" max="64" step="2" value="32" oninput="updateCursorParam('ringSize', parseInt(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
+              </div>
+
+              <!-- Ring Border Width Slider -->
+              <div class="col-span-1 sm:col-span-2">
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                  <span>Ring Border Thickness</span>
+                  <span id="cursor-border-val" class="font-mono text-white">1px</span>
+                </div>
+                <input type="range" id="cursor-border-slider" min="1" max="4" step="1" value="1" oninput="updateCursorParam('borderWidth', parseInt(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: SERVER TAGS (IN DEVELOPMENT) -->
+        <div id="settings-section-tags" class="space-y-6 hidden">
+          <div>
+            <h3 class="text-base font-bold text-white">Server Tags</h3>
+            <p class="text-xs text-sunrise-muted">Manage role tags and group badge highlights.</p>
+          </div>
+
+          <div class="border border-dashed border-sunrise-border rounded-xl p-8 text-center space-y-3">
+            <div class="w-12 h-12 rounded-full bg-sunrise-surface border border-sunrise-border flex items-center justify-center mx-auto text-sunrise-muted">
+              <i data-lucide="tag" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold text-white">Server Tags (In Development)</h4>
+              <p class="text-xs text-sunrise-muted max-w-sm mx-auto mt-1">Custom server tags, role colors, and badge permissions will be configurable here when server backend controls launch.</p>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- JAVASCRIPT STATE, CURSOR & INTERACTION     -->
+  <!-- ========================================== -->
+  <script>
+    // System State Architecture
+    const state = {
+      isAuthenticated: false,
+      authMode: 'login', // 'login' | 'signup'
+      activeChannel: 'general',
+      isMuted: false,
+      isDeafened: false,
+
+      cursor: {
+        enabled: true,
+        dotColor: '#ffffff',
+        ringColor: '#ffffff',
+        followSpeed: 0.45, // Faster default follow lerp
+        dotSize: 8,
+        ringSize: 32,
+        borderWidth: 1,
+        preset: 'classic'
+      },
+
+      cursorPresets: {
+        classic: { dotColor: '#ffffff', ringColor: '#ffffff', followSpeed: 0.45, dotSize: 8, ringSize: 32, borderWidth: 1 },
+        cyber:   { dotColor: '#38bdf8', ringColor: '#f43f5e', followSpeed: 0.60, dotSize: 6, ringSize: 36, borderWidth: 2 },
+        crimson: { dotColor: '#f43f5e', ringColor: '#fda4af', followSpeed: 0.50, dotSize: 10, ringSize: 30, borderWidth: 2 },
+        emerald: { dotColor: '#10b981', ringColor: '#6ee7b7', followSpeed: 0.55, dotSize: 8, ringSize: 34, borderWidth: 1 },
+        minimal: { dotColor: '#a1a1aa', ringColor: '#52525b', followSpeed: 0.40, dotSize: 6, ringSize: 28, borderWidth: 1 }
+      },
+      
+      theme: {
+        preset: 'charcoal',
+        pure: '#09090b',
+        charcoal: '#121215',
+        surface: '#1a1a1e',
+        hover: '#22222a',
+        border: '#222228',
+        white: '#ffffff'
+      },
+
+      themePresets: {
+        charcoal: { pure: '#09090b', charcoal: '#121215', surface: '#1a1a1e', hover: '#22222a', border: '#222228', white: '#ffffff' },
+        midnight: { pure: '#0b0e17', charcoal: '#111625', surface: '#192033', hover: '#232c45', border: '#232d47', white: '#38bdf8' },
+        emerald:  { pure: '#06120e', charcoal: '#0e1f18', surface: '#152e24', hover: '#1d3d30', border: '#1e4234', white: '#34d399' },
+        crimson:  { pure: '#14090d', charcoal: '#1f1016', surface: '#2b1720', hover: '#3b1f2c', border: '#3e202f', white: '#fb7185' },
+        amethyst: { pure: '#0f0b18', charcoal: '#181226', surface: '#231b38', hover: '#30254c', border: '#332752', white: '#c084fc' },
+        gold:     { pure: '#121008', charcoal: '#1c180e', surface: '#292416', hover: '#38311e', border: '#3b341f', white: '#facc15' }
+      },
+
+      currentUser: {
+        name: 'You',
+        handle: '@you',
+        initial: 'Y',
+        email: '',
+        pfpUrl: '',
+        pfpBg: '#1a1a1e',
+        bannerUrl: '',
+        bannerBg: '#222228',
+        nameColor: '#ffffff',
+        bio: 'Building sunrise workspace.'
+      },
+
+      channels: {
+        'welcome': {
+          category: 'info',
+          title: 'welcome',
+          desc: 'Read workspace rules and overview',
+          messages: []
+        },
+        'announcements': {
+          category: 'info',
+          title: 'announcements',
+          desc: 'Official updates from the owner',
+          messages: []
+        },
+        'general': {
+          category: 'channels',
+          title: 'general',
+          desc: 'General team discussion and updates',
+          messages: []
+        },
+        'dev-log': {
+          category: 'channels',
+          title: 'dev-log',
+          desc: 'Development progress and tech notes',
+          messages: []
+        },
+        'random': {
+          category: 'channels',
+          title: 'random',
+          desc: 'Off-topic chat and casual ideas',
+          messages: []
+        }
+      }
+    };
+
+    // ==========================================
+    // THEME ENGINE LOGIC
+    // ==========================================
+    function applyThemeObj(themeObj) {
+      document.documentElement.style.setProperty('--sunrise-pure', themeObj.pure);
+      document.documentElement.style.setProperty('--sunrise-charcoal', themeObj.charcoal);
+      document.documentElement.style.setProperty('--sunrise-surface', themeObj.surface);
+      document.documentElement.style.setProperty('--sunrise-hover', themeObj.hover);
+      document.documentElement.style.setProperty('--sunrise-border', themeObj.border);
+      document.documentElement.style.setProperty('--sunrise-white', themeObj.white);
+
+      // Update Theme Settings Picker UI
+      const purePicker = document.getElementById('theme-pure-picker');
+      const charcoalPicker = document.getElementById('theme-charcoal-picker');
+      const whitePicker = document.getElementById('theme-white-picker');
+      const surfacePicker = document.getElementById('theme-surface-picker');
+
+      if (purePicker) {
+        purePicker.value = themeObj.pure;
+        document.getElementById('theme-pure-val').innerText = themeObj.pure;
+      }
+      if (charcoalPicker) {
+        charcoalPicker.value = themeObj.charcoal;
+        document.getElementById('theme-charcoal-val').innerText = themeObj.charcoal;
+      }
+      if (whitePicker) {
+        whitePicker.value = themeObj.white;
+        document.getElementById('theme-white-val').innerText = themeObj.white;
+      }
+      if (surfacePicker) {
+        surfacePicker.value = themeObj.surface;
+        document.getElementById('theme-surface-val').innerText = themeObj.surface;
+      }
+    }
+
+    function selectThemePreset(presetKey) {
+      if (!state.themePresets[presetKey]) return;
+      state.theme = { preset: presetKey, ...state.themePresets[presetKey] };
+      applyThemeObj(state.theme);
+      showToast(`Applied ${presetKey.toUpperCase()} theme preset!`);
+    }
+
+    function updateCustomThemeVar(varName, hexVal) {
+      document.documentElement.style.setProperty(varName, hexVal);
+      
+      if (varName === '--sunrise-pure') {
+        state.theme.pure = hexVal;
+        document.getElementById('theme-pure-val').innerText = hexVal;
+      } else if (varName === '--sunrise-charcoal') {
+        state.theme.charcoal = hexVal;
+        document.getElementById('theme-charcoal-val').innerText = hexVal;
+      } else if (varName === '--sunrise-white') {
+        state.theme.white = hexVal;
+        document.getElementById('theme-white-val').innerText = hexVal;
+      } else if (varName === '--sunrise-surface') {
+        state.theme.surface = hexVal;
+        document.getElementById('theme-surface-val').innerText = hexVal;
+      }
+    }
+
+    // ==========================================
+    // DEVICE FILE UPLOAD HANDLER (FileReader)
+    // ==========================================
+    function handleFileUpload(event, targetType) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const dataUrl = e.target.result;
+        if (targetType === 'pfp') {
+          document.getElementById('setting-pfp-url').value = dataUrl;
+        } else if (targetType === 'banner') {
+          document.getElementById('setting-banner-url').value = dataUrl;
+        }
+        updateSettingsPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ==========================================
+    // CUSTOM DUAL CURSOR ENGINE (LERP & HOVER)
+    // ==========================================
+    const dot = document.getElementById('cursor-dot');
+    const ring = document.getElementById('cursor-ring');
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let ringX = mouseX;
+    let ringY = mouseY;
+
+    // Track Mouse Move
+    window.addEventListener('mousemove', (e) => {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+
+      // Immediate dot placement
+      dot.style.left = `${mouseX}px`;
+      dot.style.top = `${mouseY}px`;
+    });
+
+    // Smooth Lerp Animation Loop for Outer Ring
+    function animateCursor() {
+      const lerpFactor = state.cursor ? state.cursor.followSpeed : 0.45;
+      ringX += (mouseX - ringX) * lerpFactor;
+      ringY += (mouseY - ringY) * lerpFactor;
+
+      ring.style.left = `${ringX}px`;
+      ring.style.top = `${ringY}px`;
+
+      requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    function updateCursorStyles() {
+      const c = state.cursor;
+      const dotEl = document.getElementById('cursor-dot');
+      const ringEl = document.getElementById('cursor-ring');
+
+      if (!c.enabled) {
+        document.body.classList.add('native-cursor');
+        dotEl.style.display = 'none';
+        ringEl.style.display = 'none';
+        return;
+      }
+
+      document.body.classList.remove('native-cursor');
+      dotEl.style.display = 'block';
+      ringEl.style.display = 'block';
+
+      // Dot styles
+      dotEl.style.width = `${c.dotSize}px`;
+      dotEl.style.height = `${c.dotSize}px`;
+      dotEl.style.backgroundColor = c.dotColor;
+
+      // Ring styles
+      ringEl.style.width = `${c.ringSize}px`;
+      ringEl.style.height = `${c.ringSize}px`;
+      ringEl.style.borderColor = c.ringColor;
+      ringEl.style.borderWidth = `${c.borderWidth}px`;
+
+      // Update UI Inputs
+      const toggle = document.getElementById('cursor-toggle');
+      if (toggle) toggle.checked = c.enabled;
+
+      const dotColorPicker = document.getElementById('cursor-dot-color-picker');
+      if (dotColorPicker) {
+        dotColorPicker.value = c.dotColor;
+        document.getElementById('cursor-dot-color-val').innerText = c.dotColor;
+      }
+
+      const ringColorPicker = document.getElementById('cursor-ring-color-picker');
+      if (ringColorPicker) {
+        ringColorPicker.value = c.ringColor;
+        document.getElementById('cursor-ring-color-val').innerText = c.ringColor;
+      }
+
+      const speedSlider = document.getElementById('cursor-speed-slider');
+      if (speedSlider) {
+        speedSlider.value = c.followSpeed;
+        document.getElementById('cursor-speed-val').innerText = `${c.followSpeed} ${c.followSpeed > 0.5 ? '(Ultra Fast)' : '(Snappy)'}`;
+      }
+
+      const dotSizeSlider = document.getElementById('cursor-dot-size-slider');
+      if (dotSizeSlider) {
+        dotSizeSlider.value = c.dotSize;
+        document.getElementById('cursor-dot-size-val').innerText = `${c.dotSize}px`;
+      }
+
+      const ringSizeSlider = document.getElementById('cursor-ring-size-slider');
+      if (ringSizeSlider) {
+        ringSizeSlider.value = c.ringSize;
+        document.getElementById('cursor-ring-size-val').innerText = `${c.ringSize}px`;
+      }
+
+      const borderSlider = document.getElementById('cursor-border-slider');
+      if (borderSlider) {
+        borderSlider.value = c.borderWidth;
+        document.getElementById('cursor-border-val').innerText = `${c.borderWidth}px`;
+      }
+    }
+
+    function toggleCustomCursor(enabled) {
+      state.cursor.enabled = enabled;
+      updateCursorStyles();
+    }
+
+    function selectCursorPreset(key) {
+      if (!state.cursorPresets[key]) return;
+      state.cursor = { ...state.cursor, preset: key, ...state.cursorPresets[key] };
+      updateCursorStyles();
+      showToast(`Applied ${key.toUpperCase()} cursor preset!`);
+    }
+
+    function updateCursorParam(param, val) {
+      state.cursor[param] = val;
+      updateCursorStyles();
+    }
+
+    // Attach Hover Effects for Interactive Targets
+    function setupCursorListeners() {
+      const targets = document.querySelectorAll('button, a, input, .interactive-target');
+      targets.forEach(el => {
+        // Remove existing listener duplicates
+        el.removeEventListener('mouseenter', cursorEnterHandler);
+        el.removeEventListener('mouseleave', cursorLeaveHandler);
+
+        el.addEventListener('mouseenter', cursorEnterHandler);
+        el.addEventListener('mouseleave', cursorLeaveHandler);
+      });
+    }
+
+    function cursorEnterHandler() {
+      ring.classList.add('scale-150', 'border-white', 'bg-white/5');
+      ring.classList.remove('border-white/60');
+    }
+
+    function cursorLeaveHandler() {
+      ring.classList.remove('scale-150', 'border-white', 'bg-white/5');
+      ring.classList.add('border-white/60');
+    }
+
+    // ==========================================
+    // AUTHENTICATION & USER PROFILE FLOWS
+    // (Designed for easy Supabase Auth wiring)
+    // ==========================================
+    function switchAuthTab(mode) {
+      state.authMode = mode;
+      const loginTab = document.getElementById('tab-login');
+      const signupTab = document.getElementById('tab-signup');
+      const signupFields = document.getElementById('signup-fields');
+      const submitBtn = document.getElementById('auth-submit-btn');
+
+      if (mode === 'login') {
+        loginTab.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
+        signupTab.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
+        signupFields.classList.add('hidden');
+        submitBtn.querySelector('span').innerText = 'Log In';
+      } else {
+        signupTab.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
+        loginTab.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
+        signupFields.classList.remove('hidden');
+        submitBtn.querySelector('span').innerText = 'Create Account';
+      }
+      
+      lucide.createIcons();
+      setupCursorListeners();
+    }
+
+    /*
+      SUPABASE AUTH INTEGRATION HOOKS (For Future Setup)
+      --------------------------------------------------
+      import { createClient } from '@supabase/supabase-js'
+      const supabase = createClient('YOUR_SUPABASE_URL', 'YOUR_SUPABASE_ANON_KEY')
+
+      async function signUpWithSupabase(email, password, metadata) {
+        const { data, error } = await supabase.auth.signUp({
+          email, password, options: { data: metadata }
+        })
+      }
+      async function signInWithSupabase(email, password) {
+        const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      }
+    */
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value.trim();
+
+      if (state.authMode === 'signup') {
+        const displayName = document.getElementById('auth-display-name').value.trim() || email.split('@')[0];
+        const username = document.getElementById('auth-username').value.trim() || email.split('@')[0];
+        
+        state.currentUser = {
+          name: displayName,
+          handle: `@${username.toLowerCase().replace(/\s+/g, '_')}`,
+          initial: displayName.charAt(0).toUpperCase() || 'U',
+          email: email
+        };
+      } else {
+        const fallbackName = email.split('@')[0] || 'User';
+        state.currentUser = {
+          name: fallbackName.charAt(0).toUpperCase() + fallbackName.slice(1),
+          handle: `@${fallbackName.toLowerCase()}`,
+          initial: fallbackName.charAt(0).toUpperCase() || 'U',
+          email: email
+        };
+      }
+
+      authenticateUser();
+    }
+
+    function continueAsGuest() {
+      state.currentUser = {
+        name: 'Guest User',
+        handle: '@guest_demo',
+        initial: 'G',
+        email: 'guest@sunrise.demo'
+      };
+      authenticateUser();
+    }
+
+    function authenticateUser() {
+      state.isAuthenticated = true;
+      updateUserProfileUI();
+
+      // Animate Transition
+      const authContainer = document.getElementById('auth-container');
+      const mainApp = document.getElementById('main-app');
+
+      authContainer.classList.add('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        authContainer.classList.add('hidden');
+      }, 300);
+
+      mainApp.classList.remove('opacity-0', 'pointer-events-none');
+      mainApp.classList.add('opacity-100');
+
+      renderChannels();
+      renderMessages();
+      setupCursorListeners();
+    }
+
+    function logout() {
+      state.isAuthenticated = false;
+
+      const authContainer = document.getElementById('auth-container');
+      const mainApp = document.getElementById('main-app');
+
+      authContainer.classList.remove('hidden');
+      setTimeout(() => {
+        authContainer.classList.remove('opacity-0', 'pointer-events-none');
+      }, 10);
+
+      mainApp.classList.add('opacity-0', 'pointer-events-none');
+      mainApp.classList.remove('opacity-100');
+
+      // Reset form
+      document.getElementById('auth-form').reset();
+      setupCursorListeners();
+    }
+
+    function updateUserProfileUI() {
+      const user = state.currentUser;
+      
+      // Sidebar Profile
+      const userDisplayName = document.getElementById('user-display-name');
+      userDisplayName.innerText = user.name;
+      userDisplayName.style.color = user.nameColor || '#ffffff';
+
+      document.getElementById('user-handle').innerText = user.handle;
+
+      const userPfp = document.getElementById('user-pfp');
+      if (user.pfpUrl) {
+        userPfp.style.backgroundImage = `url('${user.pfpUrl}')`;
+        userPfp.style.backgroundSize = 'cover';
+        userPfp.style.backgroundPosition = 'center';
+        userPfp.innerText = '';
+      } else {
+        userPfp.style.backgroundImage = 'none';
+        userPfp.style.backgroundColor = user.pfpBg || '#1a1a1e';
+        userPfp.innerText = user.initial;
+      }
+
+      // Right Member Sidebar Profile
+      const memberName = document.getElementById('member-user-display-name');
+      const memberHandle = document.getElementById('member-user-handle');
+      const memberPfp = document.getElementById('member-user-pfp');
+      if (memberName) {
+        memberName.innerText = user.name;
+        memberName.style.color = user.nameColor || '#ffffff';
+      }
+      if (memberHandle) memberHandle.innerText = user.handle;
+      if (memberPfp) {
+        if (user.pfpUrl) {
+          memberPfp.style.backgroundImage = `url('${user.pfpUrl}')`;
+          memberPfp.style.backgroundSize = 'cover';
+          memberPfp.style.backgroundPosition = 'center';
+          memberPfp.innerText = '';
+        } else {
+          memberPfp.style.backgroundImage = 'none';
+          memberPfp.style.backgroundColor = user.pfpBg || '#1a1a1e';
+          memberPfp.innerText = user.initial;
+        }
+      }
+    }
+
+    // ==========================================
+    // SETTINGS MODAL LOGIC
+    // ==========================================
+    function openSettingsModal() {
+      const modal = document.getElementById('settings-modal');
+      modal.classList.remove('hidden');
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+      }, 10);
+
+      // Populate current user values into form inputs
+      const user = state.currentUser;
+      document.getElementById('setting-pfp-url').value = user.pfpUrl || '';
+      document.getElementById('setting-pfp-bg').value = user.pfpBg || '#1a1a1e';
+      document.getElementById('setting-pfp-bg-val').innerText = user.pfpBg || '#1a1a1e';
+
+      document.getElementById('setting-banner-url').value = user.bannerUrl || '';
+      document.getElementById('setting-banner-color').value = user.bannerBg || '#222228';
+      document.getElementById('setting-banner-val').innerText = user.bannerBg || '#222228';
+
+      document.getElementById('setting-name-color').value = user.nameColor || '#ffffff';
+      document.getElementById('setting-name-color-val').innerText = user.nameColor || '#ffffff';
+
+      document.getElementById('setting-bio').value = user.bio || '';
+
+      switchSettingsTab('profile');
+      updateSettingsPreview();
+      setupCursorListeners();
+    }
+
+    function closeSettingsModal() {
+      const modal = document.getElementById('settings-modal');
+      modal.classList.add('opacity-0');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 200);
+    }
+
+    function switchSettingsTab(tabName) {
+      const tabs = ['profile', 'appearance', 'cursor', 'tags'];
+      tabs.forEach(t => {
+        const tabBtn = document.getElementById(`set-tab-${t}`);
+        const section = document.getElementById(`settings-section-${t}`);
+        if (t === tabName) {
+          tabBtn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium bg-sunrise-surface text-white flex items-center justify-between transition-all interactive-target';
+          section.classList.remove('hidden');
+        } else {
+          tabBtn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target';
+          section.classList.add('hidden');
+        }
+      });
+      lucide.createIcons();
+      setupCursorListeners();
+    }
+
+    function setPresetColor(hex) {
+      document.getElementById('setting-name-color').value = hex;
+      document.getElementById('setting-name-color-val').innerText = hex;
+      updateSettingsPreview();
+    }
+
+    function updateSettingsPreview() {
+      const pfpUrl = document.getElementById('setting-pfp-url').value.trim();
+      const pfpBg = document.getElementById('setting-pfp-bg').value;
+      const bannerUrl = document.getElementById('setting-banner-url').value.trim();
+      const bannerBg = document.getElementById('setting-banner-color').value;
+      const nameColor = document.getElementById('setting-name-color').value;
+      const bio = document.getElementById('setting-bio').value;
+
+      document.getElementById('setting-pfp-bg-val').innerText = pfpBg;
+      document.getElementById('setting-banner-val').innerText = bannerBg;
+      document.getElementById('setting-name-color-val').innerText = nameColor;
+      document.getElementById('bio-char-count').innerText = `${bio.length}/120`;
+
+      // Preview Avatar
+      const previewPfp = document.getElementById('preview-pfp');
+      if (pfpUrl) {
+        previewPfp.style.backgroundImage = `url('${pfpUrl}')`;
+        previewPfp.style.backgroundSize = 'cover';
+        previewPfp.style.backgroundPosition = 'center';
+        previewPfp.innerText = '';
+      } else {
+        previewPfp.style.backgroundImage = 'none';
+        previewPfp.style.backgroundColor = pfpBg;
+        previewPfp.innerText = state.currentUser.initial || 'Y';
+      }
+
+      // Preview Banner
+      const previewBanner = document.getElementById('preview-banner');
+      if (bannerUrl) {
+        previewBanner.style.backgroundImage = `url('${bannerUrl}')`;
+        previewBanner.style.backgroundSize = 'cover';
+        previewBanner.style.backgroundPosition = 'center';
+      } else {
+        previewBanner.style.backgroundImage = 'none';
+        previewBanner.style.backgroundColor = bannerBg;
+      }
+
+      // Preview Name & Bio
+      const previewName = document.getElementById('preview-name');
+      previewName.innerText = state.currentUser.name || 'You';
+      previewName.style.color = nameColor;
+
+      document.getElementById('preview-handle').innerText = state.currentUser.handle || '@you';
+      document.getElementById('preview-bio').innerText = bio || 'No bio provided yet.';
+    }
+
+    function saveSettings(e) {
+      e.preventDefault();
+      
+      state.currentUser.pfpUrl = document.getElementById('setting-pfp-url').value.trim();
+      state.currentUser.pfpBg = document.getElementById('setting-pfp-bg').value;
+      state.currentUser.bannerUrl = document.getElementById('setting-banner-url').value.trim();
+      state.currentUser.bannerBg = document.getElementById('setting-banner-color').value;
+      state.currentUser.nameColor = document.getElementById('setting-name-color').value;
+      state.currentUser.bio = document.getElementById('setting-bio').value.trim();
+
+      updateUserProfileUI();
+      renderMessages();
+      showToast('Profile settings saved!');
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById('settings-toast');
+      document.getElementById('toast-message').innerText = message;
+      toast.classList.remove('translate-y-[-20px]', 'opacity-0');
+      toast.classList.add('translate-y-0', 'opacity-100');
+
+      setTimeout(() => {
+        toast.classList.remove('translate-y-0', 'opacity-100');
+        toast.classList.add('translate-y-[-20px]', 'opacity-0');
+      }, 2500);
+    }
+
+    // Keyboard ESC listener
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('settings-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+          closeSettingsModal();
+        }
+      }
+    });
+
+    // ==========================================
+    // CHANNEL & MESSAGING RENDER LOGIC
+    // ==========================================
+    function renderChannels() {
+      const infoContainer = document.getElementById('category-info');
+      const channelsContainer = document.getElementById('category-channels');
+
+      infoContainer.innerHTML = '';
+      channelsContainer.innerHTML = '';
+
+      Object.keys(state.channels).forEach(key => {
+        const channel = state.channels[key];
+        const isActive = state.activeChannel === key;
+
+        const btn = document.createElement('a');
+        btn.href = '#';
+        btn.onclick = (e) => {
+          e.preventDefault();
+          switchChannel(key);
+        };
+
+        btn.className = `flex items-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium transition-all group interactive-target ${
+          isActive 
+            ? 'bg-sunrise-hover text-white font-semibold' 
+            : 'text-sunrise-muted hover:text-white hover:bg-sunrise-hover/50'
+        }`;
+
+        btn.innerHTML = `
+          <i data-lucide="hash" class="w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-sunrise-muted group-hover:text-white'}"></i>
+          <span class="truncate">${channel.title}</span>
+        `;
+
+        if (channel.category === 'info') {
+          infoContainer.appendChild(btn);
+        } else {
+          channelsContainer.appendChild(btn);
+        }
+      });
+
+      lucide.createIcons();
+      setupCursorListeners();
+    }
+
+    function switchChannel(channelKey) {
+      if (!state.channels[channelKey]) return;
+      state.activeChannel = channelKey;
+
+      const current = state.channels[channelKey];
+      document.getElementById('current-channel-title').innerText = current.title;
+      document.getElementById('current-channel-desc').innerText = current.desc;
+      document.getElementById('message-input').placeholder = `Message #${current.title}`;
+
+      renderChannels();
+      renderMessages();
+
+      // Mobile Menu Close
+      const sidebar = document.getElementById('channel-sidebar');
+      if (!sidebar.classList.contains('-translate-x-full')) {
+        sidebar.classList.add('-translate-x-full');
+      }
+    }
+
+    function renderMessages() {
+      const chatContainer = document.getElementById('chat-messages');
+      chatContainer.innerHTML = '';
+
+      const channel = state.channels[state.activeChannel];
+
+      // Channel Landing Hero Header
+      const hero = document.createElement('div');
+      hero.className = 'py-6 border-b border-sunrise-border mb-4';
+      hero.innerHTML = `
+        <div class="w-10 h-10 rounded-full bg-sunrise-surface border border-sunrise-border flex items-center justify-center mb-2">
+          <i data-lucide="hash" class="w-5 h-5 text-white"></i>
+        </div>
+        <h3 class="text-lg font-bold text-white">Welcome to #${channel.title}</h3>
+        <p class="text-xs text-sunrise-muted mt-0.5">${channel.desc}</p>
+      `;
+      chatContainer.appendChild(hero);
+
+      // Render Active Channel Messages
+      if (channel.messages.length === 0) {
+        const emptyNotice = document.createElement('div');
+        emptyNotice.className = 'text-center py-8 text-xs text-sunrise-muted/60 font-mono';
+        emptyNotice.innerText = 'No messages posted yet. Be the first to start the conversation!';
+        chatContainer.appendChild(emptyNotice);
+      } else {
+        channel.messages.forEach((msg, idx) => {
+          const msgEl = document.createElement('div');
+          msgEl.className = 'flex items-start gap-3 group hover:bg-sunrise-surface/30 p-2 -mx-2 rounded-lg transition-colors relative';
+
+          const isUser = msg.author === state.currentUser.name;
+          const nameStyle = isUser ? `style="color: ${state.currentUser.nameColor || '#ffffff'};"` : '';
+          
+          let pfpContent = msg.initial;
+          let pfpStyle = '';
+          if (isUser && state.currentUser.pfpUrl) {
+            pfpStyle = `style="background-image: url('${state.currentUser.pfpUrl}'); background-size: cover; background-position: center;"`;
+            pfpContent = '';
+          } else if (isUser && state.currentUser.pfpBg) {
+            pfpStyle = `style="background-color: ${state.currentUser.pfpBg};"`;
+          }
+
+          msgEl.innerHTML = `
+            <!-- Circular Initial PFP -->
+            <div class="w-8 h-8 rounded-full bg-sunrise-surface border border-white/20 flex items-center justify-center font-bold text-xs text-white shrink-0 mt-0.5" ${pfpStyle}>
+              ${pfpContent}
+            </div>
+            
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center gap-2 mb-0.5">
+                <span class="font-semibold text-xs text-white" ${nameStyle}>${msg.author}</span>
+                <span class="text-[10px] text-sunrise-muted">${msg.time}</span>
+              </div>
+              <p class="text-xs text-sunrise-muted leading-relaxed select-text">${msg.text}</p>
+            </div>
+
+            <!-- Message Action Toolbar on Hover -->
+            <div class="absolute right-2 -top-2.5 hidden group-hover:flex items-center gap-1 bg-sunrise-surface border border-sunrise-border rounded p-1 shadow-lg z-10">
+              <button onclick="deleteMessage(${idx})" class="p-1 text-sunrise-muted hover:text-white rounded transition-colors interactive-target" title="Delete Message">
+                <i data-lucide="trash-2" class="w-3 h-3"></i>
+              </button>
+            </div>
+          `;
+          chatContainer.appendChild(msgEl);
+        });
+      }
+
+      lucide.createIcons();
+      setupCursorListeners();
+      scrollToBottom();
+    }
+
+    function scrollToBottom() {
+      const container = document.getElementById('chat-messages');
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function handleSendMessage(e) {
+      e.preventDefault();
+      const input = document.getElementById('message-input');
+      const text = input.value.trim();
+
+      if (!text) return;
+
+      const now = new Date();
+      const timeStr = `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+      const newMsg = {
+        author: state.currentUser.name,
+        initial: state.currentUser.initial,
+        time: timeStr,
+        text: text
+      };
+
+      state.channels[state.activeChannel].messages.push(newMsg);
+      input.value = '';
+
+      renderMessages();
+    }
+
+    function deleteMessage(index) {
+      state.channels[state.activeChannel].messages.splice(index, 1);
+      renderMessages();
+    }
+
+    // Audio Control Actions
+    function toggleMic() {
+      state.isMuted = !state.isMuted;
+      const btn = document.getElementById('mic-btn');
+      const icon = document.getElementById('mic-icon');
+      
+      if (state.isMuted) {
+        btn.classList.add('text-rose-400');
+        icon.setAttribute('data-lucide', 'mic-off');
+      } else {
+        btn.classList.remove('text-rose-400');
+        icon.setAttribute('data-lucide', 'mic');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleDeafen() {
+      state.isDeafened = !state.isDeafened;
+      const btn = document.getElementById('deafen-btn');
+      if (state.isDeafened) {
+        btn.classList.add('text-rose-400');
+      } else {
+        btn.classList.remove('text-rose-400');
+      }
+    }
+
+    function toggleMemberList() {
+      const memberSidebar = document.getElementById('member-sidebar');
+      memberSidebar.classList.toggle('hidden');
+    }
+
+    function toggleMobileMenu() {
+      const sidebar = document.getElementById('channel-sidebar');
+      sidebar.classList.toggle('-translate-x-full');
+    }
+
+    // App Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      setupCursorListeners();
+    });
+  </script>
+</body>
+</html>
