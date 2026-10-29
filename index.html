@@ -1087,7 +1087,21 @@
 
       try {
         // Fetch channels list from Supabase
-        const { data: chanData } = await supabaseClient.from('channels').select('*');
+        let { data: chanData } = await supabaseClient.from('channels').select('*');
+        
+        // Auto-seed default channels in Supabase if table is empty
+        if (!chanData || chanData.length === 0) {
+          const defaultChans = [
+            { name: 'welcome', category: 'INFORMATION' },
+            { name: 'announcements', category: 'INFORMATION' },
+            { name: 'general', category: 'CHANNELS' },
+            { name: 'dev-log', category: 'CHANNELS' },
+            { name: 'random', category: 'CHANNELS' }
+          ];
+          const { data: inserted } = await supabaseClient.from('channels').insert(defaultChans).select();
+          if (inserted) chanData = inserted;
+        }
+
         if (chanData && chanData.length > 0) {
           chanData.forEach(ch => {
             const key = ch.name.toLowerCase();
@@ -1791,7 +1805,7 @@
         emptyNotice.innerText = 'No messages in this channel yet. Be the first to say hello!';
         container.appendChild(emptyNotice);
       } else {
-        channel.messages.forEach((msg, idx) => {
+        channel.messages.forEach((msg) => {
           const msgEl = document.createElement('div');
           msgEl.className = 'flex items-start gap-3 group hover:bg-sunrise-hover/30 p-2 rounded-lg transition-colors relative';
           
@@ -1811,9 +1825,6 @@
               </div>
               <p class="text-xs text-white/90 leading-relaxed break-words font-normal">${escapeHtml(msg.text || msg.content || '')}</p>
             </div>
-            <button onclick="deleteMessage(${idx})" class="opacity-0 group-hover:opacity-100 p-1 text-sunrise-muted hover:text-rose-400 transition-opacity interactive-target" title="Delete Message">
-              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
-            </button>
           `;
           container.appendChild(msgEl);
         });
@@ -1834,13 +1845,40 @@
       const channel = state.channels[state.activeChannel];
       input.value = '';
 
-      if (supabaseClient && channel && channel.id && state.currentUser.id) {
+      // Get user ID from state or active Supabase session
+      let userId = state.currentUser ? state.currentUser.id : null;
+      if (!userId && supabaseClient) {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session && session.user) userId = session.user.id;
+      }
+
+      // Auto-resolve channel ID in Supabase if missing
+      if (supabaseClient && channel && !channel.id) {
+        const { data: chData } = await supabaseClient
+          .from('channels')
+          .select('id')
+          .ilike('name', channel.title)
+          .maybeSingle();
+
+        if (chData) {
+          channel.id = chData.id;
+        } else {
+          const { data: newCh } = await supabaseClient
+            .from('channels')
+            .insert({ name: channel.title, category: 'CHANNELS' })
+            .select('id')
+            .single();
+          if (newCh) channel.id = newCh.id;
+        }
+      }
+
+      if (supabaseClient && channel && channel.id && userId) {
         try {
           const { error } = await supabaseClient
             .from('messages')
             .insert({
               channel_id: channel.id,
-              user_id: state.currentUser.id,
+              user_id: userId,
               content: text
             });
 
@@ -1864,24 +1902,6 @@
           text: text
         };
         channel.messages.push(newMsg);
-        saveGuestMessages();
-        renderMessages();
-      }
-    }
-
-    async function deleteMessage(index) {
-      const channel = state.channels[state.activeChannel];
-      const msgToDelete = channel.messages[index];
-
-      if (supabaseClient && msgToDelete && msgToDelete.id) {
-        try {
-          await supabaseClient.from('messages').delete().eq('id', msgToDelete.id);
-          await fetchChannelMessages(state.activeChannel);
-        } catch (err) {
-          console.warn("Delete message exception:", err);
-        }
-      } else {
-        channel.messages.splice(index, 1);
         saveGuestMessages();
         renderMessages();
       }
