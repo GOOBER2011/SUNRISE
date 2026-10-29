@@ -1006,6 +1006,16 @@
     async function checkSession() {
       // Check Supabase session on application load
       if (supabaseClient) {
+        // Automatically restore session from localStorage whenever auth state updates
+        supabaseClient.auth.onAuthStateChange(async (event, session) => {
+          if (session && session.user) {
+            await fetchUserProfile(session.user.id, session.user.email);
+            await syncChannelsAndMessages();
+            authenticateUser(false);
+            subscribeRealtimeMessages();
+          }
+        });
+
         try {
           const { data: { session } } = await supabaseClient.auth.getSession();
           if (session && session.user) {
