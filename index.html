@@ -948,6 +948,7 @@
       },
 
       currentUser: {
+        id: null,
         name: 'You',
         handle: '@you',
         initial: 'Y',
@@ -962,30 +963,35 @@
 
       channels: {
         'welcome': {
+          id: null,
           category: 'info',
           title: 'welcome',
           desc: 'Read workspace rules and overview',
           messages: []
         },
         'announcements': {
+          id: null,
           category: 'info',
           title: 'announcements',
           desc: 'Official updates from the owner',
           messages: []
         },
         'general': {
+          id: null,
           category: 'channels',
           title: 'general',
           desc: 'General team discussion and updates',
           messages: []
         },
         'dev-log': {
+          id: null,
           category: 'channels',
           title: 'dev-log',
           desc: 'Development progress and tech notes',
           messages: []
         },
         'random': {
+          id: null,
           category: 'channels',
           title: 'random',
           desc: 'Off-topic chat and casual ideas',
@@ -995,37 +1001,169 @@
     };
 
     // ==========================================
-    // THEME ENGINE LOGIC
+    // SUPABASE SESSION & DATABASE INTEGRATION
     // ==========================================
-    function applyThemeObj(themeObj) {
-      document.documentElement.style.setProperty('--sunrise-pure', themeObj.pure);
-      document.documentElement.style.setProperty('--sunrise-charcoal', themeObj.charcoal);
-      document.documentElement.style.setProperty('--sunrise-surface', themeObj.surface);
-      document.documentElement.style.setProperty('--sunrise-hover', themeObj.hover);
-      document.documentElement.style.setProperty('--sunrise-border', themeObj.border);
-      document.documentElement.style.setProperty('--sunrise-white', themeObj.white);
+    async function checkSession() {
+      // Check Supabase session on application load
+      if (supabaseClient) {
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session && session.user) {
+            await fetchUserProfile(session.user.id, session.user.email);
+            await syncChannelsAndMessages();
+            authenticateUser(false);
+            subscribeRealtimeMessages();
+            return;
+          }
+        } catch (err) {
+          console.warn("Error checking Supabase auth session:", err);
+        }
+      }
 
-      // Update Theme Settings Picker UI
-      const purePicker = document.getElementById('theme-pure-picker');
-      const charcoalPicker = document.getElementById('theme-charcoal-picker');
-      const whitePicker = document.getElementById('theme-white-picker');
-      const surfacePicker = document.getElementById('theme-surface-picker');
+      // Guest fallback session restore from local storage
+      const savedGuest = localStorage.getItem('sunrise_guest_user');
+      if (savedGuest) {
+        try {
+          state.currentUser = JSON.parse(savedGuest);
+          authenticateUser(false);
+          loadGuestMessages();
+        } catch (e) {
+          console.warn("Guest session parse error:", e);
+        }
+      }
+    }
 
-      if (purePicker) {
-        purePicker.value = themeObj.pure;
-        document.getElementById('theme-pure-val').innerText = themeObj.pure;
+    async function fetchUserProfile(userId, email) {
+      if (!supabaseClient) return;
+      try {
+        const { data, error } = await supabaseClient
+          .from('profiles')
+          .select('*')
+          .eq('id', userId)
+          .single();
+
+        if (data) {
+          state.currentUser = {
+            id: data.id,
+            name: data.display_name || 'User',
+            handle: `@${data.username || 'user'}`,
+            initial: (data.display_name || 'U').charAt(0).toUpperCase(),
+            email: email || '',
+            pfpUrl: data.avatar_url || '',
+            pfpBg: '#1a1a1e',
+            bannerUrl: data.banner_url || '',
+            bannerBg: '#222228',
+            nameColor: data.name_color || '#ffffff',
+            bio: data.bio || ''
+          };
+        } else {
+          // Default profile if table trigger is pending
+          const fallbackName = email ? email.split('@')[0] : 'User';
+          state.currentUser = {
+            id: userId,
+            name: fallbackName,
+            handle: `@${fallbackName.toLowerCase()}`,
+            initial: fallbackName.charAt(0).toUpperCase(),
+            email: email || ''
+          };
+        }
+      } catch (err) {
+        console.warn("Profile fetch exception:", err);
       }
-      if (charcoalPicker) {
-        charcoalPicker.value = themeObj.charcoal;
-        document.getElementById('theme-charcoal-val').innerText = themeObj.charcoal;
+    }
+
+    async function syncChannelsAndMessages() {
+      if (!supabaseClient) return;
+
+      try {
+        // Fetch channels list from Supabase
+        const { data: chanData } = await supabaseClient.from('channels').select('*');
+        if (chanData && chanData.length > 0) {
+          chanData.forEach(ch => {
+            const key = ch.name.toLowerCase();
+            if (!state.channels[key]) {
+              state.channels[key] = {
+                id: ch.id,
+                category: ch.category ? ch.category.toLowerCase() : 'channels',
+                title: ch.name,
+                desc: `Channel for #${ch.name}`,
+                messages: []
+              };
+            } else {
+              state.channels[key].id = ch.id;
+            }
+          });
+        }
+      } catch (err) {
+        console.warn("Channel sync error:", err);
       }
-      if (whitePicker) {
-        whitePicker.value = themeObj.white;
-        document.getElementById('theme-white-val').innerText = themeObj.white;
+
+      await fetchChannelMessages(state.activeChannel);
+    }
+
+    async function fetchChannelMessages(channelKey) {
+      const channel = state.channels[channelKey];
+      if (!channel || !channel.id || !supabaseClient) return;
+
+      try {
+        const { data, error } = await supabaseClient
+          .from('messages')
+          .select('id, content, created_at, user_id, profiles(display_name, username, avatar_url, name_color)')
+          .eq('channel_id', channel.id)
+          .order('created_at', { ascending: true });
+
+        if (data) {
+          channel.messages = data.map(m => {
+            const profile = m.profiles || {};
+            const authorName = profile.display_name || profile.username || 'User';
+            const timeStr = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            return {
+              id: m.id,
+              author: authorName,
+              initial: authorName.charAt(0).toUpperCase(),
+              time: `Today at ${timeStr}`,
+              text: m.content,
+              nameColor: profile.name_color || '#ffffff',
+              avatarUrl: profile.avatar_url || ''
+            };
+          });
+          renderMessages();
+        }
+      } catch (err) {
+        console.warn("Message fetch error:", err);
       }
-      if (surfacePicker) {
-        surfacePicker.value = themeObj.surface;
-        document.getElementById('theme-surface-val').innerText = themeObj.surface;
+    }
+
+    function subscribeRealtimeMessages() {
+      if (!supabaseClient) return;
+
+      supabaseClient
+        .channel('public:messages')
+        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
+          const newMsg = payload.new;
+          const channelKey = Object.keys(state.channels).find(k => state.channels[k].id === newMsg.channel_id);
+          if (channelKey) {
+            await fetchChannelMessages(channelKey);
+          }
+        })
+        .subscribe();
+    }
+
+    // Local Storage helpers for guest mode
+    function saveGuestMessages() {
+      localStorage.setItem('sunrise_guest_messages', JSON.stringify(state.channels));
+    }
+
+    function loadGuestMessages() {
+      const saved = localStorage.getItem('sunrise_guest_messages');
+      if (saved) {
+        try {
+          const parsed = JSON.parse(saved);
+          Object.keys(parsed).forEach(k => {
+            if (state.channels[k]) state.channels[k].messages = parsed[k].messages || [];
+          });
+        } catch(e) {}
       }
     }
 
@@ -1249,15 +1387,7 @@
       if (state.authMode === 'signup') {
         const displayName = document.getElementById('auth-display-name').value.trim() || email.split('@')[0];
         const username = document.getElementById('auth-username').value.trim() || email.split('@')[0];
-        
-        state.currentUser = {
-          name: displayName,
-          handle: `@${username.toLowerCase().replace(/\s+/g, '_')}`,
-          initial: displayName.charAt(0).toUpperCase() || 'U',
-          email: email
-        };
 
-        // Supabase Signup Attempt
         if (supabaseClient) {
           try {
             const { data, error } = await supabaseClient.auth.signUp({
@@ -1265,60 +1395,74 @@
               password: password,
               options: { data: { display_name: displayName, username: username } }
             });
-            if (error) console.warn("Supabase Auth Warning:", error.message);
+
+            if (error) {
+              alert("Sign up error: " + error.message);
+              return;
+            }
+
+            if (data && data.user) {
+              await fetchUserProfile(data.user.id, email);
+            }
           } catch (err) {
             console.warn("Supabase auth exception:", err);
           }
         }
-
       } else {
-        const fallbackName = email.split('@')[0] || 'User';
-        state.currentUser = {
-          name: fallbackName.charAt(0).toUpperCase() + fallbackName.slice(1),
-          handle: `@${fallbackName.toLowerCase()}`,
-          initial: fallbackName.charAt(0).toUpperCase() || 'U',
-          email: email
-        };
-
-        // Supabase Login Attempt
         if (supabaseClient) {
           try {
             const { data, error } = await supabaseClient.auth.signInWithPassword({
               email: email,
               password: password
             });
-            if (error) console.warn("Supabase Auth Warning:", error.message);
+
+            if (error) {
+              alert("Log in error: " + error.message);
+              return;
+            }
+
+            if (data && data.user) {
+              await fetchUserProfile(data.user.id, email);
+            }
           } catch (err) {
             console.warn("Supabase auth exception:", err);
           }
         }
       }
 
-      authenticateUser();
+      await syncChannelsAndMessages();
+      subscribeRealtimeMessages();
+      authenticateUser(true);
     }
 
     function continueAsGuest() {
       state.currentUser = {
+        id: null,
         name: 'Guest User',
         handle: '@guest_demo',
         initial: 'G',
         email: 'guest@sunrise.demo'
       };
-      authenticateUser();
+      localStorage.setItem('sunrise_guest_user', JSON.stringify(state.currentUser));
+      loadGuestMessages();
+      authenticateUser(true);
     }
 
-    function authenticateUser() {
+    function authenticateUser(animate = true) {
       state.isAuthenticated = true;
       updateUserProfileUI();
 
-      // Animate Transition
       const authContainer = document.getElementById('auth-container');
       const mainApp = document.getElementById('main-app');
 
-      authContainer.classList.add('opacity-0', 'pointer-events-none');
-      setTimeout(() => {
-        authContainer.classList.add('hidden');
-      }, 300);
+      if (animate) {
+        authContainer.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          authContainer.classList.add('hidden');
+        }, 300);
+      } else {
+        authContainer.classList.add('hidden', 'opacity-0', 'pointer-events-none');
+      }
 
       mainApp.classList.remove('opacity-0', 'pointer-events-none');
       mainApp.classList.add('opacity-100');
@@ -1330,6 +1474,7 @@
 
     function logout() {
       state.isAuthenticated = false;
+      localStorage.removeItem('sunrise_guest_user');
 
       if (supabaseClient) {
         supabaseClient.auth.signOut().catch(() => {});
@@ -1346,7 +1491,6 @@
       mainApp.classList.add('opacity-0', 'pointer-events-none');
       mainApp.classList.remove('opacity-100');
 
-      // Reset form
       document.getElementById('auth-form').reset();
       setupCursorListeners();
     }
@@ -1593,7 +1737,7 @@
       document.getElementById('message-input').placeholder = `Message #${current.title}`;
 
       renderChannels();
-      renderMessages();
+      fetchChannelMessages(channelKey);
 
       // Mobile Menu Close
       const sidebar = document.getElementById('channel-sidebar');
@@ -1602,133 +1746,134 @@
       }
     }
 
+    function escapeHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
     function renderMessages() {
-      const chatContainer = document.getElementById('chat-messages');
-      chatContainer.innerHTML = '';
+      const container = document.getElementById('chat-messages');
+      if (!container) return;
+      container.innerHTML = '';
 
       const channel = state.channels[state.activeChannel];
+      if (!channel) return;
 
-      // Channel Landing Hero Header
-      const hero = document.createElement('div');
-      hero.className = 'py-6 border-b border-sunrise-border mb-4';
-      hero.innerHTML = `
-        <div class="w-10 h-10 rounded-full bg-sunrise-surface border border-sunrise-border flex items-center justify-center mb-2">
-          <i data-lucide="hash" class="w-5 h-5 text-white"></i>
+      // Render channel welcome header
+      const welcomeHeader = document.createElement('div');
+      welcomeHeader.className = 'py-6 mb-4 border-b border-sunrise-border/50';
+      welcomeHeader.innerHTML = `
+        <div class="w-12 h-12 rounded-2xl bg-sunrise-surface border border-sunrise-border flex items-center justify-center text-white mb-3 shadow-lg">
+          <i data-lucide="hash" class="w-6 h-6"></i>
         </div>
-        <h3 class="text-lg font-bold text-white">Welcome to #${channel.title}</h3>
-        <p class="text-xs text-sunrise-muted mt-0.5">${channel.desc}</p>
+        <h3 class="text-lg font-bold text-white">Welcome to #${channel.title}!</h3>
+        <p class="text-xs text-sunrise-muted mt-1">${channel.desc || 'This is the start of the #' + channel.title + ' channel.'}</p>
       `;
-      chatContainer.appendChild(hero);
+      container.appendChild(welcomeHeader);
 
-      // Render Active Channel Messages
-      if (channel.messages.length === 0) {
-        const emptyNotice = document.createElement('div');
-        emptyNotice.className = 'text-center py-8 text-xs text-sunrise-muted/60 font-mono';
-        emptyNotice.innerText = 'No messages posted yet. Be the first to start the conversation!';
-        chatContainer.appendChild(emptyNotice);
+      if (!channel.messages || channel.messages.length === 0) {
+        const emptyNotice = document.createElement('p');
+        emptyNotice.className = 'text-xs text-sunrise-muted/60 italic py-2';
+        emptyNotice.innerText = 'No messages in this channel yet. Be the first to say hello!';
+        container.appendChild(emptyNotice);
       } else {
         channel.messages.forEach((msg, idx) => {
           const msgEl = document.createElement('div');
-          msgEl.className = 'flex items-start gap-3 group hover:bg-sunrise-surface/30 p-2 -mx-2 rounded-lg transition-colors relative';
-
-          const isUser = msg.author === state.currentUser.name;
-          const nameStyle = isUser ? `style="color: ${state.currentUser.nameColor || '#ffffff'};"` : '';
+          msgEl.className = 'flex items-start gap-3 group hover:bg-sunrise-hover/30 p-2 rounded-lg transition-colors relative';
           
-          let pfpContent = msg.initial;
-          let pfpStyle = '';
-          if (isUser && state.currentUser.pfpUrl) {
-            pfpStyle = `style="background-image: url('${state.currentUser.pfpUrl}'); background-size: cover; background-position: center;"`;
-            pfpContent = '';
-          } else if (isUser && state.currentUser.pfpBg) {
-            pfpStyle = `style="background-color: ${state.currentUser.pfpBg};"`;
-          }
+          const pfpBg = msg.avatarUrl ? '' : `style="background-color: ${msg.pfpBg || '#1a1a1e'};"`;
+          const pfpContent = msg.avatarUrl 
+            ? `<div class="w-8 h-8 rounded-full bg-cover bg-center shrink-0 border border-white/20" style="background-image: url('${msg.avatarUrl}')"></div>`
+            : `<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-white/20 font-bold text-xs text-white" ${pfpBg}>${msg.initial || (msg.author ? msg.author.charAt(0).toUpperCase() : 'U')}</div>`;
+
+          const authorColor = msg.nameColor || '#ffffff';
 
           msgEl.innerHTML = `
-            <!-- Circular Initial PFP -->
-            <div class="w-8 h-8 rounded-full bg-sunrise-surface border border-white/20 flex items-center justify-center font-bold text-xs text-white shrink-0 mt-0.5" ${pfpStyle}>
-              ${pfpContent}
-            </div>
-            
+            ${pfpContent}
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-0.5">
-                <span class="font-semibold text-xs text-white" ${nameStyle}>${msg.author}</span>
-                <span class="text-[10px] text-sunrise-muted">${msg.time}</span>
+                <span class="text-xs font-semibold" style="color: ${authorColor}">${msg.author || 'User'}</span>
+                <span class="text-[10px] text-sunrise-muted">${msg.time || 'Just now'}</span>
               </div>
-              <p class="text-xs text-sunrise-muted leading-relaxed select-text">${msg.text}</p>
+              <p class="text-xs text-white/90 leading-relaxed break-words font-normal">${escapeHtml(msg.text || msg.content || '')}</p>
             </div>
-
-            <!-- Message Action Toolbar on Hover -->
-            <div class="absolute right-2 -top-2.5 hidden group-hover:flex items-center gap-1 bg-sunrise-surface border border-sunrise-border rounded p-1 shadow-lg z-10">
-              <button onclick="deleteMessage(${idx})" class="p-1 text-sunrise-muted hover:text-white rounded transition-colors interactive-target" title="Delete Message">
-                <i data-lucide="trash-2" class="w-3 h-3"></i>
-              </button>
-            </div>
+            <button onclick="deleteMessage(${idx})" class="opacity-0 group-hover:opacity-100 p-1 text-sunrise-muted hover:text-rose-400 transition-opacity interactive-target" title="Delete Message">
+              <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+            </button>
           `;
-          chatContainer.appendChild(msgEl);
+          container.appendChild(msgEl);
         });
       }
 
+      container.scrollTop = container.scrollHeight;
       lucide.createIcons();
       setupCursorListeners();
-      scrollToBottom();
     }
 
-    function scrollToBottom() {
-      const container = document.getElementById('chat-messages');
-      container.scrollTop = container.scrollHeight;
-    }
-
-    function handleSendMessage(e) {
+    async function handleSendMessage(e) {
       e.preventDefault();
       const input = document.getElementById('message-input');
       const text = input.value.trim();
 
       if (!text) return;
 
-      const now = new Date();
-      const timeStr = `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-
-      const newMsg = {
-        author: state.currentUser.name,
-        initial: state.currentUser.initial,
-        time: timeStr,
-        text: text
-      };
-
-      state.channels[state.activeChannel].messages.push(newMsg);
+      const channel = state.channels[state.activeChannel];
       input.value = '';
 
-      renderMessages();
-    }
+      if (supabaseClient && channel && channel.id && state.currentUser.id) {
+        try {
+          const { error } = await supabaseClient
+            .from('messages')
+            .insert({
+              channel_id: channel.id,
+              user_id: state.currentUser.id,
+              content: text
+            });
 
-    function deleteMessage(index) {
-      state.channels[state.activeChannel].messages.splice(index, 1);
-      renderMessages();
-    }
-
-    // Audio Control Actions
-    function toggleMic() {
-      state.isMuted = !state.isMuted;
-      const btn = document.getElementById('mic-btn');
-      const icon = document.getElementById('mic-icon');
-      
-      if (state.isMuted) {
-        btn.classList.add('text-rose-400');
-        icon.setAttribute('data-lucide', 'mic-off');
+          if (error) {
+            console.error("Supabase insert message error:", error);
+            showToast("Error sending message: " + error.message);
+          } else {
+            await fetchChannelMessages(state.activeChannel);
+          }
+        } catch (err) {
+          console.warn("Send message exception:", err);
+        }
       } else {
-        btn.classList.remove('text-rose-400');
-        icon.setAttribute('data-lucide', 'mic');
+        // Fallback for Guest mode
+        const now = new Date();
+        const timeStr = `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+        const newMsg = {
+          author: state.currentUser.name,
+          initial: state.currentUser.initial,
+          time: timeStr,
+          text: text
+        };
+        channel.messages.push(newMsg);
+        saveGuestMessages();
+        renderMessages();
       }
-      lucide.createIcons();
     }
 
-    function toggleDeafen() {
-      state.isDeafened = !state.isDeafened;
-      const btn = document.getElementById('deafen-btn');
-      if (state.isDeafened) {
-        btn.classList.add('text-rose-400');
+    async function deleteMessage(index) {
+      const channel = state.channels[state.activeChannel];
+      const msgToDelete = channel.messages[index];
+
+      if (supabaseClient && msgToDelete && msgToDelete.id) {
+        try {
+          await supabaseClient.from('messages').delete().eq('id', msgToDelete.id);
+          await fetchChannelMessages(state.activeChannel);
+        } catch (err) {
+          console.warn("Delete message exception:", err);
+        }
       } else {
-        btn.classList.remove('text-rose-400');
+        channel.messages.splice(index, 1);
+        saveGuestMessages();
+        renderMessages();
       }
     }
 
@@ -1742,10 +1887,39 @@
       sidebar.classList.toggle('-translate-x-full');
     }
 
+    function toggleMic() {
+      state.isMuted = !state.isMuted;
+      const micIcon = document.getElementById('mic-icon');
+      const micBtn = document.getElementById('mic-btn');
+      if (state.isMuted) {
+        if (micIcon) micIcon.setAttribute('data-lucide', 'mic-off');
+        if (micBtn) micBtn.classList.add('text-rose-400');
+      } else {
+        if (micIcon) micIcon.setAttribute('data-lucide', 'mic');
+        if (micBtn) micBtn.classList.remove('text-rose-400');
+      }
+      lucide.createIcons();
+    }
+
+    function toggleDeafen() {
+      state.isDeafened = !state.isDeafened;
+      const deafenIcon = document.getElementById('deafen-icon');
+      const deafenBtn = document.getElementById('deafen-btn');
+      if (state.isDeafened) {
+        if (deafenIcon) deafenIcon.setAttribute('data-lucide', 'volume-x');
+        if (deafenBtn) deafenBtn.classList.add('text-rose-400');
+      } else {
+        if (deafenIcon) deafenIcon.setAttribute('data-lucide', 'headphones');
+        if (deafenBtn) deafenBtn.classList.remove('text-rose-400');
+      }
+      lucide.createIcons();
+    }
+
     // App Initialization
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setupCursorListeners();
+      checkSession();
     });
   </script>
 </body>
