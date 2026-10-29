@@ -1003,12 +1003,17 @@
     // ==========================================
     // SUPABASE SESSION & DATABASE INTEGRATION
     // ==========================================
+    let sessionInitialized = false;
+
     async function checkSession() {
       // Check Supabase session on application load
       if (supabaseClient) {
         // Automatically restore session from localStorage whenever auth state updates
         supabaseClient.auth.onAuthStateChange(async (event, session) => {
-          if (session && session.user) {
+          if (session && session.user && !sessionInitialized) {
+            sessionInitialized = true;
+            state.currentUser.id = session.user.id;
+            state.currentUser.email = session.user.email;
             await fetchUserProfile(session.user.id, session.user.email);
             await syncChannelsAndMessages();
             authenticateUser(false);
@@ -1018,7 +1023,10 @@
 
         try {
           const { data: { session } } = await supabaseClient.auth.getSession();
-          if (session && session.user) {
+          if (session && session.user && !sessionInitialized) {
+            sessionInitialized = true;
+            state.currentUser.id = session.user.id;
+            state.currentUser.email = session.user.email;
             await fetchUserProfile(session.user.id, session.user.email);
             await syncChannelsAndMessages();
             authenticateUser(false);
@@ -1035,8 +1043,8 @@
       if (savedGuest) {
         try {
           state.currentUser = JSON.parse(savedGuest);
-          authenticateUser(false);
           loadGuestMessages();
+          authenticateUser(false);
         } catch (e) {
           console.warn("Guest session parse error:", e);
         }
@@ -1127,19 +1135,49 @@
 
     async function fetchChannelMessages(channelKey) {
       const channel = state.channels[channelKey];
-      if (!channel || !channel.id || !supabaseClient) return;
+      if (!channel || !supabaseClient) return;
+
+      // Ensure channel ID is present
+      if (!channel.id) {
+        try {
+          const { data: chData } = await supabaseClient
+            .from('channels')
+            .select('id')
+            .ilike('name', channel.title)
+            .maybeSingle();
+
+          if (chData) {
+            channel.id = chData.id;
+          }
+        } catch(e) {}
+      }
+
+      if (!channel.id) return;
 
       try {
-        const { data, error } = await supabaseClient
+        // Attempt query with profiles join
+        let { data, error } = await supabaseClient
           .from('messages')
           .select('id, content, created_at, user_id, profiles(display_name, username, avatar_url, name_color)')
           .eq('channel_id', channel.id)
           .order('created_at', { ascending: true });
 
+        // Fallback if join failed
+        if (error || !data) {
+          console.warn("Joined message fetch failed, executing standard fallback:", error);
+          const fallback = await supabaseClient
+            .from('messages')
+            .select('id, content, created_at, user_id')
+            .eq('channel_id', channel.id)
+            .order('created_at', { ascending: true });
+
+          data = fallback.data;
+        }
+
         if (data) {
           channel.messages = data.map(m => {
             const profile = m.profiles || {};
-            const authorName = profile.display_name || profile.username || 'User';
+            const authorName = profile.display_name || profile.username || (m.user_id === (state.currentUser ? state.currentUser.id : null) ? state.currentUser.name : 'User');
             const timeStr = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
             return {
@@ -1152,11 +1190,12 @@
               avatarUrl: profile.avatar_url || ''
             };
           });
-          renderMessages();
         }
       } catch (err) {
         console.warn("Message fetch error:", err);
       }
+
+      renderMessages();
     }
 
     function subscribeRealtimeMessages() {
@@ -1189,6 +1228,7 @@
           });
         } catch(e) {}
       }
+      renderMessages();
     }
 
     function selectThemePreset(presetKey) {
