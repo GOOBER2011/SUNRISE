@@ -1054,37 +1054,38 @@
     async function fetchUserProfile(userId, email) {
       if (!supabaseClient) return;
       try {
-        const { data, error } = await supabaseClient
+        let { data, error } = await supabaseClient
           .from('profiles')
           .select('*')
           .eq('id', userId)
           .single();
 
-        if (data) {
-          state.currentUser = {
-            id: data.id,
-            name: data.display_name || 'User',
-            handle: `@${data.username || 'user'}`,
-            initial: (data.display_name || 'U').charAt(0).toUpperCase(),
-            email: email || '',
-            pfpUrl: data.avatar_url || '',
-            pfpBg: '#1a1a1e',
-            bannerUrl: data.banner_url || '',
-            bannerBg: '#222228',
-            nameColor: data.name_color || '#ffffff',
-            bio: data.bio || ''
-          };
-        } else {
-          // Default profile if table trigger is pending
+        if (!data) {
+          // Auto-create missing profile in database to satisfy foreign key constraint on messages
           const fallbackName = email ? email.split('@')[0] : 'User';
-          state.currentUser = {
+          const username = fallbackName.toLowerCase().replace(/[^a-z0-9_]/g, '');
+          const newProfile = {
             id: userId,
-            name: fallbackName,
-            handle: `@${fallbackName.toLowerCase()}`,
-            initial: fallbackName.charAt(0).toUpperCase(),
-            email: email || ''
+            display_name: fallbackName,
+            username: username || 'user'
           };
+          await supabaseClient.from('profiles').upsert(newProfile);
+          data = newProfile;
         }
+
+        state.currentUser = {
+          id: data.id,
+          name: data.display_name || 'User',
+          handle: `@${data.username || 'user'}`,
+          initial: (data.display_name || 'U').charAt(0).toUpperCase(),
+          email: email || '',
+          pfpUrl: data.avatar_url || '',
+          pfpBg: '#1a1a1e',
+          bannerUrl: data.banner_url || '',
+          bannerBg: '#222228',
+          nameColor: data.name_color || '#ffffff',
+          bio: data.bio || ''
+        };
       } catch (err) {
         console.warn("Profile fetch exception:", err);
       }
@@ -1094,10 +1095,8 @@
       if (!supabaseClient) return;
 
       try {
-        // Fetch channels list from Supabase
         let { data: chanData } = await supabaseClient.from('channels').select('*');
         
-        // Auto-seed default channels in Supabase if table is empty
         if (!chanData || chanData.length === 0) {
           const defaultChans = [
             { name: 'welcome', category: 'INFORMATION' },
@@ -1140,11 +1139,20 @@
       // Ensure channel ID is present
       if (!channel.id) {
         try {
-          const { data: chData } = await supabaseClient
+          let { data: chData } = await supabaseClient
             .from('channels')
             .select('id')
             .ilike('name', channel.title)
             .maybeSingle();
+
+          if (!chData) {
+            const { data: newCh } = await supabaseClient
+              .from('channels')
+              .insert({ name: channel.title.toLowerCase(), category: 'CHANNELS' })
+              .select('id')
+              .single();
+            if (newCh) chData = newCh;
+          }
 
           if (chData) {
             channel.id = chData.id;
@@ -1155,16 +1163,13 @@
       if (!channel.id) return;
 
       try {
-        // Attempt query with profiles join
         let { data, error } = await supabaseClient
           .from('messages')
           .select('id, content, created_at, user_id, profiles(display_name, username, avatar_url, name_color)')
           .eq('channel_id', channel.id)
           .order('created_at', { ascending: true });
 
-        // Fallback if join failed
         if (error || !data) {
-          console.warn("Joined message fetch failed, executing standard fallback:", error);
           const fallback = await supabaseClient
             .from('messages')
             .select('id, content, created_at, user_id')
@@ -1461,7 +1466,7 @@
             });
 
             if (error) {
-              alert("Sign up error: " + error.message);
+              showToast("Sign up error: " + error.message);
               return;
             }
 
@@ -1481,7 +1486,7 @@
             });
 
             if (error) {
-              alert("Log in error: " + error.message);
+              showToast("Log in error: " + error.message);
               return;
             }
 
@@ -1882,38 +1887,45 @@
 
       if (!text) return;
 
-      const channel = state.channels[state.activeChannel];
+      const channelKey = state.activeChannel;
+      const channel = state.channels[channelKey];
       input.value = '';
 
       // Get user ID from state or active Supabase session
       let userId = state.currentUser ? state.currentUser.id : null;
       if (!userId && supabaseClient) {
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        if (session && session.user) userId = session.user.id;
-      }
-
-      // Auto-resolve channel ID in Supabase if missing
-      if (supabaseClient && channel && !channel.id) {
-        const { data: chData } = await supabaseClient
-          .from('channels')
-          .select('id')
-          .ilike('name', channel.title)
-          .maybeSingle();
-
-        if (chData) {
-          channel.id = chData.id;
-        } else {
-          const { data: newCh } = await supabaseClient
-            .from('channels')
-            .insert({ name: channel.title, category: 'CHANNELS' })
-            .select('id')
-            .single();
-          if (newCh) channel.id = newCh.id;
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session && session.user) userId = session.user.id;
+        } catch (err) {
+          console.warn("Session check error:", err);
         }
       }
 
-      if (supabaseClient && channel && channel.id && userId) {
-        try {
+      // If logged in via Supabase, ensure profile and channel exist in DB
+      if (supabaseClient && userId) {
+        await fetchUserProfile(userId, state.currentUser ? state.currentUser.email : '');
+
+        if (!channel.id) {
+          let { data: chData } = await supabaseClient
+            .from('channels')
+            .select('id')
+            .ilike('name', channel.title)
+            .maybeSingle();
+
+          if (chData) {
+            channel.id = chData.id;
+          } else {
+            const { data: newCh } = await supabaseClient
+              .from('channels')
+              .insert({ name: channel.title.toLowerCase(), category: 'CHANNELS' })
+              .select('id')
+              .single();
+            if (newCh) channel.id = newCh.id;
+          }
+        }
+
+        if (channel.id) {
           const { error } = await supabaseClient
             .from('messages')
             .insert({
@@ -1924,27 +1936,26 @@
 
           if (error) {
             console.error("Supabase insert message error:", error);
-            showToast("Error sending message: " + error.message);
+            showToast("Error saving message to database");
           } else {
-            await fetchChannelMessages(state.activeChannel);
+            await fetchChannelMessages(channelKey);
           }
-        } catch (err) {
-          console.warn("Send message exception:", err);
+          return;
         }
-      } else {
-        // Fallback for Guest mode
-        const now = new Date();
-        const timeStr = `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-        const newMsg = {
-          author: state.currentUser.name,
-          initial: state.currentUser.initial,
-          time: timeStr,
-          text: text
-        };
-        channel.messages.push(newMsg);
-        saveGuestMessages();
-        renderMessages();
       }
+
+      // Fallback for Guest mode
+      const now = new Date();
+      const timeStr = `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+      const newMsg = {
+        author: state.currentUser.name,
+        initial: state.currentUser.initial,
+        time: timeStr,
+        text: text
+      };
+      channel.messages.push(newMsg);
+      saveGuestMessages();
+      renderMessages();
     }
 
     function toggleMemberList() {
