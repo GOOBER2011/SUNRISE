@@ -321,23 +321,6 @@
         </nav>
       </div>
 
-      <!-- Category 3: Voice Channels -->
-      <div>
-        <div class="flex items-center justify-between text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1 uppercase">
-          <span>Voice</span>
-        </div>
-        <nav class="space-y-0.5">
-          <a href="#" class="flex items-center gap-2 px-2 py-1.5 rounded-md text-sunrise-muted hover:text-white hover:bg-sunrise-hover/60 text-xs font-medium transition-all group interactive-target">
-            <i data-lucide="volume-2" class="w-3.5 h-3.5 group-hover:text-white"></i>
-            <span class="truncate">General Voice</span>
-          </a>
-          <a href="#" class="flex items-center gap-2 px-2 py-1.5 rounded-md text-sunrise-muted hover:text-white hover:bg-sunrise-hover/60 text-xs font-medium transition-all group interactive-target">
-            <i data-lucide="volume-2" class="w-3.5 h-3.5 group-hover:text-white"></i>
-            <span class="truncate">Lounge</span>
-          </a>
-        </nav>
-      </div>
-
     </div>
 
     <!-- User Profile Bar (Owner / You) -->
@@ -357,14 +340,8 @@
         </div>
       </div>
 
-      <!-- User Audio & Auth Toggles -->
+      <!-- User Auth & Settings Toggles -->
       <div class="flex items-center gap-0.5 text-sunrise-muted">
-        <button id="mic-btn" onclick="toggleMic()" class="p-1 hover:text-white hover:bg-sunrise-hover rounded transition-colors interactive-target" title="Mute Microphone">
-          <i data-lucide="mic" id="mic-icon" class="w-3.5 h-3.5"></i>
-        </button>
-        <button id="deafen-btn" onclick="toggleDeafen()" class="p-1 hover:text-white hover:bg-sunrise-hover rounded transition-colors interactive-target" title="Deafen Audio">
-          <i data-lucide="headphones" id="deafen-icon" class="w-3.5 h-3.5"></i>
-        </button>
         <button onclick="openSettingsModal()" class="p-1 hover:text-white hover:bg-sunrise-hover rounded transition-colors interactive-target" title="User Settings">
           <i data-lucide="settings" class="w-3.5 h-3.5"></i>
         </button>
@@ -379,7 +356,7 @@
   <!-- ========================================== -->
   <!-- 3. CHAT CANVAS & FEED                      -->
   <!-- ========================================== -->
-  <main class="flex-1 flex flex-col min-w-0 bg-sunrise-pure">
+  <main class="flex-1 flex flex-col min-w-0 bg-sunrise-pure relative">
     
     <!-- Channel Header Bar -->
     <header class="h-13 px-4 border-b border-sunrise-border flex items-center justify-between bg-sunrise-charcoal/40 backdrop-blur-md shrink-0">
@@ -414,12 +391,46 @@
       <!-- Dynamic Content Rendered Here -->
     </div>
 
+    <!-- GIF Popover Picker Modal -->
+    <div id="gif-picker-popover" class="hidden absolute bottom-16 left-4 z-50 w-72 sm:w-80 bg-sunrise-charcoal border border-sunrise-border rounded-xl shadow-2xl p-3 space-y-2">
+      <div class="flex items-center justify-between border-b border-sunrise-border pb-2">
+        <span class="text-xs font-bold text-white flex items-center gap-1.5">
+          <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i> Select a GIF
+        </span>
+        <button type="button" onclick="toggleGifPicker(false)" class="text-sunrise-muted hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div class="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWp3dWV1dnN0Nm9iOXZxYnc4ZWdzbzB4c3BybjU5MGlhcHRiMHZjOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKsjRrfIPjeiVyM/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm41b3I5ZWpneXlsbW9uaTFmZmYyMmZvZTVuYXlhOWIxdDRwb3drOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0AMJzC6f02acGE6s/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXVjbnA3bndwbzNhNG5rcjdyb25iOWlqMXVpOWx2MnByY3MzaXRzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/d31w24psGYeedC64/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2RmejNhNWZsd2R4bHAxaDlyMGs0NWpneTlzZWtwMWY3Nm5lMHltZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT0xezQGU5xCDJuCPe/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1MGdveGthMDltZjJrcmhkamdrdm4zaTBucHBsaG5ocmV2dDF0MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3q2K5jinAlChoCLS/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHlyZWJxeTNua2pldzR0NmE0cG5wM2hxaXdzMXlhdmdhZmVyd3ZxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26u4cqiYI30juCOGY/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+      </div>
+    </div>
+
     <!-- Message Input Bar -->
     <div class="p-3 bg-sunrise-pure border-t border-sunrise-border shrink-0">
+      <!-- Attachment Preview Container -->
+      <div id="attachment-preview" class="hidden mb-2 p-2 bg-sunrise-surface border border-sunrise-border rounded-lg flex items-center justify-between">
+        <div class="flex items-center gap-2">
+          <img id="preview-attach-img" src="" class="w-10 h-10 object-cover rounded">
+          <span class="text-xs text-sunrise-muted">Image attached</span>
+        </div>
+        <button type="button" onclick="removeAttachment()" class="text-sunrise-muted hover:text-rose-400"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+
       <form id="message-form" onsubmit="handleSendMessage(event)" class="bg-sunrise-surface border border-sunrise-border focus-within:border-white/40 rounded-lg p-2 flex items-center gap-2 transition-all">
         
-        <button type="button" class="p-1 text-sunrise-muted hover:text-white rounded transition-colors interactive-target">
-          <i data-lucide="plus" class="w-4 h-4"></i>
+        <!-- Image Upload Button -->
+        <input type="file" id="chat-file-input" accept="image/*" class="hidden" onchange="handleChatFileUpload(event)">
+        <button type="button" onclick="document.getElementById('chat-file-input').click()" class="p-1 text-sunrise-muted hover:text-white rounded transition-colors interactive-target" title="Upload Image">
+          <i data-lucide="image" class="w-4 h-4"></i>
+        </button>
+
+        <!-- GIF Button -->
+        <button type="button" onclick="toggleGifPicker()" class="p-1 text-sunrise-muted hover:text-white rounded transition-colors interactive-target" title="Insert GIF">
+          <span class="font-bold text-[10px] px-1 bg-white/10 rounded">GIF</span>
         </button>
 
         <input type="text" 
@@ -539,6 +550,13 @@
               
               <!-- Form Fields -->
               <div class="space-y-4">
+
+                <!-- Display Name Field -->
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Display Name</label>
+                  <input type="text" id="setting-display-name" oninput="updateSettingsPreview()" placeholder="Your Display Name" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+                </div>
+
                 <!-- Avatar Settings -->
                 <div>
                   <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Avatar Image</label>
@@ -925,14 +943,13 @@
       isAuthenticated: false,
       authMode: 'login', // 'login' | 'signup'
       activeChannel: 'general',
-      isMuted: false,
-      isDeafened: false,
+      pendingAttachment: null,
 
       cursor: {
         enabled: true,
         dotColor: '#ffffff',
         ringColor: '#ffffff',
-        followSpeed: 0.45, // Faster default follow lerp
+        followSpeed: 0.45,
         dotSize: 8,
         ringSize: 32,
         borderWidth: 1,
@@ -1020,220 +1037,389 @@
     };
 
     // ==========================================
-    // SUPABASE SESSION & DATABASE INTEGRATION
+    // INITIALIZATION & CURSOR SYSTEM LOGIC
     // ==========================================
-    let sessionInitialized = false;
+    let cursorX = 0, cursorY = 0;
+    let ringX = 0, ringY = 0;
+    let cursorAnimFrame = null;
 
-    async function checkSession() {
-      // Check Supabase session on application load
-      if (supabaseClient) {
-        // Automatically restore session from localStorage whenever auth state updates
-        supabaseClient.auth.onAuthStateChange(async (event, session) => {
-          if (session && session.user && !sessionInitialized) {
-            sessionInitialized = true;
-            state.currentUser.id = session.user.id;
-            state.currentUser.email = session.user.email;
-            await fetchUserProfile(session.user.id, session.user.email);
-            await syncChannelsAndMessages();
-            authenticateUser(false);
-            subscribeRealtimeMessages();
-          }
-        });
+    function initLoadingScreen() {
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        setTimeout(() => {
+          loadingScreen.classList.add('opacity-0');
+          setTimeout(() => {
+            loadingScreen.classList.add('hidden');
+          }, 500);
+        }, 3000);
+      }
+    }
 
-        try {
-          const { data: { session } } = await supabaseClient.auth.getSession();
-          if (session && session.user && !sessionInitialized) {
-            sessionInitialized = true;
-            state.currentUser.id = session.user.id;
-            state.currentUser.email = session.user.email;
-            await fetchUserProfile(session.user.id, session.user.email);
-            await syncChannelsAndMessages();
-            authenticateUser(false);
-            subscribeRealtimeMessages();
+    function setupCursorListeners() {
+      if (!state.cursor.enabled) return;
+
+      const dot = document.getElementById('cursor-dot');
+      const ring = document.getElementById('cursor-ring');
+      if (!dot || !ring) return;
+
+      window.onmousemove = (e) => {
+        cursorX = e.clientX;
+        cursorY = e.clientY;
+        dot.style.left = `${cursorX}px`;
+        dot.style.top = `${cursorY}px`;
+      };
+
+      if (!cursorAnimFrame) {
+        function animateRing() {
+          ringX += (cursorX - ringX) * state.cursor.followSpeed;
+          ringY += (cursorY - ringY) * state.cursor.followSpeed;
+          ring.style.left = `${ringX}px`;
+          ring.style.top = `${ringY}px`;
+          cursorAnimFrame = requestAnimationFrame(animateRing);
+        }
+        animateRing();
+      }
+
+      document.querySelectorAll('.interactive-target, button, a, input, textarea').forEach(el => {
+        el.onmouseenter = () => {
+          ring.style.transform = `translate(-50%, -50%) scale(1.5)`;
+          dot.style.transform = `translate(-50%, -50%) scale(1.5)`;
+        };
+        el.onmouseleave = () => {
+          ring.style.transform = `translate(-50%, -50%) scale(1.0)`;
+          dot.style.transform = `translate(-50%, -50%) scale(1.0)`;
+        };
+      });
+    }
+
+    function applyCursorStyles() {
+      const dot = document.getElementById('cursor-dot');
+      const ring = document.getElementById('cursor-ring');
+      if (!dot || !ring) return;
+
+      if (!state.cursor.enabled) {
+        dot.style.display = 'none';
+        ring.style.display = 'none';
+        document.body.classList.add('native-cursor');
+        return;
+      }
+
+      document.body.classList.remove('native-cursor');
+      dot.style.display = 'block';
+      ring.style.display = 'block';
+
+      dot.style.backgroundColor = state.cursor.dotColor;
+      dot.style.width = `${state.cursor.dotSize}px`;
+      dot.style.height = `${state.cursor.dotSize}px`;
+
+      ring.style.borderColor = state.cursor.ringColor;
+      ring.style.width = `${state.cursor.ringSize}px`;
+      ring.style.height = `${state.cursor.ringSize}px`;
+      ring.style.borderWidth = `${state.cursor.borderWidth}px`;
+    }
+
+    function toggleCustomCursor(enabled) {
+      state.cursor.enabled = enabled;
+      applyCursorStyles();
+      if (enabled) setupCursorListeners();
+    }
+
+    function selectCursorPreset(presetName) {
+      if (state.cursorPresets[presetName]) {
+        state.cursor = { ...state.cursor, ...state.cursorPresets[presetName], preset: presetName };
+        applyCursorStyles();
+        
+        const dotPicker = document.getElementById('cursor-dot-color-picker');
+        const ringPicker = document.getElementById('cursor-ring-color-picker');
+        if (dotPicker) dotPicker.value = state.cursor.dotColor;
+        if (ringPicker) ringPicker.value = state.cursor.ringColor;
+      }
+    }
+
+    function updateCursorParam(param, value) {
+      state.cursor[param] = value;
+      applyCursorStyles();
+    }
+
+    function selectThemePreset(presetKey) {
+      const p = state.themePresets[presetKey];
+      if (!p) return;
+      state.theme = { ...p, preset: presetKey };
+
+      const root = document.documentElement;
+      root.style.setProperty('--sunrise-pure', p.pure);
+      root.style.setProperty('--sunrise-charcoal', p.charcoal);
+      root.style.setProperty('--sunrise-surface', p.surface);
+      root.style.setProperty('--sunrise-hover', p.hover);
+      root.style.setProperty('--sunrise-border', p.border);
+      root.style.setProperty('--sunrise-white', p.white);
+
+      const pureP = document.getElementById('theme-pure-picker');
+      if (pureP) pureP.value = p.pure;
+    }
+
+    function updateCustomThemeVar(varName, value) {
+      document.documentElement.style.setProperty(varName, value);
+    }
+
+    function handleFileUpload(event, type) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        if (type === 'pfp') {
+          const input = document.getElementById('setting-pfp-url');
+          if (input) input.value = e.target.result;
+        } else if (type === 'banner') {
+          const input = document.getElementById('setting-banner-url');
+          if (input) input.value = e.target.result;
+        }
+        updateSettingsPreview();
+      };
+      reader.readAsDataURL(file);
+    }
+
+    // ==========================================
+    // AUTHENTICATION & USER SESSION LOGIC
+    // ==========================================
+    function switchAuthTab(mode) {
+      state.authMode = mode;
+      const tabLogin = document.getElementById('tab-login');
+      const tabSignup = document.getElementById('tab-signup');
+      const signupFields = document.getElementById('signup-fields');
+      const submitBtnText = document.querySelector('#auth-submit-btn span');
+
+      if (mode === 'signup') {
+        if (tabLogin) tabLogin.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
+        if (tabSignup) tabSignup.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
+        if (signupFields) signupFields.classList.remove('hidden');
+        if (submitBtnText) submitBtnText.innerText = 'Create Account';
+      } else {
+        if (tabLogin) tabLogin.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
+        if (tabSignup) tabSignup.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
+        if (signupFields) signupFields.classList.add('hidden');
+        if (submitBtnText) submitBtnText.innerText = 'Log In';
+      }
+    }
+
+    async function handleAuthSubmit(event) {
+      event.preventDefault();
+      const email = document.getElementById('auth-email').value.trim();
+      const password = document.getElementById('auth-password').value;
+
+      if (!email || !password) return;
+
+      if (state.authMode === 'signup') {
+        const displayName = document.getElementById('auth-display-name').value.trim() || email.split('@')[0];
+        const username = document.getElementById('auth-username').value.trim() || email.split('@')[0];
+
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.auth.signUp({
+            email,
+            password,
+            options: { data: { display_name: displayName, username } }
+          });
+          if (error) {
+            showToast(error.message);
             return;
           }
-        } catch (err) {
-          console.warn("Error checking Supabase auth session:", err);
+          showToast('Account created successfully!');
+          if (data.session) enterApp(data.user, displayName);
+          else switchAuthTab('login');
+        } else {
+          enterApp({ id: 'guest-' + Date.now(), email }, displayName);
+        }
+      } else {
+        if (supabaseClient) {
+          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+          if (error) {
+            showToast(error.message);
+            return;
+          }
+          if (data.user) {
+            await fetchUserProfile(data.user.id, data.user.email);
+            enterApp(data.user);
+          }
+        } else {
+          enterApp({ id: 'guest-' + Date.now(), email }, email.split('@')[0]);
+        }
+      }
+    }
+
+    function continueAsGuest() {
+      const savedGuest = localStorage.getItem('sunrise_guest_user');
+      let guestUser = null;
+      if (savedGuest) {
+        try { guestUser = JSON.parse(savedGuest); } catch(e){}
+      }
+      if (!guestUser) {
+        guestUser = {
+          id: null,
+          name: 'Guest User',
+          handle: '@guest',
+          initial: 'G',
+          email: 'guest@sunrise.app',
+          pfpUrl: '',
+          pfpBg: '#1a1a1e',
+          bannerUrl: '',
+          bannerBg: '#222228',
+          nameColor: '#ffffff',
+          bio: 'Exploring Sunrise as guest.'
+        };
+      }
+      state.currentUser = guestUser;
+      enterApp(null, guestUser.name);
+    }
+
+    function enterApp(authUser, defaultName) {
+      state.isAuthenticated = true;
+      const authContainer = document.getElementById('auth-container');
+      const mainApp = document.getElementById('main-app');
+
+      if (authContainer) authContainer.classList.add('hidden');
+      if (mainApp) {
+        mainApp.classList.remove('opacity-0', 'pointer-events-none');
+      }
+
+      if (authUser && !state.currentUser.id) {
+        state.currentUser.id = authUser.id;
+        state.currentUser.email = authUser.email || '';
+        if (defaultName) {
+          state.currentUser.name = defaultName;
+          state.currentUser.initial = defaultName.charAt(0).toUpperCase();
+          state.currentUser.handle = `@${defaultName.toLowerCase().replace(/\s+/g, '')}`;
         }
       }
 
-      // Guest fallback session restore from local storage
+      updateUserProfileUI();
+      renderChannels();
+      switchChannel('general');
+      subscribeRealtimeMessages();
+    }
+
+    async function checkSession() {
+      if (supabaseClient) {
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session && session.user) {
+            await fetchUserProfile(session.user.id, session.user.email);
+            enterApp(session.user);
+            return;
+          }
+        } catch(e) {
+          console.warn("Check session error:", e);
+        }
+      }
+
       const savedGuest = localStorage.getItem('sunrise_guest_user');
       if (savedGuest) {
         try {
           state.currentUser = JSON.parse(savedGuest);
-          loadGuestMessages();
-          authenticateUser(false);
-        } catch (e) {
-          console.warn("Guest session parse error:", e);
-        }
+          enterApp(null);
+        } catch(e) {}
       }
     }
 
-    async function fetchUserProfile(userId, email) {
-      if (!supabaseClient) return;
+    async function fetchUserProfile(userId, userEmail) {
+      if (!supabaseClient || !userId) return;
       try {
-        let { data, error } = await supabaseClient
+        const { data } = await supabaseClient
           .from('profiles')
           .select('*')
           .eq('id', userId)
-          .single();
-
-        if (!data) {
-          // Auto-create missing profile in database to satisfy foreign key constraint on messages
-          const fallbackName = email ? email.split('@')[0] : 'User';
-          const username = fallbackName.toLowerCase().replace(/[^a-z0-9_]/g, '');
-          const newProfile = {
-            id: userId,
-            display_name: fallbackName,
-            username: username || 'user'
-          };
-          await supabaseClient.from('profiles').upsert(newProfile);
-          data = newProfile;
-        }
-
-        state.currentUser = {
-          id: data.id,
-          name: data.display_name || 'User',
-          handle: `@${data.username || 'user'}`,
-          initial: (data.display_name || 'U').charAt(0).toUpperCase(),
-          email: email || '',
-          pfpUrl: data.avatar_url || state.currentUser.pfpUrl || '',
-          pfpBg: '#1a1a1e',
-          bannerUrl: data.banner_url || state.currentUser.bannerUrl || '',
-          bannerBg: '#222228',
-          nameColor: data.name_color || state.currentUser.nameColor || '#ffffff',
-          bio: data.bio || state.currentUser.bio || ''
-        };
-      } catch (err) {
-        console.warn("Profile fetch exception:", err);
-      }
-    }
-
-    async function syncChannelsAndMessages() {
-      if (!supabaseClient) return;
-
-      try {
-        let { data: chanData } = await supabaseClient.from('channels').select('*');
-        
-        if (!chanData || chanData.length === 0) {
-          const defaultChans = [
-            { name: 'welcome', category: 'INFORMATION' },
-            { name: 'announcements', category: 'INFORMATION' },
-            { name: 'general', category: 'CHANNELS' },
-            { name: 'dev-log', category: 'CHANNELS' },
-            { name: 'random', category: 'CHANNELS' }
-          ];
-          const { data: inserted } = await supabaseClient.from('channels').insert(defaultChans).select();
-          if (inserted) chanData = inserted;
-        }
-
-        if (chanData && chanData.length > 0) {
-          chanData.forEach(ch => {
-            const key = ch.name.toLowerCase();
-            if (!state.channels[key]) {
-              state.channels[key] = {
-                id: ch.id,
-                category: ch.category ? ch.category.toLowerCase() : 'channels',
-                title: ch.name,
-                desc: `Channel for #${ch.name}`,
-                messages: []
-              };
-            } else {
-              state.channels[key].id = ch.id;
-            }
-          });
-        }
-      } catch (err) {
-        console.warn("Channel sync error:", err);
-      }
-
-      await fetchChannelMessages(state.activeChannel);
-    }
-
-    async function fetchChannelMessages(channelKey) {
-      const channel = state.channels[channelKey];
-      if (!channel || !supabaseClient) return;
-
-      // Ensure channel ID is present
-      if (!channel.id) {
-        try {
-          let { data: chData } = await supabaseClient
-            .from('channels')
-            .select('id')
-            .ilike('name', channel.title)
-            .maybeSingle();
-
-          if (!chData) {
-            const category = (channel.category === 'info' ? 'INFORMATION' : 'CHANNELS');
-            const { data: newCh } = await supabaseClient
-              .from('channels')
-              .insert({ name: channel.title.toLowerCase(), category: category })
-              .select('id')
-              .single();
-            if (newCh) chData = newCh;
-          }
-
-          if (chData) {
-            channel.id = chData.id;
-          }
-        } catch(e) {}
-      }
-
-      if (!channel.id) return;
-
-      try {
-        let { data, error } = await supabaseClient
-          .from('messages')
-          .select('id, content, created_at, user_id, profiles(display_name, username, avatar_url, name_color)')
-          .eq('channel_id', channel.id)
-          .order('created_at', { ascending: true });
-
-        if (error || !data) {
-          const fallback = await supabaseClient
-            .from('messages')
-            .select('id, content, created_at, user_id')
-            .eq('channel_id', channel.id)
-            .order('created_at', { ascending: true });
-
-          data = fallback.data;
-        }
+          .maybeSingle();
 
         if (data) {
-          channel.messages = data.map(m => {
-            const profile = m.profiles || {};
-            const isCurrentUser = (state.currentUser && m.user_id === state.currentUser.id);
-            const authorName = profile.display_name || profile.username || (isCurrentUser ? state.currentUser.name : 'User');
-            const timeStr = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            const avatarUrl = profile.avatar_url || (isCurrentUser ? (state.currentUser.pfpUrl || '') : '');
-            const nameColor = profile.name_color || (isCurrentUser ? (state.currentUser.nameColor || '#ffffff') : '#ffffff');
-
-            return {
-              id: m.id,
-              author: authorName,
-              initial: authorName.charAt(0).toUpperCase(),
-              time: `Today at ${timeStr}`,
-              text: m.content,
-              nameColor: nameColor,
-              avatarUrl: avatarUrl
-            };
+          state.currentUser.id = data.id;
+          state.currentUser.name = data.display_name || userEmail.split('@')[0];
+          state.currentUser.initial = state.currentUser.name.charAt(0).toUpperCase();
+          state.currentUser.handle = `@${data.username || userEmail.split('@')[0]}`;
+          state.currentUser.pfpUrl = data.avatar_url || '';
+          state.currentUser.bannerUrl = data.banner_url || '';
+          state.currentUser.nameColor = data.name_color || '#ffffff';
+          state.currentUser.bio = data.bio || '';
+        } else {
+          const defaultName = userEmail ? userEmail.split('@')[0] : 'User';
+          const username = defaultName.toLowerCase().replace(/[^a-z0-9]/g, '');
+          await supabaseClient.from('profiles').upsert({
+            id: userId,
+            username: username,
+            display_name: defaultName
           });
+          state.currentUser.id = userId;
+          state.currentUser.name = defaultName;
+          state.currentUser.initial = defaultName.charAt(0).toUpperCase();
+          state.currentUser.handle = `@${username}`;
         }
       } catch (err) {
-        console.warn("Message fetch error:", err);
+        console.warn("fetchUserProfile error:", err);
+      }
+      updateUserProfileUI();
+    }
+
+    function updateUserProfileUI() {
+      const user = state.currentUser;
+      if (!user) return;
+
+      const userPfp = document.getElementById('user-pfp');
+      const memberPfp = document.getElementById('member-user-pfp');
+      
+      const updatePfpElem = (elem) => {
+        if (!elem) return;
+        if (user.pfpUrl) {
+          elem.style.backgroundImage = `url('${user.pfpUrl}')`;
+          elem.style.backgroundSize = 'cover';
+          elem.style.backgroundPosition = 'center';
+          elem.innerText = '';
+        } else {
+          elem.style.backgroundImage = 'none';
+          elem.style.backgroundColor = user.pfpBg || '#1a1a1e';
+          elem.innerText = user.initial || 'Y';
+        }
+      };
+
+      updatePfpElem(userPfp);
+      updatePfpElem(memberPfp);
+
+      const displayNameEl = document.getElementById('user-display-name');
+      if (displayNameEl) {
+        displayNameEl.innerText = user.name || 'You';
+        displayNameEl.style.color = user.nameColor || '#ffffff';
       }
 
-      if (state.activeChannel === channelKey) {
-        renderMessages();
+      const userHandleEl = document.getElementById('user-handle');
+      if (userHandleEl) userHandleEl.innerText = user.handle || '@you';
+
+      const memberNameEl = document.getElementById('member-user-display-name');
+      if (memberNameEl) {
+        memberNameEl.innerText = user.name || 'You';
+        memberNameEl.style.color = user.nameColor || '#ffffff';
       }
+
+      const memberHandleEl = document.getElementById('member-user-handle');
+      if (memberHandleEl) memberHandleEl.innerText = user.handle || '@you';
+    }
+
+    function logout() {
+      if (supabaseClient) {
+        supabaseClient.auth.signOut();
+      }
+      localStorage.removeItem('sunrise_guest_user');
+      state.isAuthenticated = false;
+      state.currentUser.id = null;
+
+      const authContainer = document.getElementById('auth-container');
+      const mainApp = document.getElementById('main-app');
+
+      if (authContainer) authContainer.classList.remove('hidden');
+      if (mainApp) mainApp.classList.add('opacity-0', 'pointer-events-none');
     }
 
     function loadLocalMessageCache() {
       try {
-        const saved = localStorage.getItem('sunrise_messages_cache');
-        if (saved) {
-          const cache = JSON.parse(saved);
+        const raw = localStorage.getItem('sunrise_messages_cache');
+        if (raw) {
+          const cache = JSON.parse(raw);
           Object.keys(cache).forEach(k => {
             if (state.channels[k]) {
               state.channels[k].messages = cache[k] || [];
@@ -1243,397 +1429,115 @@
       } catch (e) {
         console.warn("Failed to load local message cache:", e);
       }
-      renderMessages();
     }
 
-    function initLoadingScreen() {
-      const loader = document.getElementById('loading-screen');
-      if (!loader) return;
-      setTimeout(() => {
-        loader.classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => {
-          loader.style.display = 'none';
-        }, 500);
-      }, 3000);
-    }
+    async function fetchChannelMessages(channelKey) {
+      const channel = state.channels[channelKey];
+      if (!channel) return;
 
-    function selectThemePreset(presetKey) {
-      if (!state.themePresets[presetKey]) return;
-      state.theme = { preset: presetKey, ...state.themePresets[presetKey] };
-      applyThemeObj(state.theme);
-      showToast(`Applied ${presetKey.toUpperCase()} theme preset!`);
-    }
+      if (supabaseClient) {
+        try {
+          if (!channel.id) {
+            const { data: chData } = await supabaseClient
+              .from('channels')
+              .select('id')
+              .ilike('name', channel.title)
+              .maybeSingle();
 
-    function updateCustomThemeVar(varName, hexVal) {
-      document.documentElement.style.setProperty(varName, hexVal);
-      
-      if (varName === '--sunrise-pure') {
-        state.theme.pure = hexVal;
-        document.getElementById('theme-pure-val').innerText = hexVal;
-      } else if (varName === '--sunrise-charcoal') {
-        state.theme.charcoal = hexVal;
-        document.getElementById('theme-charcoal-val').innerText = hexVal;
-      } else if (varName === '--sunrise-white') {
-        state.theme.white = hexVal;
-        document.getElementById('theme-white-val').innerText = hexVal;
-      } else if (varName === '--sunrise-surface') {
-        state.theme.surface = hexVal;
-        document.getElementById('theme-surface-val').innerText = hexVal;
+            if (chData) channel.id = chData.id;
+          }
+
+          if (channel.id) {
+            const { data: msgs, error } = await supabaseClient
+              .from('messages')
+              .select('*, profiles(*)')
+              .eq('channel_id', channel.id)
+              .order('created_at', { ascending: true });
+
+            if (!error && msgs) {
+              channel.messages = msgs.map(m => {
+                const profile = m.profiles || {};
+                const created = new Date(m.created_at);
+                const timeStr = `Today at ${created.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+                
+                let textContent = m.content || '';
+                let imgUrl = null;
+
+                if (textContent.includes('\nhttps://') || textContent.startsWith('https://') || textContent.startsWith('data:image')) {
+                  const lines = textContent.split('\n');
+                  const lastLine = lines[lines.length - 1];
+                  if (lastLine.startsWith('https://') || lastLine.startsWith('data:image')) {
+                    imgUrl = lastLine;
+                    textContent = lines.slice(0, lines.length - 1).join('\n');
+                  }
+                }
+
+                return {
+                  id: m.id,
+                  author: profile.display_name || 'User',
+                  initial: (profile.display_name || 'U').charAt(0).toUpperCase(),
+                  time: timeStr,
+                  text: textContent,
+                  imageUrl: imgUrl,
+                  nameColor: profile.name_color || '#ffffff',
+                  avatarUrl: profile.avatar_url || ''
+                };
+              });
+
+              saveLocalMessageCache();
+              if (state.activeChannel === channelKey) renderMessages();
+            }
+          }
+        } catch (err) {
+          console.warn("fetchChannelMessages error:", err);
+        }
       }
     }
 
     // ==========================================
-    // DEVICE FILE UPLOAD HANDLER (FileReader)
+    // CHAT IMAGE & GIF ATTACHMENT HANDLERS
     // ==========================================
-    function handleFileUpload(event, targetType) {
+    function handleChatFileUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
 
       const reader = new FileReader();
       reader.onload = function(e) {
-        const dataUrl = e.target.result;
-        if (targetType === 'pfp') {
-          document.getElementById('setting-pfp-url').value = dataUrl;
-        } else if (targetType === 'banner') {
-          document.getElementById('setting-banner-url').value = dataUrl;
-        }
-        updateSettingsPreview();
+        state.pendingAttachment = e.target.result;
+        const previewImg = document.getElementById('preview-attach-img');
+        const previewBox = document.getElementById('attachment-preview');
+        if (previewImg) previewImg.src = state.pendingAttachment;
+        if (previewBox) previewBox.classList.remove('hidden');
       };
       reader.readAsDataURL(file);
     }
 
-    // ==========================================
-    // CUSTOM DUAL CURSOR ENGINE (LERP & HOVER)
-    // ==========================================
-    const dot = document.getElementById('cursor-dot');
-    const ring = document.getElementById('cursor-ring');
-
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let ringX = mouseX;
-    let ringY = mouseY;
-
-    // Track Mouse Move
-    window.addEventListener('mousemove', (e) => {
-      mouseX = e.clientX;
-      mouseY = e.clientY;
-
-      // Immediate dot placement
-      dot.style.left = `${mouseX}px`;
-      dot.style.top = `${mouseY}px`;
-    });
-
-    // Smooth Lerp Animation Loop for Outer Ring
-    function animateCursor() {
-      const lerpFactor = state.cursor ? state.cursor.followSpeed : 0.45;
-      ringX += (mouseX - ringX) * lerpFactor;
-      ringY += (mouseY - ringY) * lerpFactor;
-
-      ring.style.left = `${ringX}px`;
-      ring.style.top = `${ringY}px`;
-
-      requestAnimationFrame(animateCursor);
-    }
-    animateCursor();
-
-    function updateCursorStyles() {
-      const c = state.cursor;
-      const dotEl = document.getElementById('cursor-dot');
-      const ringEl = document.getElementById('cursor-ring');
-
-      if (!c.enabled) {
-        document.body.classList.add('native-cursor');
-        dotEl.style.display = 'none';
-        ringEl.style.display = 'none';
-        return;
-      }
-
-      document.body.classList.remove('native-cursor');
-      dotEl.style.display = 'block';
-      ringEl.style.display = 'block';
-
-      // Dot styles
-      dotEl.style.width = `${c.dotSize}px`;
-      dotEl.style.height = `${c.dotSize}px`;
-      dotEl.style.backgroundColor = c.dotColor;
-
-      // Ring styles
-      ringEl.style.width = `${c.ringSize}px`;
-      ringEl.style.height = `${c.ringSize}px`;
-      ringEl.style.borderColor = c.ringColor;
-      ringEl.style.borderWidth = `${c.borderWidth}px`;
-
-      // Update UI Inputs
-      const toggle = document.getElementById('cursor-toggle');
-      if (toggle) toggle.checked = c.enabled;
-
-      const dotColorPicker = document.getElementById('cursor-dot-color-picker');
-      if (dotColorPicker) {
-        dotColorPicker.value = c.dotColor;
-        document.getElementById('cursor-dot-color-val').innerText = c.dotColor;
-      }
-
-      const ringColorPicker = document.getElementById('cursor-ring-color-picker');
-      if (ringColorPicker) {
-        ringColorPicker.value = c.ringColor;
-        document.getElementById('cursor-ring-color-val').innerText = c.ringColor;
-      }
-
-      const speedSlider = document.getElementById('cursor-speed-slider');
-      if (speedSlider) {
-        speedSlider.value = c.followSpeed;
-        document.getElementById('cursor-speed-val').innerText = `${c.followSpeed} ${c.followSpeed > 0.5 ? '(Ultra Fast)' : '(Snappy)'}`;
-      }
-
-      const dotSizeSlider = document.getElementById('cursor-dot-size-slider');
-      if (dotSizeSlider) {
-        dotSizeSlider.value = c.dotSize;
-        document.getElementById('cursor-dot-size-val').innerText = `${c.dotSize}px`;
-      }
-
-      const ringSizeSlider = document.getElementById('cursor-ring-size-slider');
-      if (ringSizeSlider) {
-        ringSizeSlider.value = c.ringSize;
-        document.getElementById('cursor-ring-size-val').innerText = `${c.ringSize}px`;
-      }
-
-      const borderSlider = document.getElementById('cursor-border-slider');
-      if (borderSlider) {
-        borderSlider.value = c.borderWidth;
-        document.getElementById('cursor-border-val').innerText = `${c.borderWidth}px`;
-      }
+    function removeAttachment() {
+      state.pendingAttachment = null;
+      const previewBox = document.getElementById('attachment-preview');
+      const fileInput = document.getElementById('chat-file-input');
+      if (previewBox) previewBox.classList.add('hidden');
+      if (fileInput) fileInput.value = '';
     }
 
-    function toggleCustomCursor(enabled) {
-      state.cursor.enabled = enabled;
-      updateCursorStyles();
-    }
-
-    function selectCursorPreset(key) {
-      if (!state.cursorPresets[key]) return;
-      state.cursor = { ...state.cursor, preset: key, ...state.cursorPresets[key] };
-      updateCursorStyles();
-      showToast(`Applied ${key.toUpperCase()} cursor preset!`);
-    }
-
-    function updateCursorParam(param, val) {
-      state.cursor[param] = val;
-      updateCursorStyles();
-    }
-
-    // Attach Hover Effects for Interactive Targets
-    function setupCursorListeners() {
-      const targets = document.querySelectorAll('button, a, input, .interactive-target');
-      targets.forEach(el => {
-        el.removeEventListener('mouseenter', cursorEnterHandler);
-        el.removeEventListener('mouseleave', cursorLeaveHandler);
-
-        el.addEventListener('mouseenter', cursorEnterHandler);
-        el.addEventListener('mouseleave', cursorLeaveHandler);
-      });
-    }
-
-    function cursorEnterHandler() {
-      ring.classList.add('scale-150', 'border-white', 'bg-white/5');
-      ring.classList.remove('border-white/60');
-    }
-
-    function cursorLeaveHandler() {
-      ring.classList.remove('scale-150', 'border-white', 'bg-white/5');
-      ring.classList.add('border-white/60');
-    }
-
-    // ==========================================
-    // AUTHENTICATION & USER PROFILE FLOWS
-    // ==========================================
-    function switchAuthTab(mode) {
-      state.authMode = mode;
-      const loginTab = document.getElementById('tab-login');
-      const signupTab = document.getElementById('tab-signup');
-      const signupFields = document.getElementById('signup-fields');
-      const submitBtn = document.getElementById('auth-submit-btn');
-
-      if (mode === 'login') {
-        loginTab.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
-        signupTab.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
-        signupFields.classList.add('hidden');
-        submitBtn.querySelector('span').innerText = 'Log In';
+    function toggleGifPicker(forceState) {
+      const popover = document.getElementById('gif-picker-popover');
+      if (!popover) return;
+      if (typeof forceState === 'boolean') {
+        if (forceState) popover.classList.remove('hidden');
+        else popover.classList.add('hidden');
       } else {
-        signupTab.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
-        loginTab.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
-        signupFields.classList.remove('hidden');
-        submitBtn.querySelector('span').innerText = 'Create Account';
+        popover.classList.toggle('hidden');
       }
-      
-      lucide.createIcons();
-      setupCursorListeners();
     }
 
-    async function handleAuthSubmit(e) {
-      e.preventDefault();
-      const email = document.getElementById('auth-email').value.trim();
-      const password = document.getElementById('auth-password').value.trim();
-
-      if (state.authMode === 'signup') {
-        const displayName = document.getElementById('auth-display-name').value.trim() || email.split('@')[0];
-        const username = document.getElementById('auth-username').value.trim() || email.split('@')[0];
-
-        if (supabaseClient) {
-          try {
-            const { data, error } = await supabaseClient.auth.signUp({
-              email: email,
-              password: password,
-              options: { data: { display_name: displayName, username: username } }
-            });
-
-            if (error) {
-              showToast("Sign up error: " + error.message);
-              return;
-            }
-
-            if (data && data.user) {
-              await fetchUserProfile(data.user.id, email);
-            }
-          } catch (err) {
-            console.warn("Supabase auth exception:", err);
-          }
-        }
-      } else {
-        if (supabaseClient) {
-          try {
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-              email: email,
-              password: password
-            });
-
-            if (error) {
-              showToast("Log in error: " + error.message);
-              return;
-            }
-
-            if (data && data.user) {
-              await fetchUserProfile(data.user.id, email);
-            }
-          } catch (err) {
-            console.warn("Supabase auth exception:", err);
-          }
-        }
-      }
-
-      await syncChannelsAndMessages();
-      subscribeRealtimeMessages();
-      authenticateUser(true);
-    }
-
-    function continueAsGuest() {
-      state.currentUser = {
-        id: null,
-        name: 'Guest User',
-        handle: '@guest_demo',
-        initial: 'G',
-        email: 'guest@sunrise.demo'
-      };
-      localStorage.setItem('sunrise_guest_user', JSON.stringify(state.currentUser));
-      loadGuestMessages();
-      authenticateUser(true);
-    }
-
-    function authenticateUser(animate = true) {
-      state.isAuthenticated = true;
-      updateUserProfileUI();
-
-      const authContainer = document.getElementById('auth-container');
-      const mainApp = document.getElementById('main-app');
-
-      if (animate) {
-        authContainer.classList.add('opacity-0', 'pointer-events-none');
-        setTimeout(() => {
-          authContainer.classList.add('hidden');
-        }, 300);
-      } else {
-        authContainer.classList.add('hidden', 'opacity-0', 'pointer-events-none');
-      }
-
-      mainApp.classList.remove('opacity-0', 'pointer-events-none');
-      mainApp.classList.add('opacity-100');
-
-      renderChannels();
-      renderMessages();
-      setupCursorListeners();
-    }
-
-    function logout() {
-      state.isAuthenticated = false;
-      localStorage.removeItem('sunrise_guest_user');
-
-      if (supabaseClient) {
-        supabaseClient.auth.signOut().catch(() => {});
-      }
-
-      const authContainer = document.getElementById('auth-container');
-      const mainApp = document.getElementById('main-app');
-
-      authContainer.classList.remove('hidden');
-      setTimeout(() => {
-        authContainer.classList.remove('opacity-0', 'pointer-events-none');
-      }, 10);
-
-      mainApp.classList.add('opacity-0', 'pointer-events-none');
-      mainApp.classList.remove('opacity-100');
-
-      document.getElementById('auth-form').reset();
-      setupCursorListeners();
-    }
-
-    function updateUserProfileUI() {
-      const user = state.currentUser;
-      if (!user) return;
-      
-      // Sidebar Profile
-      const userDisplayName = document.getElementById('user-display-name');
-      if (userDisplayName) {
-        userDisplayName.innerText = user.name || 'You';
-        userDisplayName.style.color = user.nameColor || '#ffffff';
-      }
-
-      const userHandle = document.getElementById('user-handle');
-      if (userHandle) userHandle.innerText = user.handle || '@you';
-
-      const userPfp = document.getElementById('user-pfp');
-      if (userPfp) {
-        if (user.pfpUrl) {
-          userPfp.style.backgroundImage = `url('${user.pfpUrl}')`;
-          userPfp.style.backgroundSize = 'cover';
-          userPfp.style.backgroundPosition = 'center';
-          userPfp.innerText = '';
-        } else {
-          userPfp.style.backgroundImage = 'none';
-          userPfp.style.backgroundColor = user.pfpBg || '#1a1a1e';
-          userPfp.innerText = user.initial || 'Y';
-        }
-      }
-
-      // Right Member Sidebar Profile
-      const memberName = document.getElementById('member-user-display-name');
-      const memberHandle = document.getElementById('member-user-handle');
-      const memberPfp = document.getElementById('member-user-pfp');
-      if (memberName) {
-        memberName.innerText = user.name || 'You';
-        memberName.style.color = user.nameColor || '#ffffff';
-      }
-      if (memberHandle) memberHandle.innerText = user.handle || '@you';
-      if (memberPfp) {
-        if (user.pfpUrl) {
-          memberPfp.style.backgroundImage = `url('${user.pfpUrl}')`;
-          memberPfp.style.backgroundSize = 'cover';
-          memberPfp.style.backgroundPosition = 'center';
-          memberPfp.innerText = '';
-        } else {
-          memberPfp.style.backgroundImage = 'none';
-          memberPfp.style.backgroundColor = user.pfpBg || '#1a1a1e';
-          memberPfp.innerText = user.initial || 'Y';
-        }
-      }
+    function selectGif(gifUrl) {
+      state.pendingAttachment = gifUrl;
+      toggleGifPicker(false);
+      const previewImg = document.getElementById('preview-attach-img');
+      const previewBox = document.getElementById('attachment-preview');
+      if (previewImg) previewImg.src = state.pendingAttachment;
+      if (previewBox) previewBox.classList.remove('hidden');
     }
 
     // ==========================================
@@ -1649,6 +1553,10 @@
 
       // Populate current user values into form inputs
       const user = state.currentUser || {};
+
+      const displayNameInput = document.getElementById('setting-display-name');
+      if (displayNameInput) displayNameInput.value = user.name || '';
+
       const pfpUrlInput = document.getElementById('setting-pfp-url');
       if (pfpUrlInput) pfpUrlInput.value = user.pfpUrl || '';
       
@@ -1714,6 +1622,7 @@
     }
 
     function updateSettingsPreview() {
+      const displayName = (document.getElementById('setting-display-name')?.value || '').trim();
       const pfpUrl = (document.getElementById('setting-pfp-url')?.value || '').trim();
       const pfpBg = document.getElementById('setting-pfp-bg')?.value || '#1a1a1e';
       const bannerUrl = (document.getElementById('setting-banner-url')?.value || '').trim();
@@ -1744,7 +1653,7 @@
         } else {
           previewPfp.style.backgroundImage = 'none';
           previewPfp.style.backgroundColor = pfpBg;
-          previewPfp.innerText = state.currentUser ? state.currentUser.initial : 'Y';
+          previewPfp.innerText = displayName ? displayName.charAt(0).toUpperCase() : (state.currentUser ? state.currentUser.initial : 'Y');
         }
       }
 
@@ -1764,7 +1673,7 @@
       // Preview Name & Bio
       const previewName = document.getElementById('preview-name');
       if (previewName) {
-        previewName.innerText = (state.currentUser && state.currentUser.name) || 'You';
+        previewName.innerText = displayName || (state.currentUser && state.currentUser.name) || 'You';
         previewName.style.color = nameColor;
       }
 
@@ -1779,6 +1688,12 @@
       e.preventDefault();
       if (!state.currentUser) return;
       
+      const newDisplayName = (document.getElementById('setting-display-name')?.value || '').trim();
+      if (newDisplayName) {
+        state.currentUser.name = newDisplayName;
+        state.currentUser.initial = newDisplayName.charAt(0).toUpperCase();
+      }
+
       state.currentUser.pfpUrl = (document.getElementById('setting-pfp-url')?.value || '').trim();
       state.currentUser.pfpBg = document.getElementById('setting-pfp-bg')?.value || '#1a1a1e';
       state.currentUser.bannerUrl = (document.getElementById('setting-banner-url')?.value || '').trim();
@@ -1790,14 +1705,19 @@
       if (supabaseClient && state.currentUser.id) {
         supabaseClient.from('profiles').upsert({
           id: state.currentUser.id,
+          display_name: state.currentUser.name,
           avatar_url: state.currentUser.pfpUrl,
           banner_url: state.currentUser.bannerUrl,
           name_color: state.currentUser.nameColor,
-          bio: state.currentUser.bio,
-          display_name: state.currentUser.name
+          bio: state.currentUser.bio
         }).then(({ error }) => {
           if (error) console.warn("Supabase profile save error:", error);
         });
+      }
+
+      // Persist guest if running in demo guest session
+      if (!state.currentUser.id) {
+        localStorage.setItem('sunrise_guest_user', JSON.stringify(state.currentUser));
       }
 
       updateUserProfileUI();
@@ -1978,6 +1898,7 @@
             : `<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-white/20 font-bold text-xs text-white" ${pfpBg}>${msg.initial || (msg.author ? msg.author.charAt(0).toUpperCase() : 'U')}</div>`;
 
           const authorColor = msg.nameColor || '#ffffff';
+          const mediaHtml = msg.imageUrl ? `<img src="${msg.imageUrl}" class="mt-2 max-w-xs max-h-60 rounded-xl border border-sunrise-border object-cover">` : '';
 
           msgEl.innerHTML = `
             ${pfpContent}
@@ -1986,7 +1907,8 @@
                 <span class="text-xs font-semibold" style="color: ${authorColor}">${msg.author || 'User'}</span>
                 <span class="text-[10px] text-sunrise-muted">${msg.time || 'Just now'}</span>
               </div>
-              <p class="text-xs text-white/90 leading-relaxed break-words font-normal">${escapeHtml(msg.text || msg.content || '')}</p>
+              ${msg.text ? `<p class="text-xs text-white/90 leading-relaxed break-words font-normal">${escapeHtml(msg.text || msg.content || '')}</p>` : ''}
+              ${mediaHtml}
             </div>
           `;
           container.appendChild(msgEl);
@@ -2004,11 +1926,14 @@
       if (!input) return;
       const text = input.value.trim();
 
-      if (!text) return;
+      if (!text && !state.pendingAttachment) return;
 
       const channelKey = state.activeChannel;
       const channel = state.channels[channelKey];
       input.value = '';
+
+      const attachment = state.pendingAttachment;
+      removeAttachment();
 
       const now = new Date();
       const timeStr = `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
@@ -2020,6 +1945,7 @@
         initial: state.currentUser ? state.currentUser.initial : 'Y',
         time: timeStr,
         text: text,
+        imageUrl: attachment || null,
         nameColor: state.currentUser ? state.currentUser.nameColor : '#ffffff',
         avatarUrl: state.currentUser ? state.currentUser.pfpUrl : ''
       };
@@ -2064,12 +1990,13 @@
           }
 
           if (channel.id) {
+            const messageContent = attachment ? (text ? `${text}\n${attachment}` : attachment) : text;
             const { error } = await supabaseClient
               .from('messages')
               .insert({
                 channel_id: channel.id,
                 user_id: userId,
-                content: text
+                content: messageContent
               });
 
             if (error) {
@@ -2087,34 +2014,6 @@
     function toggleMobileMenu() {
       const sidebar = document.getElementById('channel-sidebar');
       if (sidebar) sidebar.classList.toggle('-translate-x-full');
-    }
-
-    function toggleMic() {
-      state.isMuted = !state.isMuted;
-      const micIcon = document.getElementById('mic-icon');
-      const micBtn = document.getElementById('mic-btn');
-      if (state.isMuted) {
-        if (micIcon) micIcon.setAttribute('data-lucide', 'mic-off');
-        if (micBtn) micBtn.classList.add('text-rose-400');
-      } else {
-        if (micIcon) micIcon.setAttribute('data-lucide', 'mic');
-        if (micBtn) micBtn.classList.remove('text-rose-400');
-      }
-      lucide.createIcons();
-    }
-
-    function toggleDeafen() {
-      state.isDeafened = !state.isDeafened;
-      const deafenIcon = document.getElementById('deafen-icon');
-      const deafenBtn = document.getElementById('deafen-btn');
-      if (state.isDeafened) {
-        if (deafenIcon) deafenIcon.setAttribute('data-lucide', 'volume-x');
-        if (deafenBtn) deafenBtn.classList.add('text-rose-400');
-      } else {
-        if (deafenIcon) deafenIcon.setAttribute('data-lucide', 'headphones');
-        if (deafenBtn) deafenBtn.classList.remove('text-rose-400');
-      }
-      lucide.createIcons();
     }
 
     // App Initialization
