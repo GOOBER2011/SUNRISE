@@ -1098,12 +1098,12 @@
           handle: `@${data.username || 'user'}`,
           initial: (data.display_name || 'U').charAt(0).toUpperCase(),
           email: email || '',
-          pfpUrl: data.avatar_url || '',
+          pfpUrl: data.avatar_url || state.currentUser.pfpUrl || '',
           pfpBg: '#1a1a1e',
-          bannerUrl: data.banner_url || '',
+          bannerUrl: data.banner_url || state.currentUser.bannerUrl || '',
           bannerBg: '#222228',
-          nameColor: data.name_color || '#ffffff',
-          bio: data.bio || ''
+          nameColor: data.name_color || state.currentUser.nameColor || '#ffffff',
+          bio: data.bio || state.currentUser.bio || ''
         };
       } catch (err) {
         console.warn("Profile fetch exception:", err);
@@ -1165,9 +1165,10 @@
             .maybeSingle();
 
           if (!chData) {
+            const category = (channel.category === 'info' ? 'INFORMATION' : 'CHANNELS');
             const { data: newCh } = await supabaseClient
               .from('channels')
-              .insert({ name: channel.title.toLowerCase(), category: 'CHANNELS' })
+              .insert({ name: channel.title.toLowerCase(), category: category })
               .select('id')
               .single();
             if (newCh) chData = newCh;
@@ -1201,8 +1202,12 @@
         if (data) {
           channel.messages = data.map(m => {
             const profile = m.profiles || {};
-            const authorName = profile.display_name || profile.username || (m.user_id === (state.currentUser ? state.currentUser.id : null) ? state.currentUser.name : 'User');
+            const isCurrentUser = (state.currentUser && m.user_id === state.currentUser.id);
+            const authorName = profile.display_name || profile.username || (isCurrentUser ? state.currentUser.name : 'User');
             const timeStr = new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+            const avatarUrl = profile.avatar_url || (isCurrentUser ? (state.currentUser.pfpUrl || '') : '');
+            const nameColor = profile.name_color || (isCurrentUser ? (state.currentUser.nameColor || '#ffffff') : '#ffffff');
 
             return {
               id: m.id,
@@ -1210,8 +1215,8 @@
               initial: authorName.charAt(0).toUpperCase(),
               time: `Today at ${timeStr}`,
               text: m.content,
-              nameColor: profile.name_color || '#ffffff',
-              avatarUrl: profile.avatar_url || ''
+              nameColor: nameColor,
+              avatarUrl: avatarUrl
             };
           });
         }
@@ -1219,34 +1224,8 @@
         console.warn("Message fetch error:", err);
       }
 
-      renderMessages();
-    }
-
-    function subscribeRealtimeMessages() {
-      if (!supabaseClient) return;
-
-      supabaseClient
-        .channel('public:messages')
-        .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
-          const newMsg = payload.new;
-          const channelKey = Object.keys(state.channels).find(k => state.channels[k].id === newMsg.channel_id);
-          if (channelKey) {
-            await fetchChannelMessages(channelKey);
-          }
-        })
-        .subscribe();
-    }
-
-    // Local Storage & Local Persistence Caching
-    function saveLocalMessageCache() {
-      try {
-        const cache = {};
-        Object.keys(state.channels).forEach(k => {
-          cache[k] = state.channels[k].messages || [];
-        });
-        localStorage.setItem('sunrise_messages_cache', JSON.stringify(cache));
-      } catch (e) {
-        console.warn("Failed to save local message cache:", e);
+      if (state.activeChannel === channelKey) {
+        renderMessages();
       }
     }
 
@@ -1807,6 +1786,20 @@
       state.currentUser.nameColor = document.getElementById('setting-name-color')?.value || '#ffffff';
       state.currentUser.bio = (document.getElementById('setting-bio')?.value || '').trim();
 
+      // Sync updated profile attributes to Supabase profiles table
+      if (supabaseClient && state.currentUser.id) {
+        supabaseClient.from('profiles').upsert({
+          id: state.currentUser.id,
+          avatar_url: state.currentUser.pfpUrl,
+          banner_url: state.currentUser.bannerUrl,
+          name_color: state.currentUser.nameColor,
+          bio: state.currentUser.bio,
+          display_name: state.currentUser.name
+        }).then(({ error }) => {
+          if (error) console.warn("Supabase profile save error:", error);
+        });
+      }
+
       updateUserProfileUI();
       renderMessages();
       showToast('Profile settings saved!');
@@ -1880,7 +1873,42 @@
       setupCursorListeners();
     }
 
-    function switchChannel(channelKey) {
+    function saveLocalMessageCache() {
+      try {
+        const cache = {};
+        Object.keys(state.channels).forEach(k => {
+          cache[k] = state.channels[k].messages || [];
+        });
+        localStorage.setItem('sunrise_messages_cache', JSON.stringify(cache));
+      } catch (e) {
+        console.warn("Failed to save local message cache:", e);
+      }
+    }
+
+    function loadGuestMessages() {
+      loadLocalMessageCache();
+    }
+
+    function subscribeRealtimeMessages() {
+      if (!supabaseClient) return;
+      try {
+        supabaseClient
+          .channel('public:messages')
+          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
+            if (payload.new && payload.new.channel_id) {
+              const chKey = Object.keys(state.channels).find(k => state.channels[k].id === payload.new.channel_id);
+              if (chKey) {
+                await fetchChannelMessages(chKey);
+              }
+            }
+          })
+          .subscribe();
+      } catch (e) {
+        console.warn("Realtime subscription error:", e);
+      }
+    }
+
+    async function switchChannel(channelKey) {
       if (!state.channels[channelKey]) return;
       state.activeChannel = channelKey;
 
@@ -1894,7 +1922,9 @@
       if (inputEl) inputEl.placeholder = `Message #${current.title}`;
 
       renderChannels();
-      fetchChannelMessages(channelKey);
+      renderMessages(); // Instantly isolate channel view
+
+      await fetchChannelMessages(channelKey);
 
       // Mobile Menu Close
       const sidebar = document.getElementById('channel-sidebar');
