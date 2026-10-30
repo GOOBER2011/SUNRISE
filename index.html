@@ -114,6 +114,25 @@
 <body class="bg-sunrise-pure text-white font-sans antialiased h-screen overflow-hidden flex select-none relative">
 
   <!-- ========================================== -->
+  <!-- LOADING SCREEN OVERLAY (3 SECONDS)         -->
+  <!-- ========================================== -->
+  <div id="loading-screen" class="fixed inset-0 z-[99999] bg-[#09090b] flex flex-col items-center justify-center transition-opacity duration-500">
+    <div class="relative w-20 h-20 flex items-center justify-center mb-6">
+      <!-- Outer Rotating Circle -->
+      <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-white border-r-white/30 animate-spin" style="animation-duration: 1.2s;"></div>
+      <!-- Middle Rotating Circle (Reverse) -->
+      <div class="absolute inset-2 rounded-full border-2 border-transparent border-b-white/80 border-l-white/20 animate-spin" style="animation-duration: 0.8s; animation-direction: reverse;"></div>
+      <!-- Inner Rotating Circle -->
+      <div class="absolute inset-4 rounded-full border-2 border-transparent border-t-white border-l-white/40 animate-spin" style="animation-duration: 0.5s;"></div>
+    </div>
+    <div class="flex items-center gap-2">
+      <i data-lucide="sun" class="w-4 h-4 text-white animate-pulse"></i>
+      <span class="text-xs font-semibold tracking-widest uppercase text-white/90">Loading Sunrise</span>
+    </div>
+    <p class="text-[10px] text-sunrise-muted mt-1 font-mono">Syncing workspace environment...</p>
+  </div>
+
+  <!-- ========================================== -->
   <!-- CUSTOM CURSOR ELEMENTS                     -->
   <!-- ========================================== -->
   <!-- Main Cursor Solid Dot -->
@@ -1218,22 +1237,45 @@
         .subscribe();
     }
 
-    // Local Storage helpers for guest mode
-    function saveGuestMessages() {
-      localStorage.setItem('sunrise_guest_messages', JSON.stringify(state.channels));
+    // Local Storage & Local Persistence Caching
+    function saveLocalMessageCache() {
+      try {
+        const cache = {};
+        Object.keys(state.channels).forEach(k => {
+          cache[k] = state.channels[k].messages || [];
+        });
+        localStorage.setItem('sunrise_messages_cache', JSON.stringify(cache));
+      } catch (e) {
+        console.warn("Failed to save local message cache:", e);
+      }
     }
 
-    function loadGuestMessages() {
-      const saved = localStorage.getItem('sunrise_guest_messages');
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          Object.keys(parsed).forEach(k => {
-            if (state.channels[k]) state.channels[k].messages = parsed[k].messages || [];
+    function loadLocalMessageCache() {
+      try {
+        const saved = localStorage.getItem('sunrise_messages_cache');
+        if (saved) {
+          const cache = JSON.parse(saved);
+          Object.keys(cache).forEach(k => {
+            if (state.channels[k]) {
+              state.channels[k].messages = cache[k] || [];
+            }
           });
-        } catch(e) {}
+        }
+      } catch (e) {
+        console.warn("Failed to load local message cache:", e);
       }
       renderMessages();
+    }
+
+    function initLoadingScreen() {
+      const loader = document.getElementById('loading-screen');
+      if (!loader) return;
+      setTimeout(() => {
+        loader.classList.add('opacity-0', 'pointer-events-none');
+        setTimeout(() => {
+          loader.style.display = 'none';
+        }, 500);
+      }, 3000);
     }
 
     function selectThemePreset(presetKey) {
@@ -1566,24 +1608,30 @@
 
     function updateUserProfileUI() {
       const user = state.currentUser;
+      if (!user) return;
       
       // Sidebar Profile
       const userDisplayName = document.getElementById('user-display-name');
-      userDisplayName.innerText = user.name;
-      userDisplayName.style.color = user.nameColor || '#ffffff';
+      if (userDisplayName) {
+        userDisplayName.innerText = user.name || 'You';
+        userDisplayName.style.color = user.nameColor || '#ffffff';
+      }
 
-      document.getElementById('user-handle').innerText = user.handle;
+      const userHandle = document.getElementById('user-handle');
+      if (userHandle) userHandle.innerText = user.handle || '@you';
 
       const userPfp = document.getElementById('user-pfp');
-      if (user.pfpUrl) {
-        userPfp.style.backgroundImage = `url('${user.pfpUrl}')`;
-        userPfp.style.backgroundSize = 'cover';
-        userPfp.style.backgroundPosition = 'center';
-        userPfp.innerText = '';
-      } else {
-        userPfp.style.backgroundImage = 'none';
-        userPfp.style.backgroundColor = user.pfpBg || '#1a1a1e';
-        userPfp.innerText = user.initial;
+      if (userPfp) {
+        if (user.pfpUrl) {
+          userPfp.style.backgroundImage = `url('${user.pfpUrl}')`;
+          userPfp.style.backgroundSize = 'cover';
+          userPfp.style.backgroundPosition = 'center';
+          userPfp.innerText = '';
+        } else {
+          userPfp.style.backgroundImage = 'none';
+          userPfp.style.backgroundColor = user.pfpBg || '#1a1a1e';
+          userPfp.innerText = user.initial || 'Y';
+        }
       }
 
       // Right Member Sidebar Profile
@@ -1591,10 +1639,10 @@
       const memberHandle = document.getElementById('member-user-handle');
       const memberPfp = document.getElementById('member-user-pfp');
       if (memberName) {
-        memberName.innerText = user.name;
+        memberName.innerText = user.name || 'You';
         memberName.style.color = user.nameColor || '#ffffff';
       }
-      if (memberHandle) memberHandle.innerText = user.handle;
+      if (memberHandle) memberHandle.innerText = user.handle || '@you';
       if (memberPfp) {
         if (user.pfpUrl) {
           memberPfp.style.backgroundImage = `url('${user.pfpUrl}')`;
@@ -1604,7 +1652,7 @@
         } else {
           memberPfp.style.backgroundImage = 'none';
           memberPfp.style.backgroundColor = user.pfpBg || '#1a1a1e';
-          memberPfp.innerText = user.initial;
+          memberPfp.innerText = user.initial || 'Y';
         }
       }
     }
@@ -1614,33 +1662,47 @@
     // ==========================================
     function openSettingsModal() {
       const modal = document.getElementById('settings-modal');
+      if (!modal) return;
       modal.classList.remove('hidden');
       setTimeout(() => {
         modal.classList.remove('opacity-0');
       }, 10);
 
       // Populate current user values into form inputs
-      const user = state.currentUser;
-      document.getElementById('setting-pfp-url').value = user.pfpUrl || '';
-      document.getElementById('setting-pfp-bg').value = user.pfpBg || '#1a1a1e';
-      document.getElementById('setting-pfp-bg-val').innerText = user.pfpBg || '#1a1a1e';
+      const user = state.currentUser || {};
+      const pfpUrlInput = document.getElementById('setting-pfp-url');
+      if (pfpUrlInput) pfpUrlInput.value = user.pfpUrl || '';
+      
+      const pfpBgInput = document.getElementById('setting-pfp-bg');
+      if (pfpBgInput) pfpBgInput.value = user.pfpBg || '#1a1a1e';
+      
+      const pfpBgVal = document.getElementById('setting-pfp-bg-val');
+      if (pfpBgVal) pfpBgVal.innerText = user.pfpBg || '#1a1a1e';
 
-      document.getElementById('setting-banner-url').value = user.bannerUrl || '';
-      document.getElementById('setting-banner-color').value = user.bannerBg || '#222228';
-      document.getElementById('setting-banner-val').innerText = user.bannerBg || '#222228';
+      const bannerUrlInput = document.getElementById('setting-banner-url');
+      if (bannerUrlInput) bannerUrlInput.value = user.bannerUrl || '';
 
-      document.getElementById('setting-name-color').value = user.nameColor || '#ffffff';
-      document.getElementById('setting-name-color-val').innerText = user.nameColor || '#ffffff';
+      const bannerBgInput = document.getElementById('setting-banner-color');
+      if (bannerBgInput) bannerBgInput.value = user.bannerBg || '#222228';
 
-      document.getElementById('setting-bio').value = user.bio || '';
+      const bannerBgVal = document.getElementById('setting-banner-val');
+      if (bannerBgVal) bannerBgVal.innerText = user.bannerBg || '#222228';
 
-      switchSettingsTab('profile');
+      const nameColorInput = document.getElementById('setting-name-color');
+      if (nameColorInput) nameColorInput.value = user.nameColor || '#ffffff';
+
+      const nameColorVal = document.getElementById('setting-name-color-val');
+      if (nameColorVal) nameColorVal.innerText = user.nameColor || '#ffffff';
+
+      const bioInput = document.getElementById('setting-bio');
+      if (bioInput) bioInput.value = user.bio || '';
+
       updateSettingsPreview();
-      setupCursorListeners();
     }
 
     function closeSettingsModal() {
       const modal = document.getElementById('settings-modal');
+      if (!modal) return;
       modal.classList.add('opacity-0');
       setTimeout(() => {
         modal.classList.add('hidden');
@@ -1653,11 +1715,11 @@
         const tabBtn = document.getElementById(`set-tab-${t}`);
         const section = document.getElementById(`settings-section-${t}`);
         if (t === tabName) {
-          tabBtn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium bg-sunrise-surface text-white flex items-center justify-between transition-all interactive-target';
-          section.classList.remove('hidden');
+          if (tabBtn) tabBtn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium bg-sunrise-surface text-white flex items-center justify-between transition-all interactive-target';
+          if (section) section.classList.remove('hidden');
         } else {
-          tabBtn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target';
-          section.classList.add('hidden');
+          if (tabBtn) tabBtn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target';
+          if (section) section.classList.add('hidden');
         }
       });
       lucide.createIcons();
@@ -1665,66 +1727,85 @@
     }
 
     function setPresetColor(hex) {
-      document.getElementById('setting-name-color').value = hex;
-      document.getElementById('setting-name-color-val').innerText = hex;
+      const input = document.getElementById('setting-name-color');
+      const val = document.getElementById('setting-name-color-val');
+      if (input) input.value = hex;
+      if (val) val.innerText = hex;
       updateSettingsPreview();
     }
 
     function updateSettingsPreview() {
-      const pfpUrl = document.getElementById('setting-pfp-url').value.trim();
-      const pfpBg = document.getElementById('setting-pfp-bg').value;
-      const bannerUrl = document.getElementById('setting-banner-url').value.trim();
-      const bannerBg = document.getElementById('setting-banner-color').value;
-      const nameColor = document.getElementById('setting-name-color').value;
-      const bio = document.getElementById('setting-bio').value;
+      const pfpUrl = (document.getElementById('setting-pfp-url')?.value || '').trim();
+      const pfpBg = document.getElementById('setting-pfp-bg')?.value || '#1a1a1e';
+      const bannerUrl = (document.getElementById('setting-banner-url')?.value || '').trim();
+      const bannerBg = document.getElementById('setting-banner-color')?.value || '#222228';
+      const nameColor = document.getElementById('setting-name-color')?.value || '#ffffff';
+      const bio = document.getElementById('setting-bio')?.value || '';
 
-      document.getElementById('setting-pfp-bg-val').innerText = pfpBg;
-      document.getElementById('setting-banner-val').innerText = bannerBg;
-      document.getElementById('setting-name-color-val').innerText = nameColor;
-      document.getElementById('bio-char-count').innerText = `${bio.length}/120`;
+      const pfpBgVal = document.getElementById('setting-pfp-bg-val');
+      if (pfpBgVal) pfpBgVal.innerText = pfpBg;
+
+      const bannerVal = document.getElementById('setting-banner-val');
+      if (bannerVal) bannerVal.innerText = bannerBg;
+
+      const nameColorVal = document.getElementById('setting-name-color-val');
+      if (nameColorVal) nameColorVal.innerText = nameColor;
+
+      const charCount = document.getElementById('bio-char-count');
+      if (charCount) charCount.innerText = `${bio.length}/120`;
 
       // Preview Avatar
       const previewPfp = document.getElementById('preview-pfp');
-      if (pfpUrl) {
-        previewPfp.style.backgroundImage = `url('${pfpUrl}')`;
-        previewPfp.style.backgroundSize = 'cover';
-        previewPfp.style.backgroundPosition = 'center';
-        previewPfp.innerText = '';
-      } else {
-        previewPfp.style.backgroundImage = 'none';
-        previewPfp.style.backgroundColor = pfpBg;
-        previewPfp.innerText = state.currentUser.initial || 'Y';
+      if (previewPfp) {
+        if (pfpUrl) {
+          previewPfp.style.backgroundImage = `url('${pfpUrl}')`;
+          previewPfp.style.backgroundSize = 'cover';
+          previewPfp.style.backgroundPosition = 'center';
+          previewPfp.innerText = '';
+        } else {
+          previewPfp.style.backgroundImage = 'none';
+          previewPfp.style.backgroundColor = pfpBg;
+          previewPfp.innerText = state.currentUser ? state.currentUser.initial : 'Y';
+        }
       }
 
       // Preview Banner
       const previewBanner = document.getElementById('preview-banner');
-      if (bannerUrl) {
-        previewBanner.style.backgroundImage = `url('${bannerUrl}')`;
-        previewBanner.style.backgroundSize = 'cover';
-        previewBanner.style.backgroundPosition = 'center';
-      } else {
-        previewBanner.style.backgroundImage = 'none';
-        previewBanner.style.backgroundColor = bannerBg;
+      if (previewBanner) {
+        if (bannerUrl) {
+          previewBanner.style.backgroundImage = `url('${bannerUrl}')`;
+          previewBanner.style.backgroundSize = 'cover';
+          previewBanner.style.backgroundPosition = 'center';
+        } else {
+          previewBanner.style.backgroundImage = 'none';
+          previewBanner.style.backgroundColor = bannerBg;
+        }
       }
 
       // Preview Name & Bio
       const previewName = document.getElementById('preview-name');
-      previewName.innerText = state.currentUser.name || 'You';
-      previewName.style.color = nameColor;
+      if (previewName) {
+        previewName.innerText = (state.currentUser && state.currentUser.name) || 'You';
+        previewName.style.color = nameColor;
+      }
 
-      document.getElementById('preview-handle').innerText = state.currentUser.handle || '@you';
-      document.getElementById('preview-bio').innerText = bio || 'No bio provided yet.';
+      const previewHandle = document.getElementById('preview-handle');
+      if (previewHandle) previewHandle.innerText = (state.currentUser && state.currentUser.handle) || '@you';
+
+      const previewBio = document.getElementById('preview-bio');
+      if (previewBio) previewBio.innerText = bio || 'No bio provided yet.';
     }
 
     function saveSettings(e) {
       e.preventDefault();
+      if (!state.currentUser) return;
       
-      state.currentUser.pfpUrl = document.getElementById('setting-pfp-url').value.trim();
-      state.currentUser.pfpBg = document.getElementById('setting-pfp-bg').value;
-      state.currentUser.bannerUrl = document.getElementById('setting-banner-url').value.trim();
-      state.currentUser.bannerBg = document.getElementById('setting-banner-color').value;
-      state.currentUser.nameColor = document.getElementById('setting-name-color').value;
-      state.currentUser.bio = document.getElementById('setting-bio').value.trim();
+      state.currentUser.pfpUrl = (document.getElementById('setting-pfp-url')?.value || '').trim();
+      state.currentUser.pfpBg = document.getElementById('setting-pfp-bg')?.value || '#1a1a1e';
+      state.currentUser.bannerUrl = (document.getElementById('setting-banner-url')?.value || '').trim();
+      state.currentUser.bannerBg = document.getElementById('setting-banner-color')?.value || '#222228';
+      state.currentUser.nameColor = document.getElementById('setting-name-color')?.value || '#ffffff';
+      state.currentUser.bio = (document.getElementById('setting-bio')?.value || '').trim();
 
       updateUserProfileUI();
       renderMessages();
@@ -1733,14 +1814,17 @@
 
     function showToast(message) {
       const toast = document.getElementById('settings-toast');
-      document.getElementById('toast-message').innerText = message;
-      toast.classList.remove('translate-y-[-20px]', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
+      const msgEl = document.getElementById('toast-message');
+      if (msgEl) msgEl.innerText = message;
+      if (toast) {
+        toast.classList.remove('translate-y-[-20px]', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
 
-      setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-[-20px]', 'opacity-0');
-      }, 2500);
+        setTimeout(() => {
+          toast.classList.remove('translate-y-0', 'opacity-100');
+          toast.classList.add('translate-y-[-20px]', 'opacity-0');
+        }, 2500);
+      }
     }
 
     // Keyboard ESC listener
@@ -1760,8 +1844,8 @@
       const infoContainer = document.getElementById('category-info');
       const channelsContainer = document.getElementById('category-channels');
 
-      infoContainer.innerHTML = '';
-      channelsContainer.innerHTML = '';
+      if (infoContainer) infoContainer.innerHTML = '';
+      if (channelsContainer) channelsContainer.innerHTML = '';
 
       Object.keys(state.channels).forEach(key => {
         const channel = state.channels[key];
@@ -1785,9 +1869,9 @@
           <span class="truncate">${channel.title}</span>
         `;
 
-        if (channel.category === 'info') {
+        if (channel.category === 'info' && infoContainer) {
           infoContainer.appendChild(btn);
-        } else {
+        } else if (channelsContainer) {
           channelsContainer.appendChild(btn);
         }
       });
@@ -1801,16 +1885,20 @@
       state.activeChannel = channelKey;
 
       const current = state.channels[channelKey];
-      document.getElementById('current-channel-title').innerText = current.title;
-      document.getElementById('current-channel-desc').innerText = current.desc;
-      document.getElementById('message-input').placeholder = `Message #${current.title}`;
+      const titleEl = document.getElementById('current-channel-title');
+      const descEl = document.getElementById('current-channel-desc');
+      const inputEl = document.getElementById('message-input');
+
+      if (titleEl) titleEl.innerText = current.title;
+      if (descEl) descEl.innerText = current.desc;
+      if (inputEl) inputEl.placeholder = `Message #${current.title}`;
 
       renderChannels();
       fetchChannelMessages(channelKey);
 
       // Mobile Menu Close
       const sidebar = document.getElementById('channel-sidebar');
-      if (!sidebar.classList.contains('-translate-x-full')) {
+      if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
         sidebar.classList.add('-translate-x-full');
       }
     }
@@ -1883,6 +1971,7 @@
     async function handleSendMessage(e) {
       e.preventDefault();
       const input = document.getElementById('message-input');
+      if (!input) return;
       const text = input.value.trim();
 
       if (!text) return;
@@ -1891,7 +1980,26 @@
       const channel = state.channels[channelKey];
       input.value = '';
 
-      // Get user ID from state or active Supabase session
+      const now = new Date();
+      const timeStr = `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
+
+      // 1. Instantly render and store local message so chat never disappears
+      const localMsg = {
+        id: 'msg-' + Date.now(),
+        author: state.currentUser ? state.currentUser.name : 'You',
+        initial: state.currentUser ? state.currentUser.initial : 'Y',
+        time: timeStr,
+        text: text,
+        nameColor: state.currentUser ? state.currentUser.nameColor : '#ffffff',
+        avatarUrl: state.currentUser ? state.currentUser.pfpUrl : ''
+      };
+
+      if (!channel.messages) channel.messages = [];
+      channel.messages.push(localMsg);
+      saveLocalMessageCache();
+      renderMessages();
+
+      // 2. Asynchronously insert to Supabase if session exists
       let userId = state.currentUser ? state.currentUser.id : null;
       if (!userId && supabaseClient) {
         try {
@@ -1902,70 +2010,53 @@
         }
       }
 
-      // If logged in via Supabase, ensure profile and channel exist in DB
       if (supabaseClient && userId) {
-        await fetchUserProfile(userId, state.currentUser ? state.currentUser.email : '');
+        try {
+          await fetchUserProfile(userId, state.currentUser ? state.currentUser.email : '');
 
-        if (!channel.id) {
-          let { data: chData } = await supabaseClient
-            .from('channels')
-            .select('id')
-            .ilike('name', channel.title)
-            .maybeSingle();
-
-          if (chData) {
-            channel.id = chData.id;
-          } else {
-            const { data: newCh } = await supabaseClient
+          if (!channel.id) {
+            let { data: chData } = await supabaseClient
               .from('channels')
-              .insert({ name: channel.title.toLowerCase(), category: 'CHANNELS' })
               .select('id')
-              .single();
-            if (newCh) channel.id = newCh.id;
-          }
-        }
+              .ilike('name', channel.title)
+              .maybeSingle();
 
-        if (channel.id) {
-          const { error } = await supabaseClient
-            .from('messages')
-            .insert({
-              channel_id: channel.id,
-              user_id: userId,
-              content: text
-            });
-
-          if (error) {
-            console.error("Supabase insert message error:", error);
-            showToast("Error saving message to database");
-          } else {
-            await fetchChannelMessages(channelKey);
+            if (chData) {
+              channel.id = chData.id;
+            } else {
+              const { data: newCh } = await supabaseClient
+                .from('channels')
+                .insert({ name: channel.title.toLowerCase(), category: 'CHANNELS' })
+                .select('id')
+                .single();
+              if (newCh) channel.id = newCh.id;
+            }
           }
-          return;
+
+          if (channel.id) {
+            const { error } = await supabaseClient
+              .from('messages')
+              .insert({
+                channel_id: channel.id,
+                user_id: userId,
+                content: text
+              });
+
+            if (error) {
+              console.error("Supabase insert message error:", error);
+            } else {
+              await fetchChannelMessages(channelKey);
+            }
+          }
+        } catch (err) {
+          console.warn("Supabase message send error:", err);
         }
       }
-
-      // Fallback for Guest mode
-      const now = new Date();
-      const timeStr = `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-      const newMsg = {
-        author: state.currentUser.name,
-        initial: state.currentUser.initial,
-        time: timeStr,
-        text: text
-      };
-      channel.messages.push(newMsg);
-      saveGuestMessages();
-      renderMessages();
-    }
-
-    function toggleMemberList() {
-      const memberSidebar = document.getElementById('member-sidebar');
-      memberSidebar.classList.toggle('hidden');
     }
 
     function toggleMobileMenu() {
       const sidebar = document.getElementById('channel-sidebar');
-      sidebar.classList.toggle('-translate-x-full');
+      if (sidebar) sidebar.classList.toggle('-translate-x-full');
     }
 
     function toggleMic() {
@@ -2000,6 +2091,8 @@
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setupCursorListeners();
+      loadLocalMessageCache();
+      initLoadingScreen();
       checkSession();
     });
   </script>
