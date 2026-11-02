@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sunrise | Minimal Workspace</title>
+  <title>Sunrise Workspace | Next-Gen Team Collaboration</title>
 
   <!-- Supabase JS Client SDK -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
-    // Initialize Supabase Client Instance
     const SUPABASE_URL = "https://weiybadtuecrozdfpefu.supabase.co";
     const SUPABASE_ANON_KEY = "sb_publishable_bCvZWrwXVic1uUtPhPYRtA_pJxEv4eF";
     let supabaseClient = null;
@@ -16,7 +15,6 @@
     try {
       if (window.supabase && window.supabase.createClient) {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        console.log("Supabase initialized successfully!");
       }
     } catch (err) {
       console.warn("Supabase initialization deferred:", err);
@@ -32,7 +30,7 @@
   <!-- Inter Font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -57,10 +55,15 @@
             'spin-slow': {
               '0%': { transform: 'translate(-50%, -50%) rotate(0deg)' },
               '100%': { transform: 'translate(-50%, -50%) rotate(360deg)' },
+            },
+            'voice-pulse': {
+              '0%, 100%': { boxShadow: '0 0 0 0 rgba(52, 211, 153, 0.4)' },
+              '50%': { boxShadow: '0 0 0 10px rgba(52, 211, 153, 0)' }
             }
           },
           animation: {
             'spin-slow': 'spin-slow 8s linear infinite',
+            'voice-pulse': 'voice-pulse 2s infinite',
           }
         }
       }
@@ -77,7 +80,7 @@
       --sunrise-white: #ffffff;
     }
 
-    /* Global Cursor Reset - Native Cursor Toggleable via Body Class */
+    /* Global Cursor Reset */
     body:not(.native-cursor) *, 
     body:not(.native-cursor) *::before, 
     body:not(.native-cursor) *::after {
@@ -100,7 +103,6 @@
       background: #3a3a42;
     }
 
-    /* Custom Ring Rotation Animation */
     @keyframes cursorRotate {
       0% { transform: translate(-50%, -50%) rotate(0deg); }
       100% { transform: translate(-50%, -50%) rotate(360deg); }
@@ -109,56 +111,54 @@
     .cursor-ring-anim {
       animation: cursorRotate 6s linear infinite;
     }
+
+    /* Custom Glassmorphism */
+    .glass-panel {
+      background: rgba(18, 18, 21, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
   </style>
 </head>
 <body class="bg-sunrise-pure text-white font-sans antialiased h-screen overflow-hidden flex select-none relative">
 
   <!-- ========================================== -->
-  <!-- LOADING SCREEN OVERLAY (3 SECONDS)         -->
+  <!-- LOADING SCREEN OVERLAY                     -->
   <!-- ========================================== -->
   <div id="loading-screen" class="fixed inset-0 z-[99999] bg-[#09090b] flex flex-col items-center justify-center transition-opacity duration-500">
     <div class="relative w-20 h-20 flex items-center justify-center mb-6">
-      <!-- Outer Rotating Circle -->
       <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-white border-r-white/30 animate-spin" style="animation-duration: 1.2s;"></div>
-      <!-- Middle Rotating Circle (Reverse) -->
       <div class="absolute inset-2 rounded-full border-2 border-transparent border-b-white/80 border-l-white/20 animate-spin" style="animation-duration: 0.8s; animation-direction: reverse;"></div>
-      <!-- Inner Rotating Circle -->
       <div class="absolute inset-4 rounded-full border-2 border-transparent border-t-white border-l-white/40 animate-spin" style="animation-duration: 0.5s;"></div>
     </div>
     <div class="flex items-center gap-2">
-      <i data-lucide="sun" class="w-4 h-4 text-white animate-pulse"></i>
-      <span class="text-xs font-semibold tracking-widest uppercase text-white/90">Loading Sunrise</span>
+      <i data-lucide="sun" class="w-5 h-5 text-white animate-pulse"></i>
+      <span class="text-xs font-bold tracking-widest uppercase text-white/90">Loading Sunrise Workspace</span>
     </div>
-    <p class="text-[10px] text-sunrise-muted mt-1 font-mono">Syncing workspace environment...</p>
+    <p class="text-[10px] text-sunrise-muted mt-1 font-mono">Initializing real-time audio, AI modules & workspace channels...</p>
   </div>
 
   <!-- ========================================== -->
-  <!-- CUSTOM CURSOR ELEMENTS                     -->
+  <!-- CUSTOM DUAL CURSOR ELEMENTS                -->
   <!-- ========================================== -->
-  <!-- Main Cursor Solid Dot -->
   <div id="cursor-dot" class="fixed top-0 left-0 w-2 h-2 bg-white rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2 transition-opacity duration-300"></div>
-  
-  <!-- Rotating Outer Ring with Lerp Delay -->
   <div id="cursor-ring" class="fixed top-0 left-0 w-8 h-8 border border-white/60 border-dashed rounded-full pointer-events-none z-[9998] cursor-ring-anim transition-transform duration-150 ease-out"></div>
 
   <!-- ========================================== -->
-  <!-- AUTHENTICATION CONTAINER (LOG IN / SIGN UP)-->
+  <!-- AUTHENTICATION CONTAINER                   -->
   <!-- ========================================== -->
   <div id="auth-container" class="fixed inset-0 z-[100] bg-sunrise-pure flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-sunrise-charcoal border border-sunrise-border rounded-xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-      <!-- Ambient Glow Accent -->
-      <div class="absolute -top-12 -left-12 w-32 h-32 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
+    <div class="w-full max-w-md bg-sunrise-charcoal border border-sunrise-border rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+      <div class="absolute -top-12 -left-12 w-36 h-36 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
 
-      <!-- Header / Logo -->
       <div class="text-center mb-6">
         <div class="w-12 h-12 rounded-2xl bg-white text-sunrise-pure mx-auto flex items-center justify-center mb-3 shadow-lg shadow-white/10">
           <i data-lucide="sun" class="w-6 h-6 stroke-[2.5]"></i>
         </div>
-        <h2 class="text-xl font-bold tracking-tight text-white">Welcome to Sunrise</h2>
-        <p class="text-xs text-sunrise-muted mt-1">Minimal workspace for teams and creators</p>
+        <h2 class="text-xl font-bold tracking-tight text-white">Welcome to Sunrise Workspace</h2>
+        <p class="text-xs text-sunrise-muted mt-1">High-performance communication for teams & creators</p>
       </div>
 
-      <!-- Auth Mode Tabs -->
       <div class="flex bg-sunrise-pure p-1 rounded-lg border border-sunrise-border mb-6">
         <button id="tab-login" type="button" onclick="switchAuthTab('login')" class="flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target">
           Log In
@@ -168,14 +168,11 @@
         </button>
       </div>
 
-      <!-- Auth Form -->
       <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
-        
-        <!-- Sign Up Only Fields -->
         <div id="signup-fields" class="space-y-3 hidden">
           <div>
             <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1">Display Name</label>
-            <input type="text" id="auth-display-name" placeholder="Alex" autocomplete="off" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+            <input type="text" id="auth-display-name" placeholder="Alex Rivers" autocomplete="off" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
           </div>
           <div>
             <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1">Username</label>
@@ -183,7 +180,6 @@
           </div>
         </div>
 
-        <!-- Common Fields -->
         <div>
           <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1">Email Address</label>
           <input type="email" id="auth-email" required placeholder="alex@sunrise.app" autocomplete="email" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
@@ -192,146 +188,130 @@
         <div>
           <div class="flex justify-between items-center mb-1">
             <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider">Password</label>
-            <a href="#" id="forgot-password-link" onclick="event.preventDefault();" class="text-[10px] text-sunrise-muted hover:text-white transition-colors interactive-target">Forgot?</a>
+            <a href="#" onclick="event.preventDefault(); showToast('Password reset link sent.');" class="text-[10px] text-sunrise-muted hover:text-white transition-colors interactive-target">Forgot?</a>
           </div>
           <input type="password" id="auth-password" required placeholder="••••••••" autocomplete="current-password" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
         </div>
 
-        <!-- Submit Button -->
         <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-white text-sunrise-pure font-semibold text-xs rounded-lg hover:bg-neutral-200 transition-colors shadow-md shadow-white/5 mt-2 flex items-center justify-center gap-2 interactive-target">
           <span>Log In</span>
           <i data-lucide="arrow-right" class="w-3.5 h-3.5 stroke-[2.5]"></i>
         </button>
       </form>
 
-      <!-- Divider & Demo / Guest Shortcut -->
       <div class="relative my-5">
         <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-sunrise-border"></div></div>
         <div class="relative flex justify-center text-[10px] uppercase"><span class="bg-sunrise-charcoal px-2 text-sunrise-muted">Or</span></div>
       </div>
 
       <button type="button" onclick="continueAsGuest()" class="w-full py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/30 text-white font-medium text-xs rounded-lg transition-all flex items-center justify-center gap-2 interactive-target">
-        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-white/80"></i>
-        <span>Continue as Demo Guest</span>
+        <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400"></i>
+        <span>Explore as Demo Guest</span>
       </button>
-
-      <!-- Status indicator for Supabase readiness -->
-      <p class="text-[10px] text-sunrise-muted/60 text-center mt-4 font-mono flex items-center justify-center gap-1.5">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-        <span>Connected to Supabase Project</span>
-      </p>
     </div>
   </div>
 
-  <!-- MAIN APPLICATION CONTAINER -->
+  <!-- ========================================== -->
+  <!-- MAIN APPLICATION CONTAINER                 -->
+  <!-- ========================================== -->
   <div id="main-app" class="flex-1 h-full w-full flex overflow-hidden opacity-0 pointer-events-none transition-opacity duration-300">
 
   <!-- ========================================== -->
-  <!-- 1. SERVER BAR (LEFTMOST)                   -->
+  <!-- 1. SERVER NAVIGATION BAR (LEFTMOST)        -->
   <!-- ========================================== -->
   <aside class="w-16 bg-[#060608] border-r border-sunrise-border flex flex-col items-center py-3 space-y-3 z-30 shrink-0">
     
-    <!-- Sunrise Primary Brand Logo -->
+    <!-- DM Home Button -->
     <div class="relative group interactive-target">
-      <!-- Active Pill Indicator -->
-      <div class="absolute -left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-white rounded-r-full transition-all duration-200"></div>
-      
-      <button class="w-11 h-11 rounded-2xl bg-white text-sunrise-pure flex items-center justify-center font-bold shadow-md shadow-white/10 group-hover:rounded-xl transition-all duration-300">
-        <i data-lucide="sun" class="w-5 h-5 stroke-[2.5]"></i>
+      <div id="dm-active-indicator" class="absolute -left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-white rounded-r-full transition-all duration-200 opacity-0"></div>
+      <button onclick="switchMode('dms')" id="btn-mode-dms" class="w-11 h-11 rounded-2xl bg-sunrise-surface border border-sunrise-border text-white flex items-center justify-center font-bold shadow-md hover:rounded-xl transition-all duration-300 group-hover:bg-sunrise-hover">
+        <i data-lucide="message-square" class="w-5 h-5"></i>
       </button>
-      
-      <!-- Tooltip -->
       <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
-        Sunrise Workspace
+        Direct Messages & AI
       </div>
     </div>
 
     <div class="w-7 h-[1px] bg-sunrise-border/80 my-1"></div>
 
-    <!-- Server List -->
-    <div class="flex-1 space-y-3 w-full flex flex-col items-center overflow-y-auto no-scrollbar">
-      
-      <!-- Server 1 -->
-      <div class="relative group interactive-target">
-        <div class="absolute -left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-0 group-hover:h-5 bg-white/70 rounded-r-full transition-all duration-200"></div>
-        <button class="w-11 h-11 rounded-3xl bg-sunrise-charcoal border border-sunrise-border flex items-center justify-center text-xs font-semibold text-sunrise-muted group-hover:bg-sunrise-hover group-hover:text-white group-hover:rounded-xl transition-all duration-300">
-          DEV
-        </button>
-        <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
-          Developers Lab
-        </div>
-      </div>
-
-      <!-- Add Server Button -->
-      <button class="w-11 h-11 rounded-3xl bg-sunrise-charcoal border border-dashed border-sunrise-border/80 flex items-center justify-center text-sunrise-muted hover:text-white hover:bg-sunrise-hover hover:border-white/40 hover:rounded-xl transition-all duration-300 group relative interactive-target">
-        <i data-lucide="plus" class="w-4 h-4"></i>
-        <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
-          Create Server
-        </div>
-      </button>
-
+    <!-- Dynamic Server List -->
+    <div id="server-list-container" class="flex-1 space-y-3 w-full flex flex-col items-center overflow-y-auto no-scrollbar">
+      <!-- Populated dynamically via JS -->
     </div>
 
-    <!-- Bottom Settings Icon -->
-    <button class="w-11 h-11 rounded-2xl bg-sunrise-charcoal border border-sunrise-border/60 flex items-center justify-center text-sunrise-muted hover:text-white hover:bg-sunrise-hover transition-all duration-300 relative group interactive-target">
-      <i data-lucide="compass" class="w-4 h-4"></i>
+    <!-- Create New Server Button -->
+    <button onclick="openCreateServerModal()" class="w-11 h-11 rounded-3xl bg-sunrise-charcoal border border-dashed border-sunrise-border/80 flex items-center justify-center text-sunrise-muted hover:text-white hover:bg-sunrise-hover hover:border-white/40 hover:rounded-xl transition-all duration-300 group relative interactive-target" title="Create Server">
+      <i data-lucide="plus" class="w-4 h-4"></i>
       <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
-        Explore
+        Create Server
+      </div>
+    </button>
+
+    <!-- Quick Switcher Launcher -->
+    <button onclick="openQuickSwitcher()" class="w-11 h-11 rounded-2xl bg-sunrise-charcoal border border-sunrise-border/60 flex items-center justify-center text-sunrise-muted hover:text-white hover:bg-sunrise-hover transition-all duration-300 relative group interactive-target" title="Quick Switcher (Ctrl+K)">
+      <i data-lucide="search" class="w-4 h-4"></i>
+      <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
+        Quick Switcher (Ctrl+K)
       </div>
     </button>
 
   </aside>
 
   <!-- ========================================== -->
-  <!-- 2. CHANNEL & CATEGORY NAVIGATION          -->
+  <!-- 2. CHANNELS / DMS SIDEBAR                  -->
   <!-- ========================================== -->
-  <aside id="channel-sidebar" class="w-56 bg-sunrise-charcoal border-r border-sunrise-border flex flex-col shrink-0 transition-transform duration-300 absolute md:relative z-20 h-full -translate-x-full md:translate-x-0">
+  <aside id="channel-sidebar" class="w-60 bg-sunrise-charcoal border-r border-sunrise-border flex flex-col shrink-0 transition-transform duration-300 absolute md:relative z-20 h-full -translate-x-full md:translate-x-0">
     
-    <!-- Server Title Header -->
-    <header class="h-13 px-3.5 border-b border-sunrise-border flex items-center justify-between cursor-pointer hover:bg-sunrise-hover/50 transition-colors interactive-target">
-      <div class="flex items-center gap-2">
-        <div class="w-2 h-2 rounded-full bg-white"></div>
-        <h1 class="font-bold text-xs tracking-wider uppercase text-white">Sunrise HQ</h1>
+    <!-- Sidebar Top Header -->
+    <header class="h-13 px-3.5 border-b border-sunrise-border flex items-center justify-between cursor-pointer hover:bg-sunrise-hover/50 transition-colors interactive-target" onclick="toggleServerMenu()">
+      <div class="flex items-center gap-2 truncate">
+        <div id="sidebar-header-badge" class="w-2.5 h-2.5 rounded-full bg-white shrink-0"></div>
+        <h1 id="sidebar-header-title" class="font-bold text-xs tracking-wider uppercase text-white truncate">Sunrise HQ</h1>
       </div>
       <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-sunrise-muted"></i>
     </header>
 
-    <!-- Channels Navigation List -->
-    <div class="flex-1 overflow-y-auto px-2 py-3 space-y-5">
-      
-      <!-- Category 1: Information -->
-      <div>
-        <div class="flex items-center justify-between text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1 uppercase">
-          <span>Information</span>
-          <i data-lucide="shield-alert" class="w-3 h-3 text-sunrise-muted/60"></i>
-        </div>
-        <nav class="space-y-0.5" id="category-info">
-          <!-- Populated by JS -->
-        </nav>
-      </div>
-
-      <!-- Category 2: Text Channels -->
-      <div>
-        <div class="flex items-center justify-between text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1 uppercase">
-          <span>Channels</span>
-          <button class="hover:text-white transition-colors interactive-target"><i data-lucide="plus" class="w-3 h-3"></i></button>
-        </div>
-        <nav class="space-y-0.5" id="category-channels">
-          <!-- Populated by JS -->
-        </nav>
-      </div>
-
+    <!-- Content Navigation List (Channels or DMs) -->
+    <div class="flex-1 overflow-y-auto px-2 py-3 space-y-4" id="sidebar-nav-content">
+      <!-- Dynamic Channels / Category HTML -->
     </div>
 
-    <!-- User Profile Bar (Owner / You) -->
+    <!-- Connected Voice Control Bar (Appears when in a Voice Room) -->
+    <div id="active-voice-bar" class="hidden border-t border-sunrise-border bg-emerald-950/40 p-2.5 space-y-2">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2 min-w-0">
+          <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+          <div class="truncate">
+            <div class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">Voice Connected</div>
+            <div id="voice-bar-channel-name" class="text-xs font-semibold text-white truncate">Lounge Voice</div>
+          </div>
+        </div>
+        <button onclick="disconnectVoice()" class="p-1.5 text-rose-400 hover:bg-rose-500/20 rounded transition-colors interactive-target" title="Disconnect">
+          <i data-lucide="phone-off" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+
+      <div class="flex items-center justify-around pt-1 border-t border-emerald-900/50">
+        <button id="btn-voice-mute" onclick="toggleMuteVoice()" class="p-1.5 text-white hover:bg-white/10 rounded transition-colors interactive-target" title="Mute Microphone">
+          <i data-lucide="mic" class="w-3.5 h-3.5"></i>
+        </button>
+        <button id="btn-voice-deafen" onclick="toggleDeafenVoice()" class="p-1.5 text-white hover:bg-white/10 rounded transition-colors interactive-target" title="Deafen Sound">
+          <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+        </button>
+        <button id="btn-voice-screenshare" onclick="toggleScreenShare()" class="p-1.5 text-white hover:bg-white/10 rounded transition-colors interactive-target" title="Share Screen">
+          <i data-lucide="monitor" class="w-3.5 h-3.5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- User Profile Bar -->
     <div class="p-2 bg-[#09090b] border-t border-sunrise-border flex items-center justify-between">
-      <div class="flex items-center gap-2 min-w-0">
-        <!-- Circular PFP with Green Online Status -->
+      <div class="flex items-center gap-2 min-w-0 cursor-pointer interactive-target" onclick="openCurrentUserProfile()">
         <div class="relative shrink-0">
           <div id="user-pfp" class="w-8 h-8 rounded-full bg-sunrise-surface border border-white/20 flex items-center justify-center font-bold text-xs text-white">
             Y
           </div>
-          <div class="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-sunrise-pure"></div>
+          <div id="user-status-indicator" class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-sunrise-pure"></div>
         </div>
         
         <div class="truncate">
@@ -340,7 +320,6 @@
         </div>
       </div>
 
-      <!-- User Auth & Settings Toggles -->
       <div class="flex items-center gap-0.5 text-sunrise-muted">
         <button onclick="openSettingsModal()" class="p-1 hover:text-white hover:bg-sunrise-hover rounded transition-colors interactive-target" title="User Settings">
           <i data-lucide="settings" class="w-3.5 h-3.5"></i>
@@ -354,30 +333,38 @@
   </aside>
 
   <!-- ========================================== -->
-  <!-- 3. CHAT CANVAS & FEED                      -->
+  <!-- 3. MAIN CHAT / VOICE STAGE CANVAS          -->
   <!-- ========================================== -->
   <main class="flex-1 flex flex-col min-w-0 bg-sunrise-pure relative">
     
-    <!-- Channel Header Bar -->
-    <header class="h-13 px-4 border-b border-sunrise-border flex items-center justify-between bg-sunrise-charcoal/40 backdrop-blur-md shrink-0">
+    <!-- Top Channel Header -->
+    <header class="h-13 px-4 border-b border-sunrise-border flex items-center justify-between bg-sunrise-charcoal/40 backdrop-blur-md shrink-0 z-10">
       <div class="flex items-center gap-2.5 min-w-0">
         <button onclick="toggleMobileMenu()" class="md:hidden p-1 text-sunrise-muted hover:text-white interactive-target">
           <i data-lucide="menu" class="w-4 h-4"></i>
         </button>
 
-        <i data-lucide="hash" class="w-4 h-4 text-sunrise-muted shrink-0"></i>
+        <div id="header-channel-icon" class="text-sunrise-muted shrink-0">
+          <i data-lucide="hash" class="w-4 h-4"></i>
+        </div>
         <h2 id="current-channel-title" class="font-bold text-xs text-white truncate tracking-wide">general</h2>
         
         <div class="hidden sm:block h-3.5 w-[1px] bg-sunrise-border mx-1"></div>
         <p id="current-channel-desc" class="hidden sm:block text-xs text-sunrise-muted truncate font-normal">
-          General discussion and team updates
+          General team updates and discussion
         </p>
       </div>
 
-      <!-- Action Icons -->
       <div class="flex items-center gap-2 text-sunrise-muted">
-        <button class="p-1.5 hover:text-white rounded transition-colors interactive-target" title="Pinned Messages">
+        <!-- Message Search Filter Input -->
+        <div class="relative hidden sm:block">
+          <input type="text" id="channel-search-input" oninput="filterMessages(this.value)" placeholder="Search messages..." class="w-36 focus:w-48 transition-all duration-200 bg-sunrise-surface border border-sunrise-border rounded-lg pl-7 pr-2 py-1 text-[11px] text-white placeholder-sunrise-muted focus:outline-none focus:border-white/40 interactive-target">
+          <i data-lucide="search" class="w-3.5 h-3.5 absolute left-2 top-1/2 -translate-y-1/2 text-sunrise-muted pointer-events-none"></i>
+        </div>
+
+        <button onclick="openPinnedDrawer()" class="p-1.5 hover:text-white rounded transition-colors interactive-target relative" title="Pinned Messages">
           <i data-lucide="pin" class="w-4 h-4"></i>
+          <span id="pinned-count-badge" class="hidden absolute -top-1 -right-1 bg-white text-sunrise-pure text-[9px] font-bold rounded-full w-4 h-4 flex items-center justify-center">0</span>
         </button>
 
         <button onclick="toggleMemberList()" class="p-1.5 hover:text-white rounded transition-colors interactive-target" title="Toggle Member Sidebar">
@@ -386,12 +373,25 @@
       </div>
     </header>
 
-    <!-- Chat Messages Scroll Container -->
-    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
-      <!-- Dynamic Content Rendered Here -->
+    <!-- VOICE ROOM LIVE STAGE VIEW (Active when connected to Voice) -->
+    <div id="voice-stage-container" class="hidden flex-1 p-6 bg-gradient-to-b from-[#0e1614] to-sunrise-pure flex flex-col items-center justify-center relative overflow-hidden">
+      <div class="absolute top-4 left-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs px-3 py-1 rounded-full flex items-center gap-2">
+        <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+        <span class="font-semibold uppercase tracking-wider text-[10px]">Live Voice Stage</span>
+      </div>
+
+      <!-- Participant Grid -->
+      <div id="voice-stage-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-6 max-w-3xl w-full">
+        <!-- Populated dynamically -->
+      </div>
     </div>
 
-    <!-- GIF Popover Picker Modal -->
+    <!-- CHAT MESSAGES SCROLL CONTAINER -->
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4">
+      <!-- Rendered dynamically -->
+    </div>
+
+    <!-- GIF PICKER POPOVER -->
     <div id="gif-picker-popover" class="hidden absolute bottom-16 left-4 z-50 w-72 sm:w-80 bg-sunrise-charcoal border border-sunrise-border rounded-xl shadow-2xl p-3 space-y-2">
       <div class="flex items-center justify-between border-b border-sunrise-border pb-2">
         <span class="text-xs font-bold text-white flex items-center gap-1.5">
@@ -404,13 +404,23 @@
         <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm41b3I5ZWpneXlsbW9uaTFmZmYyMmZvZTVuYXlhOWIxdDRwb3drOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0AMJzC6f02acGE6s/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
         <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXVjbnA3bndwbzNhNG5rcjdyb25iOWlqMXVpOWx2MnByY3MzaXRzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/d31w24psGYeedC64/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
         <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2RmejNhNWZsd2R4bHAxaDlyMGs0NWpneTlzZWtwMWY3Nm5lMHltZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT0xezQGU5xCDJuCPe/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1MGdveGthMDltZjJrcmhkamdrdm4zaTBucHBsaG5ocmV2dDF0MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3q2K5jinAlChoCLS/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHlyZWJxeTNua2pldzR0NmE0cG5wM2hxaXdzMXlhdmdhZmVyd3ZxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26u4cqiYI30juCOGY/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
       </div>
     </div>
 
-    <!-- Message Input Bar -->
-    <div class="p-3 bg-sunrise-pure border-t border-sunrise-border shrink-0">
+    <!-- BOTTOM MESSAGE INPUT BAR -->
+    <div id="chat-input-bar" class="p-3 bg-sunrise-pure border-t border-sunrise-border shrink-0">
+      
+      <!-- Reply Preview Container -->
+      <div id="reply-preview-bar" class="hidden mb-2 p-2 bg-sunrise-surface border border-sunrise-border rounded-lg flex items-center justify-between text-xs">
+        <div class="flex items-center gap-2 truncate">
+          <i data-lucide="corner-up-left" class="w-3.5 h-3.5 text-sunrise-muted"></i>
+          <span class="text-sunrise-muted">Replying to</span>
+          <span id="reply-target-author" class="font-semibold text-white">User</span>:
+          <span id="reply-target-text" class="text-sunrise-muted truncate">Message content</span>
+        </div>
+        <button type="button" onclick="cancelReply()" class="text-sunrise-muted hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+
       <!-- Attachment Preview Container -->
       <div id="attachment-preview" class="hidden mb-2 p-2 bg-sunrise-surface border border-sunrise-border rounded-lg flex items-center justify-between">
         <div class="flex items-center gap-2">
@@ -422,15 +432,13 @@
 
       <form id="message-form" onsubmit="handleSendMessage(event)" class="bg-sunrise-surface border border-sunrise-border focus-within:border-white/40 rounded-lg p-2 flex items-center gap-2 transition-all">
         
-        <!-- Image Upload Button -->
         <input type="file" id="chat-file-input" accept="image/*" class="hidden" onchange="handleChatFileUpload(event)">
         <button type="button" onclick="document.getElementById('chat-file-input').click()" class="p-1 text-sunrise-muted hover:text-white rounded transition-colors interactive-target" title="Upload Image">
           <i data-lucide="image" class="w-4 h-4"></i>
         </button>
 
-        <!-- GIF Button -->
         <button type="button" onclick="toggleGifPicker()" class="p-1 text-sunrise-muted hover:text-white rounded transition-colors interactive-target" title="Insert GIF">
-          <span class="font-bold text-[10px] px-1 bg-white/10 rounded">GIF</span>
+          <span class="font-bold text-[10px] px-1.5 py-0.5 bg-white/10 rounded">GIF</span>
         </button>
 
         <input type="text" 
@@ -450,42 +458,145 @@
   <!-- ========================================== -->
   <!-- 4. RIGHT MEMBER SIDEBAR                    -->
   <!-- ========================================== -->
-  <aside id="member-sidebar" class="w-52 bg-sunrise-charcoal border-l border-sunrise-border hidden lg:flex flex-col shrink-0 p-3 overflow-y-auto">
-    
-    <!-- Online Members Group -->
-    <div>
-      <h3 class="text-[10px] font-bold text-sunrise-muted uppercase tracking-widest mb-2 px-1">
-        Online — <span id="online-count">1</span>
-      </h3>
-      
-      <!-- Single Owner Profile (No Dummy Users) -->
-      <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sunrise-hover/60 cursor-pointer transition-colors group interactive-target">
-        <div class="relative shrink-0">
-          <div id="member-user-pfp" class="w-7 h-7 rounded-full bg-sunrise-surface border border-white/20 flex items-center justify-center font-bold text-xs text-white">
-            Y
-          </div>
-          <div class="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-sunrise-charcoal"></div>
-        </div>
-        
-        <div class="truncate min-w-0 flex-1">
-          <div class="flex items-center justify-between">
-            <span id="member-user-display-name" class="text-xs font-semibold text-white/90 group-hover:text-white truncate">You</span>
-            <span class="text-[9px] font-bold px-1 py-0.2 bg-white/10 border border-white/20 text-white rounded">OWNER</span>
-          </div>
-          <div id="member-user-handle" class="text-[10px] text-sunrise-muted truncate">@you</div>
-        </div>
-      </div>
+  <aside id="member-sidebar" class="w-56 bg-sunrise-charcoal border-l border-sunrise-border hidden lg:flex flex-col shrink-0 p-3 overflow-y-auto">
+    <div id="member-sidebar-content">
+      <!-- Rendered dynamically -->
     </div>
-
   </aside>
 
   </div> <!-- END #main-app -->
 
   <!-- ========================================== -->
-  <!-- 5. USER SETTINGS MODAL                     -->
+  <!-- MODAL 1: COMMAND PALETTE / QUICK SWITCHER  -->
+  <!-- ========================================== -->
+  <div id="quick-switcher-modal" class="fixed inset-0 z-[300] bg-black/70 backdrop-blur-sm hidden flex items-start justify-center pt-20 p-4">
+    <div class="w-full max-w-lg bg-sunrise-charcoal border border-sunrise-border rounded-xl shadow-2xl overflow-hidden">
+      <div class="p-3 border-b border-sunrise-border flex items-center gap-2">
+        <i data-lucide="search" class="w-4 h-4 text-sunrise-muted"></i>
+        <input type="text" id="quick-switcher-input" oninput="renderQuickSwitcherResults(this.value)" placeholder="Where would you like to go? (Type to search channels, servers, DMs)..." class="flex-1 bg-transparent text-xs text-white placeholder-sunrise-muted focus:outline-none">
+        <span class="text-[10px] bg-sunrise-surface px-1.5 py-0.5 rounded text-sunrise-muted font-mono">ESC to close</span>
+      </div>
+      <div id="quick-switcher-results" class="max-h-80 overflow-y-auto p-2 space-y-1">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 2: CREATE SERVER MODAL               -->
+  <!-- ========================================== -->
+  <div id="create-server-modal" class="fixed inset-0 z-[250] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-sunrise-charcoal border border-sunrise-border rounded-2xl p-6 shadow-2xl relative space-y-4">
+      <div class="flex justify-between items-center border-b border-sunrise-border pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="plus-circle" class="w-4 h-4 text-emerald-400"></i> Create a New Workspace Server
+        </h3>
+        <button onclick="closeCreateServerModal()" class="text-sunrise-muted hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+
+      <form onsubmit="handleCreateServerSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Server Name</label>
+          <input type="text" id="new-server-name" required placeholder="Design Guild" class="w-full bg-sunrise-surface border border-sunrise-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/50">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Server Abbreviation (Icon Text)</label>
+          <input type="text" id="new-server-abbr" maxlength="4" required placeholder="DES" class="w-full bg-sunrise-surface border border-sunrise-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/50 uppercase">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Server Theme Color</label>
+          <input type="color" id="new-server-color" value="#38bdf8" class="w-full h-9 rounded border border-sunrise-border bg-transparent cursor-pointer">
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeCreateServerModal()" class="px-4 py-2 bg-sunrise-surface text-xs font-semibold rounded-lg hover:bg-sunrise-hover">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-white text-sunrise-pure text-xs font-bold rounded-lg hover:bg-neutral-200">Create Server</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 3: CREATE CHANNEL MODAL              -->
+  <!-- ========================================== -->
+  <div id="create-channel-modal" class="fixed inset-0 z-[250] bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-md bg-sunrise-charcoal border border-sunrise-border rounded-2xl p-6 shadow-2xl relative space-y-4">
+      <div class="flex justify-between items-center border-b border-sunrise-border pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i data-lucide="hash" class="w-4 h-4 text-white"></i> Create Channel
+        </h3>
+        <button onclick="closeCreateChannelModal()" class="text-sunrise-muted hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+
+      <form onsubmit="handleCreateChannelSubmit(event)" class="space-y-4">
+        <div>
+          <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Channel Type</label>
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" id="type-btn-text" onclick="setChannelType('text')" class="p-3 border border-white/40 bg-sunrise-surface rounded-xl text-left flex items-center gap-2">
+              <i data-lucide="hash" class="w-4 h-4 text-white"></i>
+              <div>
+                <div class="text-xs font-bold text-white">Text</div>
+                <div class="text-[10px] text-sunrise-muted">Post messages & files</div>
+              </div>
+            </button>
+            <button type="button" id="type-btn-voice" onclick="setChannelType('voice')" class="p-3 border border-sunrise-border bg-sunrise-pure rounded-xl text-left flex items-center gap-2">
+              <i data-lucide="volume-2" class="w-4 h-4 text-emerald-400"></i>
+              <div>
+                <div class="text-xs font-bold text-white">Voice</div>
+                <div class="text-[10px] text-sunrise-muted">Live audio stage</div>
+              </div>
+            </button>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Channel Name</label>
+          <input type="text" id="new-channel-name" required placeholder="tech-discussions" class="w-full bg-sunrise-surface border border-sunrise-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/50">
+        </div>
+
+        <div>
+          <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Description</label>
+          <input type="text" id="new-channel-desc" placeholder="Topic details..." class="w-full bg-sunrise-surface border border-sunrise-border rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-white/50">
+        </div>
+
+        <div class="pt-2 flex justify-end gap-2">
+          <button type="button" onclick="closeCreateChannelModal()" class="px-4 py-2 bg-sunrise-surface text-xs font-semibold rounded-lg hover:bg-sunrise-hover">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-white text-sunrise-pure text-xs font-bold rounded-lg hover:bg-neutral-200">Create Channel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 4: PINNED MESSAGES DRAWER            -->
+  <!-- ========================================== -->
+  <div id="pinned-drawer-modal" class="fixed inset-0 z-[220] bg-black/60 backdrop-blur-sm hidden flex justify-end">
+    <div class="w-full max-w-sm h-full bg-sunrise-charcoal border-l border-sunrise-border p-4 space-y-4 flex flex-col">
+      <div class="flex items-center justify-between border-b border-sunrise-border pb-3">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-white flex items-center gap-2">
+          <i data-lucide="pin" class="w-4 h-4 text-amber-400"></i> Pinned Messages
+        </h3>
+        <button onclick="closePinnedDrawer()" class="text-sunrise-muted hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div id="pinned-messages-list" class="flex-1 overflow-y-auto space-y-3">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 5: USER PROFILE POPOVER CARD         -->
+  <!-- ========================================== -->
+  <div id="user-profile-modal" class="fixed inset-0 z-[280] bg-black/70 backdrop-blur-sm hidden flex items-center justify-center p-4">
+    <div id="user-profile-card-content" class="w-full max-w-sm bg-sunrise-charcoal border border-sunrise-border rounded-2xl overflow-hidden shadow-2xl relative">
+      <!-- Populated dynamically -->
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL 6: USER & SERVER SETTINGS            -->
   <!-- ========================================== -->
   <div id="settings-modal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-200">
-    <!-- Toast Notification -->
     <div id="settings-toast" class="fixed top-6 right-6 z-[210] bg-white text-sunrise-pure font-semibold text-xs px-4 py-2.5 rounded-lg shadow-xl flex items-center gap-2 translate-y-[-20px] opacity-0 transition-all duration-300 pointer-events-none">
       <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
       <span id="toast-message">Settings saved successfully!</span>
@@ -493,8 +604,7 @@
 
     <div class="w-full max-w-4xl h-[85vh] max-h-[700px] bg-sunrise-charcoal border border-sunrise-border rounded-2xl shadow-2xl flex overflow-hidden relative">
       
-      <!-- Close Button -->
-      <button onclick="closeSettingsModal()" class="absolute top-4 right-4 z-20 p-2 text-sunrise-muted hover:text-white hover:bg-sunrise-hover rounded-full transition-colors interactive-target" title="Esc to close">
+      <button onclick="closeSettingsModal()" class="absolute top-4 right-4 z-20 p-2 text-sunrise-muted hover:text-white hover:bg-sunrise-hover rounded-full transition-colors interactive-target">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
 
@@ -516,15 +626,20 @@
             <button id="set-tab-cursor" onclick="switchSettingsTab('cursor')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
               <div class="flex items-center gap-2">
                 <i data-lucide="mouse-pointer" class="w-3.5 h-3.5"></i>
-                <span>Cursor</span>
+                <span>Cursor Physics</span>
               </div>
             </button>
             <button id="set-tab-tags" onclick="switchSettingsTab('tags')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
               <div class="flex items-center gap-2">
                 <i data-lucide="tag" class="w-3.5 h-3.5"></i>
-                <span>Server Tags</span>
+                <span>Role Tags</span>
               </div>
-              <span class="text-[9px] font-bold px-1.5 py-0.5 bg-sunrise-surface border border-sunrise-border text-sunrise-muted rounded">SOON</span>
+            </button>
+            <button id="set-tab-audio" onclick="switchSettingsTab('audio')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
+              <div class="flex items-center gap-2">
+                <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>
+                <span>Audio Engine</span>
+              </div>
             </button>
           </nav>
         </div>
@@ -538,7 +653,7 @@
       <!-- Settings Content Area -->
       <main class="flex-1 overflow-y-auto p-6 relative">
         
-        <!-- SECTION 1: USER PROFILE -->
+        <!-- SECTION 1: PROFILE -->
         <div id="settings-section-profile" class="space-y-6">
           <div>
             <h3 class="text-base font-bold text-white">User Profile</h3>
@@ -548,18 +663,14 @@
           <form onsubmit="saveSettings(event)" class="space-y-5">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               
-              <!-- Form Fields -->
               <div class="space-y-4">
-
-                <!-- Display Name Field -->
                 <div>
                   <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Display Name</label>
                   <input type="text" id="setting-display-name" oninput="updateSettingsPreview()" placeholder="Your Display Name" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
                 </div>
 
-                <!-- Avatar Settings -->
                 <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Avatar Image</label>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Avatar Image URL</label>
                   <div class="flex items-center gap-2 mb-2">
                     <input type="url" id="setting-pfp-url" oninput="updateSettingsPreview()" placeholder="https://example.com/avatar.jpg" class="flex-1 bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
                     <input type="file" id="pfp-file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'pfp')">
@@ -570,20 +681,19 @@
                   </div>
                 </div>
 
-                <!-- Avatar Background Fallback Color -->
                 <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Avatar BG Color</label>
-                  <div class="flex items-center gap-2">
-                    <input type="color" id="setting-pfp-bg" oninput="updateSettingsPreview()" value="#1a1a1e" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                    <span class="text-xs text-sunrise-muted font-mono" id="setting-pfp-bg-val">#1a1a1e</span>
-                  </div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Online Status</label>
+                  <select id="setting-status" onchange="updateSettingsPreview()" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white focus:outline-none">
+                    <option value="online">Online (Green)</option>
+                    <option value="idle">Idle (Amber)</option>
+                    <option value="dnd">Do Not Disturb (Red)</option>
+                  </select>
                 </div>
 
-                <!-- Banner Customization -->
                 <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Banner Image</label>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Banner Image URL</label>
                   <div class="flex items-center gap-2 mb-2">
-                    <input type="url" id="setting-banner-url" oninput="updateSettingsPreview()" placeholder="https://example.com/banner.jpg" class="flex-1 bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+                    <input type="url" id="setting-banner-url" oninput="updateSettingsPreview()" placeholder="https://example.com/banner.jpg" class="flex-1 bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white focus:outline-none transition-all interactive-target">
                     <input type="file" id="banner-file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'banner')">
                     <button type="button" onclick="document.getElementById('banner-file-input').click()" class="px-3 py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/40 text-xs font-semibold rounded-lg text-white transition-all flex items-center gap-1.5 shrink-0 interactive-target">
                       <i data-lucide="upload" class="w-3.5 h-3.5"></i>
@@ -593,340 +703,159 @@
                 </div>
 
                 <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Banner Color</label>
-                  <div class="flex items-center gap-2">
-                    <input type="color" id="setting-banner-color" oninput="updateSettingsPreview()" value="#222228" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                    <span class="text-xs text-sunrise-muted font-mono" id="setting-banner-val">#222228</span>
-                  </div>
-                </div>
-
-                <!-- Name Color Picker & Swatches -->
-                <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Display Name Color</label>
-                  <div class="flex items-center gap-3 mb-2">
-                    <input type="color" id="setting-name-color" oninput="updateSettingsPreview()" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                    <span class="text-xs text-sunrise-muted font-mono" id="setting-name-color-val">#ffffff</span>
-                  </div>
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <button type="button" onclick="setPresetColor('#ffffff')" class="w-6 h-6 rounded-full bg-white border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Pure White"></button>
-                    <button type="button" onclick="setPresetColor('#38bdf8')" class="w-6 h-6 rounded-full bg-sky-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Subtle Cyan"></button>
-                    <button type="button" onclick="setPresetColor('#a78bfa')" class="w-6 h-6 rounded-full bg-violet-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Soft Violet"></button>
-                    <button type="button" onclick="setPresetColor('#fb7185')" class="w-6 h-6 rounded-full bg-rose-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Crimson"></button>
-                    <button type="button" onclick="setPresetColor('#34d399')" class="w-6 h-6 rounded-full bg-emerald-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Emerald"></button>
-                    <button type="button" onclick="setPresetColor('#fbbf24')" class="w-6 h-6 rounded-full bg-amber-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Amber"></button>
-                  </div>
-                </div>
-
-                <!-- User Bio -->
-                <div>
                   <div class="flex justify-between items-center mb-1.5">
                     <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted">About Me (Bio)</label>
                     <span class="text-[10px] text-sunrise-muted font-mono" id="bio-char-count">0/120</span>
                   </div>
-                  <textarea id="setting-bio" maxlength="120" oninput="updateSettingsPreview()" rows="3" placeholder="Tell the world about yourself..." class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg p-2.5 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all resize-none interactive-target"></textarea>
+                  <textarea id="setting-bio" maxlength="120" oninput="updateSettingsPreview()" rows="3" placeholder="Tell the workspace about yourself..." class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg p-2.5 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all resize-none interactive-target"></textarea>
                 </div>
               </div>
 
-              <!-- Real-time Live Profile Card Preview -->
+              <!-- Real-time Live Preview Card -->
               <div>
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2">Live Preview</label>
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2">Live Card Preview</label>
                 <div class="w-full bg-sunrise-pure border border-sunrise-border rounded-xl overflow-hidden shadow-xl">
-                  
-                  <!-- Preview Banner -->
                   <div id="preview-banner" class="h-24 w-full bg-cover bg-center transition-all relative" style="background-color: #222228;"></div>
-
-                  <!-- Preview Content -->
                   <div class="px-4 pb-4 pt-0 relative">
-                    <!-- Preview Avatar -->
                     <div class="relative -mt-10 mb-3 inline-block">
-                      <div id="preview-pfp" class="w-16 h-16 rounded-full bg-sunrise-surface border-4 border-sunrise-pure bg-cover bg-center flex items-center justify-center font-bold text-lg text-white shadow-lg overflow-hidden" style="background-color: #1a1a1e;">
+                      <div id="preview-pfp" class="w-16 h-16 rounded-full bg-sunrise-surface border-4 border-sunrise-pure bg-cover bg-center flex items-center justify-center font-bold text-lg text-white shadow-lg overflow-hidden">
                         Y
                       </div>
-                      <div class="absolute bottom-1 right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full ring-2 ring-sunrise-pure"></div>
+                      <div id="preview-status" class="absolute bottom-1 right-1 w-3.5 h-3.5 bg-emerald-500 rounded-full ring-2 ring-sunrise-pure"></div>
                     </div>
-
-                    <!-- User Metadata -->
                     <div class="space-y-1">
-                      <h4 id="preview-name" class="font-bold text-sm text-white truncate" style="color: #ffffff;">You</h4>
+                      <h4 id="preview-name" class="font-bold text-sm text-white truncate">You</h4>
                       <p id="preview-handle" class="text-xs text-sunrise-muted truncate">@you</p>
                     </div>
-
                     <div class="w-full h-[1px] bg-sunrise-border/80 my-3"></div>
-
-                    <!-- Bio Preview -->
                     <div>
                       <h5 class="text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1">About Me</h5>
                       <p id="preview-bio" class="text-xs text-white/90 leading-relaxed font-normal whitespace-pre-line">Building sunrise workspace.</p>
                     </div>
                   </div>
-
                 </div>
               </div>
 
             </div>
 
-            <!-- Save Action Button -->
             <div class="pt-4 border-t border-sunrise-border flex justify-end">
-              <button type="submit" class="px-5 py-2 bg-white text-sunrise-pure font-semibold text-xs rounded-lg hover:bg-neutral-200 transition-colors shadow-lg shadow-white/5 flex items-center gap-2 interactive-target">
+              <button type="submit" class="px-5 py-2 bg-white text-sunrise-pure font-semibold text-xs rounded-lg hover:bg-neutral-200 transition-colors shadow-lg flex items-center gap-2 interactive-target">
                 <i data-lucide="check" class="w-3.5 h-3.5 stroke-[2.5]"></i>
-                <span>Save Changes</span>
+                <span>Save Profile Changes</span>
               </button>
             </div>
           </form>
         </div>
 
-        <!-- SECTION 2: APPEARANCE & THEME ENGINE -->
+        <!-- SECTION 2: APPEARANCE -->
         <div id="settings-section-appearance" class="space-y-6 hidden">
           <div>
             <h3 class="text-base font-bold text-white">Appearance & Theme Engine</h3>
             <p class="text-xs text-sunrise-muted">Select workspace theme presets or craft your custom color system.</p>
           </div>
 
-          <!-- Theme Presets Grid -->
-          <div>
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-3">Theme Presets</label>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              
-              <!-- Preset 1: Charcoal / Monochrome -->
-              <button type="button" onclick="selectThemePreset('charcoal')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
-                <div class="flex items-center gap-1.5 mb-2">
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#09090b] border border-white/20"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#121215]"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-white"></div>
-                </div>
-                <h4 class="text-xs font-semibold text-white">Pure Charcoal</h4>
-                <p class="text-[10px] text-sunrise-muted">Monochrome classic</p>
-              </button>
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            <button type="button" onclick="selectThemePreset('charcoal')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all interactive-target">
+              <div class="flex items-center gap-1.5 mb-2">
+                <div class="w-3.5 h-3.5 rounded-full bg-[#09090b]"></div>
+                <div class="w-3.5 h-3.5 rounded-full bg-[#121215]"></div>
+                <div class="w-3.5 h-3.5 rounded-full bg-white"></div>
+              </div>
+              <h4 class="text-xs font-semibold text-white">Pure Charcoal</h4>
+            </button>
 
-              <!-- Preset 2: Midnight Blue -->
-              <button type="button" onclick="selectThemePreset('midnight')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
-                <div class="flex items-center gap-1.5 mb-2">
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#0b0e17] border border-white/20"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#111625]"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#38bdf8]"></div>
-                </div>
-                <h4 class="text-xs font-semibold text-white">Midnight Blue</h4>
-                <p class="text-[10px] text-sunrise-muted">Deep ocean glow</p>
-              </button>
+            <button type="button" onclick="selectThemePreset('midnight')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all interactive-target">
+              <div class="flex items-center gap-1.5 mb-2">
+                <div class="w-3.5 h-3.5 rounded-full bg-[#0b0e17]"></div>
+                <div class="w-3.5 h-3.5 rounded-full bg-[#111625]"></div>
+                <div class="w-3.5 h-3.5 rounded-full bg-[#38bdf8]"></div>
+              </div>
+              <h4 class="text-xs font-semibold text-white">Midnight Blue</h4>
+            </button>
 
-              <!-- Preset 3: Obsidian Emerald -->
-              <button type="button" onclick="selectThemePreset('emerald')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
-                <div class="flex items-center gap-1.5 mb-2">
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#06120e] border border-white/20"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#0e1f18]"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#34d399]"></div>
-                </div>
-                <h4 class="text-xs font-semibold text-white">Obsidian Emerald</h4>
-                <p class="text-[10px] text-sunrise-muted">Dark matrix forest</p>
-              </button>
+            <button type="button" onclick="selectThemePreset('emerald')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all interactive-target">
+              <div class="flex items-center gap-1.5 mb-2">
+                <div class="w-3.5 h-3.5 rounded-full bg-[#06120e]"></div>
+                <div class="w-3.5 h-3.5 rounded-full bg-[#0e1f18]"></div>
+                <div class="w-3.5 h-3.5 rounded-full bg-[#34d399]"></div>
+              </div>
+              <h4 class="text-xs font-semibold text-white">Obsidian Emerald</h4>
+            </button>
 
-              <!-- Preset 4: Crimson Synth -->
-              <button type="button" onclick="selectThemePreset('crimson')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
-                <div class="flex items-center gap-1.5 mb-2">
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#14090d] border border-white/20"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#1f1016]"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#fb7185]"></div>
-                </div>
-                <h4 class="text-xs font-semibold text-white">Crimson Synth</h4>
-                <p class="text-[10px] text-sunrise-muted">Neon rose dark</p>
-              </button>
-
-              <!-- Preset 5: Dark Amethyst -->
-              <button type="button" onclick="selectThemePreset('amethyst')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
-                <div class="flex items-center gap-1.5 mb-2">
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#0f0b18] border border-white/20"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#181226]"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#c084fc]"></div>
-                </div>
-                <h4 class="text-xs font-semibold text-white">Dark Amethyst</h4>
-                <p class="text-[10px] text-sunrise-muted">Deep violet velvet</p>
-              </button>
-
-              <!-- Preset 6: Cyberpunk Gold -->
-              <button type="button" onclick="selectThemePreset('gold')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
-                <div class="flex items-center gap-1.5 mb-2">
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#121008] border border-white/20"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#1c180e]"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#facc15]"></div>
-                </div>
-                <h4 class="text-xs font-semibold text-white">Cyberpunk Gold</h4>
-                <p class="text-[10px] text-sunrise-muted">Industrial amber glow</p>
-              </button>
-
-            </div>
+            <button type="button" onclick="selectThemePreset('crimson')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all interactive-target">
+              <div class="flex items-center gap-1.5 mb-2">
+                <div class="w-3.5 h-3.5 rounded-full bg-[#14090d]"></div>
+                <div class="w-3.5 h-3.5 rounded-full bg-[#1f1016]"></div>
+                <div class="w-3.5 h-3.5 rounded-full bg-[#fb7185]"></div>
+              </div>
+              <h4 class="text-xs font-semibold text-white">Crimson Synth</h4>
+            </button>
           </div>
-
-          <div class="w-full h-[1px] bg-sunrise-border/80 my-4"></div>
-
-          <!-- Custom Color Controls -->
-          <div class="space-y-4">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2">Custom Palette Controls</label>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Canvas Background</label>
-                <div class="flex items-center gap-2">
-                  <input type="color" id="theme-pure-picker" oninput="updateCustomThemeVar('--sunrise-pure', this.value)" value="#09090b" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                  <span class="text-xs text-sunrise-muted font-mono" id="theme-pure-val">#09090b</span>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Sidebar Surface</label>
-                <div class="flex items-center gap-2">
-                  <input type="color" id="theme-charcoal-picker" oninput="updateCustomThemeVar('--sunrise-charcoal', this.value)" value="#121215" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                  <span class="text-xs text-sunrise-muted font-mono" id="theme-charcoal-val">#121215</span>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Accent & Highlight</label>
-                <div class="flex items-center gap-2">
-                  <input type="color" id="theme-white-picker" oninput="updateCustomThemeVar('--sunrise-white', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                  <span class="text-xs text-sunrise-muted font-mono" id="theme-white-val">#ffffff</span>
-                </div>
-              </div>
-
-              <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Cards & Inputs</label>
-                <div class="flex items-center gap-2">
-                  <input type="color" id="theme-surface-picker" oninput="updateCustomThemeVar('--sunrise-surface', this.value)" value="#1a1a1e" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                  <span class="text-xs text-sunrise-muted font-mono" id="theme-surface-val">#1a1a1e</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
         </div>
 
-        <!-- SECTION 3: CURSOR CUSTOMIZATION -->
+        <!-- SECTION 3: CURSOR -->
         <div id="settings-section-cursor" class="space-y-6 hidden">
           <div>
             <h3 class="text-base font-bold text-white">Cursor Customization</h3>
-            <p class="text-xs text-sunrise-muted">Modify physics, colors, sizing, and trailing speed for your pointer.</p>
+            <p class="text-xs text-sunrise-muted">Modify pointer physics and ring colors.</p>
           </div>
 
-          <!-- Enable/Disable Custom Cursor Toggle -->
           <div class="p-4 bg-sunrise-surface border border-sunrise-border rounded-xl flex items-center justify-between">
             <div>
               <h4 class="text-xs font-bold text-white">Enable Custom Dual Cursor</h4>
-              <p class="text-[10px] text-sunrise-muted mt-0.5">Disabling reverts to standard operating system pointer.</p>
+              <p class="text-[10px] text-sunrise-muted">Toggle particle lerp ring trailing effect.</p>
             </div>
             <label class="relative inline-flex items-center cursor-pointer interactive-target">
               <input type="checkbox" id="cursor-toggle" onchange="toggleCustomCursor(this.checked)" checked class="sr-only peer">
-              <div class="w-9 h-5 bg-sunrise-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-white"></div>
+              <div class="w-9 h-5 bg-sunrise-border rounded-full peer peer-checked:bg-white peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-black after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
             </label>
           </div>
+        </div>
 
-          <!-- Cursor Style Presets -->
+        <!-- SECTION 4: ROLE TAGS -->
+        <div id="settings-section-tags" class="space-y-6 hidden">
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2.5">Cursor Presets</label>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-              <button type="button" onclick="selectCursorPreset('classic')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
-                <div class="text-xs font-semibold text-white">Classic White</div>
-                <div class="text-[10px] text-sunrise-muted">Snappy trailing dot</div>
-              </button>
-              <button type="button" onclick="selectCursorPreset('cyber')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
-                <div class="text-xs font-semibold text-sky-400">Cyber Neon</div>
-                <div class="text-[10px] text-sunrise-muted">Cyan dot & rose ring</div>
-              </button>
-              <button type="button" onclick="selectCursorPreset('crimson')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
-                <div class="text-xs font-semibold text-rose-400">Crimson Glow</div>
-                <div class="text-[10px] text-sunrise-muted">Bold red trailing</div>
-              </button>
-              <button type="button" onclick="selectCursorPreset('emerald')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
-                <div class="text-xs font-semibold text-emerald-400">Emerald Pulse</div>
-                <div class="text-[10px] text-sunrise-muted">Vibrant matrix green</div>
-              </button>
-              <button type="button" onclick="selectCursorPreset('minimal')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
-                <div class="text-xs font-semibold text-zinc-400">Minimal Dark</div>
-                <div class="text-[10px] text-sunrise-muted">Subtle zinc tone</div>
-              </button>
-            </div>
+            <h3 class="text-base font-bold text-white">Server Role Tags</h3>
+            <p class="text-xs text-sunrise-muted">Manage custom badges assigned to your account and workspace members.</p>
           </div>
 
-          <!-- Colors & Sliders Grid -->
-          <div class="space-y-4 pt-2">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted">Fine-Tuning Controls</label>
-            
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <!-- Dot Color -->
-              <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Center Dot Color</label>
-                <div class="flex items-center gap-2">
-                  <input type="color" id="cursor-dot-color-picker" oninput="updateCursorParam('dotColor', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                  <span class="text-xs text-sunrise-muted font-mono" id="cursor-dot-color-val">#ffffff</span>
-                </div>
-              </div>
+          <div class="space-y-3">
+            <div id="roles-manager-list" class="flex flex-wrap gap-2">
+              <!-- Rendered dynamically -->
+            </div>
 
-              <!-- Ring Color -->
-              <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Trailing Ring Color</label>
-                <div class="flex items-center gap-2">
-                  <input type="color" id="cursor-ring-color-picker" oninput="updateCursorParam('ringColor', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                  <span class="text-xs text-sunrise-muted font-mono" id="cursor-ring-color-val">#ffffff</span>
-                </div>
-              </div>
-
-              <!-- Follow Speed Slider -->
-              <div class="col-span-1 sm:col-span-2">
-                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
-                  <span>Ring Follow Speed (Lerp)</span>
-                  <span id="cursor-speed-val" class="font-mono text-white">0.45 (Fast)</span>
-                </div>
-                <input type="range" id="cursor-speed-slider" min="0.10" max="0.85" step="0.05" value="0.45" oninput="updateCursorParam('followSpeed', parseFloat(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
-                <div class="flex justify-between text-[9px] text-sunrise-muted/60 mt-0.5">
-                  <span>Delayed Trailing (0.10)</span>
-                  <span>Snappy Response (0.85)</span>
-                </div>
-              </div>
-
-              <!-- Dot Size Slider -->
-              <div>
-                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
-                  <span>Center Dot Size</span>
-                  <span id="cursor-dot-size-val" class="font-mono text-white">8px</span>
-                </div>
-                <input type="range" id="cursor-dot-size-slider" min="4" max="20" step="1" value="8" oninput="updateCursorParam('dotSize', parseInt(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
-              </div>
-
-              <!-- Ring Size Slider -->
-              <div>
-                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
-                  <span>Outer Ring Size</span>
-                  <span id="cursor-ring-size-val" class="font-mono text-white">32px</span>
-                </div>
-                <input type="range" id="cursor-ring-size-slider" min="16" max="64" step="2" value="32" oninput="updateCursorParam('ringSize', parseInt(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
-              </div>
-
-              <!-- Ring Border Width Slider -->
-              <div class="col-span-1 sm:col-span-2">
-                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
-                  <span>Ring Border Thickness</span>
-                  <span id="cursor-border-val" class="font-mono text-white">1px</span>
-                </div>
-                <input type="range" id="cursor-border-slider" min="1" max="4" step="1" value="1" oninput="updateCursorParam('borderWidth', parseInt(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
+            <div class="p-4 bg-sunrise-surface border border-sunrise-border rounded-xl space-y-3">
+              <h4 class="text-xs font-bold text-white">Create New Role Tag</h4>
+              <div class="flex gap-2">
+                <input type="text" id="new-role-name" placeholder="ROLE NAME (e.g. VIP, DEV)" class="flex-1 bg-sunrise-pure border border-sunrise-border rounded-lg px-3 py-1.5 text-xs text-white">
+                <input type="color" id="new-role-color" value="#a78bfa" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer">
+                <button type="button" onclick="addCustomRole()" class="px-3 py-1.5 bg-white text-sunrise-pure text-xs font-bold rounded-lg hover:bg-neutral-200">Add Role</button>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- SECTION 4: SERVER TAGS (IN DEVELOPMENT) -->
-        <div id="settings-section-tags" class="space-y-6 hidden">
+        <!-- SECTION 5: AUDIO SOUND ENGINE -->
+        <div id="settings-section-audio" class="space-y-6 hidden">
           <div>
-            <h3 class="text-base font-bold text-white">Server Tags</h3>
-            <p class="text-xs text-sunrise-muted">Manage role tags and group badge highlights.</p>
+            <h3 class="text-base font-bold text-white">Audio & Web Audio Synth Settings</h3>
+            <p class="text-xs text-sunrise-muted">Manage synthesized tone effects for messages and voice actions.</p>
           </div>
 
-          <div class="border border-dashed border-sunrise-border rounded-xl p-8 text-center space-y-3">
-            <div class="w-12 h-12 rounded-full bg-sunrise-surface border border-sunrise-border flex items-center justify-center mx-auto text-sunrise-muted">
-              <i data-lucide="tag" class="w-6 h-6"></i>
-            </div>
+          <div class="p-4 bg-sunrise-surface border border-sunrise-border rounded-xl flex items-center justify-between">
             <div>
-              <h4 class="text-xs font-bold text-white">Server Tags (In Development)</h4>
-              <p class="text-xs text-sunrise-muted max-w-sm mx-auto mt-1">Custom server tags, role colors, and badge permissions will be configurable here when server backend controls launch.</p>
+              <h4 class="text-xs font-bold text-white">Sound Effects Enabled</h4>
+              <p class="text-[10px] text-sunrise-muted">Synthesized audio feedback for send, receive, and voice room actions.</p>
             </div>
+            <label class="relative inline-flex items-center cursor-pointer interactive-target">
+              <input type="checkbox" id="audio-toggle" onchange="toggleSound(this.checked)" checked class="sr-only peer">
+              <div class="w-9 h-5 bg-sunrise-border rounded-full peer peer-checked:bg-white peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-black after:rounded-full after:h-4 after:w-4 after:transition-all"></div>
+            </label>
           </div>
+
+          <button type="button" onclick="SoundFx.playReceive()" class="px-4 py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/40 text-xs font-semibold rounded-lg text-white">
+            Test Sound Chime
+          </button>
         </div>
 
       </main>
@@ -935,15 +864,122 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- JAVASCRIPT STATE, CURSOR & INTERACTION     -->
+  <!-- JAVASCRIPT LOGIC & STATE ARCHITECTURE      -->
   <!-- ========================================== -->
   <script>
-    // System State Architecture
+    // Web Audio API Synthesizer Engine (Zero External Audio Assets)
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    const SoundFx = {
+      playSend() {
+        if (!state.soundEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(440, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(880, ctx.currentTime + 0.08);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.08);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.08);
+        } catch(e){}
+      },
+
+      playReceive() {
+        if (!state.soundEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          const osc1 = ctx.createOscillator();
+          const osc2 = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc1.type = 'sine';
+          osc2.type = 'sine';
+          osc1.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+          osc2.frequency.setValueAtTime(659.25, ctx.currentTime + 0.06); // E5
+          gain.gain.setValueAtTime(0.12, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
+          osc1.connect(gain);
+          osc2.connect(gain);
+          gain.connect(ctx.destination);
+          osc1.start();
+          osc1.stop(ctx.currentTime + 0.1);
+          osc2.start(ctx.currentTime + 0.06);
+          osc2.stop(ctx.currentTime + 0.2);
+        } catch(e){}
+      },
+
+      playJoin() {
+        if (!state.soundEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(300, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.15);
+        } catch(e){}
+      },
+
+      playLeave() {
+        if (!state.soundEnabled) return;
+        try {
+          const ctx = getAudioContext();
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(600, ctx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(250, ctx.currentTime + 0.15);
+          gain.gain.setValueAtTime(0.15, ctx.currentTime);
+          gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.15);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start();
+          osc.stop(ctx.currentTime + 0.15);
+        } catch(e){}
+      }
+    };
+
+    // SYSTEM CENTRAL STATE
     const state = {
       isAuthenticated: false,
-      authMode: 'login', // 'login' | 'signup'
-      activeChannel: 'general',
+      authMode: 'login',
+      activeMode: 'server', // 'server' | 'dms'
+      activeServerId: 'sunrise-hq',
+      activeChannelId: 'general',
+      activeDmId: null,
+      searchQuery: '',
+      replyingToMsg: null,
       pendingAttachment: null,
+      soundEnabled: true,
+
+      voiceState: {
+        connected: false,
+        channelId: null,
+        channelName: '',
+        muted: false,
+        deafened: false,
+        screenSharing: false,
+        participants: []
+      },
 
       cursor: {
         enabled: true,
@@ -952,35 +988,7 @@
         followSpeed: 0.45,
         dotSize: 8,
         ringSize: 32,
-        borderWidth: 1,
-        preset: 'classic'
-      },
-
-      cursorPresets: {
-        classic: { dotColor: '#ffffff', ringColor: '#ffffff', followSpeed: 0.45, dotSize: 8, ringSize: 32, borderWidth: 1 },
-        cyber:   { dotColor: '#38bdf8', ringColor: '#f43f5e', followSpeed: 0.60, dotSize: 6, ringSize: 36, borderWidth: 2 },
-        crimson: { dotColor: '#f43f5e', ringColor: '#fda4af', followSpeed: 0.50, dotSize: 10, ringSize: 30, borderWidth: 2 },
-        emerald: { dotColor: '#10b981', ringColor: '#6ee7b7', followSpeed: 0.55, dotSize: 8, ringSize: 34, borderWidth: 1 },
-        minimal: { dotColor: '#a1a1aa', ringColor: '#52525b', followSpeed: 0.40, dotSize: 6, ringSize: 28, borderWidth: 1 }
-      },
-      
-      theme: {
-        preset: 'charcoal',
-        pure: '#09090b',
-        charcoal: '#121215',
-        surface: '#1a1a1e',
-        hover: '#22222a',
-        border: '#222228',
-        white: '#ffffff'
-      },
-
-      themePresets: {
-        charcoal: { pure: '#09090b', charcoal: '#121215', surface: '#1a1a1e', hover: '#22222a', border: '#222228', white: '#ffffff' },
-        midnight: { pure: '#0b0e17', charcoal: '#111625', surface: '#192033', hover: '#232c45', border: '#232d47', white: '#38bdf8' },
-        emerald:  { pure: '#06120e', charcoal: '#0e1f18', surface: '#152e24', hover: '#1d3d30', border: '#1e4234', white: '#34d399' },
-        crimson:  { pure: '#14090d', charcoal: '#1f1016', surface: '#2b1720', hover: '#3b1f2c', border: '#3e202f', white: '#fb7185' },
-        amethyst: { pure: '#0f0b18', charcoal: '#181226', surface: '#231b38', hover: '#30254c', border: '#332752', white: '#c084fc' },
-        gold:     { pure: '#121008', charcoal: '#1c180e', surface: '#292416', hover: '#38311e', border: '#3b341f', white: '#facc15' }
+        borderWidth: 1
       },
 
       currentUser: {
@@ -988,51 +996,147 @@
         name: 'You',
         handle: '@you',
         initial: 'Y',
-        email: '',
+        email: 'you@sunrise.app',
         pfpUrl: '',
         pfpBg: '#1a1a1e',
         bannerUrl: '',
         bannerBg: '#222228',
         nameColor: '#ffffff',
-        bio: 'Building sunrise workspace.'
+        status: 'online',
+        bio: 'Building Sunrise Workspace.',
+        roles: ['OWNER', 'DEV']
       },
 
-      channels: {
-        'welcome': {
-          id: null,
-          category: 'info',
-          title: 'welcome',
-          desc: 'Read workspace rules and overview',
-          messages: []
+      roles: [
+        { id: 'role-owner', name: 'OWNER', color: '#facc15' },
+        { id: 'role-dev', name: 'DEV', color: '#38bdf8' },
+        { id: 'role-vip', name: 'VIP', color: '#a78bfa' },
+        { id: 'role-mod', name: 'MOD', color: '#34d399' }
+      ],
+
+      // Preloaded Workspace Servers
+      servers: [
+        {
+          id: 'sunrise-hq',
+          name: 'Sunrise HQ',
+          abbr: 'SUN',
+          color: '#ffffff',
+          desc: 'Primary workspace server for central announcements & engineering',
+          categories: [
+            {
+              name: 'Information',
+              channels: [
+                { id: 'welcome', name: 'welcome', type: 'text', desc: 'Read rules & getting started guide' },
+                { id: 'announcements', name: 'announcements', type: 'text', desc: 'Official platform news' }
+              ]
+            },
+            {
+              name: 'Text Channels',
+              channels: [
+                { id: 'general', name: 'general', type: 'text', desc: 'General discussion & updates' },
+                { id: 'dev-log', name: 'dev-log', type: 'text', desc: 'Tech stack progress notes' },
+                { id: 'design', name: 'design', type: 'text', desc: 'UI/UX mockups and feedback' }
+              ]
+            },
+            {
+              name: 'Voice Lounges',
+              channels: [
+                { id: 'stage-voice', name: '🔊 HQ Live Stage', type: 'voice', desc: 'Open audio collaboration stage' },
+                { id: 'casual-voice', name: '🔊 Lounge Voice', type: 'voice', desc: 'Casual tech chats' }
+              ]
+            }
+          ]
         },
-        'announcements': {
-          id: null,
-          category: 'info',
-          title: 'announcements',
-          desc: 'Official updates from the owner',
-          messages: []
+        {
+          id: 'dev-lab',
+          name: 'Developers Lab',
+          abbr: 'DEV',
+          color: '#38bdf8',
+          desc: 'Open lab for code snippets, APIs, and bug reports',
+          categories: [
+            {
+              name: 'Core Lab',
+              channels: [
+                { id: 'dev-chat', name: 'dev-chat', type: 'text', desc: 'Frontend & backend discussions' },
+                { id: 'code-review', name: 'code-review', type: 'text', desc: 'Share code blocks and snippets' }
+              ]
+            },
+            {
+              name: 'Voice Huddles',
+              channels: [
+                { id: 'pair-prog', name: '🔊 Pair Programming', type: 'voice', desc: 'Live code review audio room' }
+              ]
+            }
+          ]
         },
-        'general': {
-          id: null,
-          category: 'channels',
-          title: 'general',
-          desc: 'General team discussion and updates',
-          messages: []
-        },
-        'dev-log': {
-          id: null,
-          category: 'channels',
-          title: 'dev-log',
-          desc: 'Development progress and tech notes',
-          messages: []
-        },
-        'random': {
-          id: null,
-          category: 'channels',
-          title: 'random',
-          desc: 'Off-topic chat and casual ideas',
-          messages: []
+        {
+          id: 'design-guild',
+          name: 'Design Guild',
+          abbr: 'DES',
+          color: '#a78bfa',
+          desc: 'Creative showcase for graphic artists and UI designers',
+          categories: [
+            {
+              name: 'Showcase',
+              channels: [
+                { id: 'showcase', name: 'showcase', type: 'text', desc: 'Post artwork and prototypes' },
+                { id: 'resources', name: 'resources', type: 'text', desc: 'Design tokens and palettes' }
+              ]
+            }
+          ]
         }
+      ],
+
+      // Preloaded Direct Messages & AI Bot
+      dms: [
+        {
+          id: 'dm-bot',
+          user: {
+            id: 'bot-ai',
+            name: 'Sunrise AI Bot',
+            handle: '@sunrise_ai',
+            initial: 'AI',
+            pfpBg: '#10b981',
+            status: 'online',
+            roles: ['BOT', 'ASSISTANT'],
+            bio: 'Automated Sunrise Workspace Assistant.'
+          },
+          messages: [
+            { id: 'bot-1', author: 'Sunrise AI Bot', initial: 'AI', time: 'Today at 09:00 AM', text: 'Hello! I am your Sunrise AI Assistant. Ask me anything or mention me with `@Sunrise Bot` in any channel!', nameColor: '#34d399', isBot: true }
+          ]
+        },
+        {
+          id: 'dm-sarah',
+          user: {
+            id: 'sarah-p',
+            name: 'Sarah Chen',
+            handle: '@sarah_c',
+            initial: 'S',
+            pfpBg: '#f43f5e',
+            status: 'online',
+            roles: ['DESIGN LEAD'],
+            bio: 'Crafting dark mode UI components.'
+          },
+          messages: [
+            { id: 's-1', author: 'Sarah Chen', initial: 'S', time: 'Yesterday at 4:20 PM', text: 'Hey! Are we pushing the new audio synthesis feature to Sunrise HQ today?', nameColor: '#fb7185' }
+          ]
+        }
+      ],
+
+      // Local Message Store per Channel ID
+      channelMessages: {
+        'general': [
+          {
+            id: 'msg-g1',
+            author: 'Sunrise AI Bot',
+            initial: 'AI',
+            time: 'Today at 10:15 AM',
+            text: 'Welcome to Sunrise Workspace! Mention `@Sunrise Bot` to test dynamic replies or hit `Ctrl/Cmd + K` for Quick Switcher.',
+            reactions: { '🚀': ['user1'], '🔥': ['user2'] },
+            pinned: true,
+            nameColor: '#34d399'
+          }
+        ]
       }
     };
 
@@ -1048,16 +1152,13 @@
       if (loadingScreen) {
         setTimeout(() => {
           loadingScreen.classList.add('opacity-0');
-          setTimeout(() => {
-            loadingScreen.classList.add('hidden');
-          }, 500);
-        }, 3000);
+          setTimeout(() => loadingScreen.classList.add('hidden'), 500);
+        }, 1800);
       }
     }
 
     function setupCursorListeners() {
       if (!state.cursor.enabled) return;
-
       const dot = document.getElementById('cursor-dot');
       const ring = document.getElementById('cursor-ring');
       if (!dot || !ring) return;
@@ -1115,7 +1216,6 @@
       ring.style.borderColor = state.cursor.ringColor;
       ring.style.width = `${state.cursor.ringSize}px`;
       ring.style.height = `${state.cursor.ringSize}px`;
-      ring.style.borderWidth = `${state.cursor.borderWidth}px`;
     }
 
     function toggleCustomCursor(enabled) {
@@ -1124,803 +1224,453 @@
       if (enabled) setupCursorListeners();
     }
 
-    function selectCursorPreset(presetName) {
-      if (state.cursorPresets[presetName]) {
-        state.cursor = { ...state.cursor, ...state.cursorPresets[presetName], preset: presetName };
-        applyCursorStyles();
-        
-        const dotPicker = document.getElementById('cursor-dot-color-picker');
-        const ringPicker = document.getElementById('cursor-ring-color-picker');
-        if (dotPicker) dotPicker.value = state.cursor.dotColor;
-        if (ringPicker) ringPicker.value = state.cursor.ringColor;
-      }
-    }
-
-    function updateCursorParam(param, value) {
-      state.cursor[param] = value;
-      applyCursorStyles();
-    }
-
-    function selectThemePreset(presetKey) {
-      const p = state.themePresets[presetKey];
-      if (!p) return;
-      state.theme = { ...p, preset: presetKey };
-
-      const root = document.documentElement;
-      root.style.setProperty('--sunrise-pure', p.pure);
-      root.style.setProperty('--sunrise-charcoal', p.charcoal);
-      root.style.setProperty('--sunrise-surface', p.surface);
-      root.style.setProperty('--sunrise-hover', p.hover);
-      root.style.setProperty('--sunrise-border', p.border);
-      root.style.setProperty('--sunrise-white', p.white);
-
-      const pureP = document.getElementById('theme-pure-picker');
-      if (pureP) pureP.value = p.pure;
-    }
-
-    function updateCustomThemeVar(varName, value) {
-      document.documentElement.style.setProperty(varName, value);
-    }
-
-    function handleFileUpload(event, type) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        if (type === 'pfp') {
-          const input = document.getElementById('setting-pfp-url');
-          if (input) input.value = e.target.result;
-        } else if (type === 'banner') {
-          const input = document.getElementById('setting-banner-url');
-          if (input) input.value = e.target.result;
-        }
-        updateSettingsPreview();
-      };
-      reader.readAsDataURL(file);
+    function toggleSound(enabled) {
+      state.soundEnabled = enabled;
+      showToast(enabled ? 'Sound effects enabled' : 'Sound effects muted');
     }
 
     // ==========================================
-    // AUTHENTICATION & USER SESSION LOGIC
+    // MULTI-SERVER & DM NAVIGATION ENGINE
     // ==========================================
-    function switchAuthTab(mode) {
-      state.authMode = mode;
-      const tabLogin = document.getElementById('tab-login');
-      const tabSignup = document.getElementById('tab-signup');
-      const signupFields = document.getElementById('signup-fields');
-      const submitBtnText = document.querySelector('#auth-submit-btn span');
-
-      if (mode === 'signup') {
-        if (tabLogin) tabLogin.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
-        if (tabSignup) tabSignup.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
-        if (signupFields) signupFields.classList.remove('hidden');
-        if (submitBtnText) submitBtnText.innerText = 'Create Account';
-      } else {
-        if (tabLogin) tabLogin.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
-        if (tabSignup) tabSignup.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
-        if (signupFields) signupFields.classList.add('hidden');
-        if (submitBtnText) submitBtnText.innerText = 'Log In';
-      }
-    }
-
-    async function handleAuthSubmit(event) {
-      event.preventDefault();
-      const email = document.getElementById('auth-email').value.trim();
-      const password = document.getElementById('auth-password').value;
-
-      if (!email || !password) return;
-
-      if (state.authMode === 'signup') {
-        const displayName = document.getElementById('auth-display-name').value.trim() || email.split('@')[0];
-        const username = document.getElementById('auth-username').value.trim() || email.split('@')[0];
-
-        if (supabaseClient) {
-          const { data, error } = await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: { data: { display_name: displayName, username } }
-          });
-          if (error) {
-            showToast(error.message);
-            return;
-          }
-          showToast('Account created successfully!');
-          if (data.session) enterApp(data.user, displayName);
-          else switchAuthTab('login');
-        } else {
-          enterApp({ id: 'guest-' + Date.now(), email }, displayName);
-        }
-      } else {
-        if (supabaseClient) {
-          const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if (error) {
-            showToast(error.message);
-            return;
-          }
-          if (data.user) {
-            await fetchUserProfile(data.user.id, data.user.email);
-            enterApp(data.user);
-          }
-        } else {
-          enterApp({ id: 'guest-' + Date.now(), email }, email.split('@')[0]);
-        }
-      }
-    }
-
-    function continueAsGuest() {
-      const savedGuest = localStorage.getItem('sunrise_guest_user');
-      let guestUser = null;
-      if (savedGuest) {
-        try { guestUser = JSON.parse(savedGuest); } catch(e){}
-      }
-      if (!guestUser) {
-        guestUser = {
-          id: null,
-          name: 'Guest User',
-          handle: '@guest',
-          initial: 'G',
-          email: 'guest@sunrise.app',
-          pfpUrl: '',
-          pfpBg: '#1a1a1e',
-          bannerUrl: '',
-          bannerBg: '#222228',
-          nameColor: '#ffffff',
-          bio: 'Exploring Sunrise as guest.'
-        };
-      }
-      state.currentUser = guestUser;
-      enterApp(null, guestUser.name);
-    }
-
-    function enterApp(authUser, defaultName) {
-      state.isAuthenticated = true;
-      const authContainer = document.getElementById('auth-container');
-      const mainApp = document.getElementById('main-app');
-
-      if (authContainer) authContainer.classList.add('hidden');
-      if (mainApp) {
-        mainApp.classList.remove('opacity-0', 'pointer-events-none');
-      }
-
-      if (authUser && !state.currentUser.id) {
-        state.currentUser.id = authUser.id;
-        state.currentUser.email = authUser.email || '';
-        if (defaultName) {
-          state.currentUser.name = defaultName;
-          state.currentUser.initial = defaultName.charAt(0).toUpperCase();
-          state.currentUser.handle = `@${defaultName.toLowerCase().replace(/\s+/g, '')}`;
-        }
-      }
-
-      updateUserProfileUI();
-      renderChannels();
-      switchChannel('general');
-      subscribeRealtimeMessages();
-    }
-
-    async function checkSession() {
-      if (supabaseClient) {
-        try {
-          const { data: { session } } = await supabaseClient.auth.getSession();
-          if (session && session.user) {
-            await fetchUserProfile(session.user.id, session.user.email);
-            enterApp(session.user);
-            return;
-          }
-        } catch(e) {
-          console.warn("Check session error:", e);
-        }
-      }
-
-      const savedGuest = localStorage.getItem('sunrise_guest_user');
-      if (savedGuest) {
-        try {
-          state.currentUser = JSON.parse(savedGuest);
-          enterApp(null);
-        } catch(e) {}
-      }
-    }
-
-    async function fetchUserProfile(userId, userEmail) {
-      if (!supabaseClient || !userId) return;
-      try {
-        const { data } = await supabaseClient
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle();
-
-        if (data) {
-          state.currentUser.id = data.id;
-          state.currentUser.name = data.display_name || userEmail.split('@')[0];
-          state.currentUser.initial = state.currentUser.name.charAt(0).toUpperCase();
-          state.currentUser.handle = `@${data.username || userEmail.split('@')[0]}`;
-          state.currentUser.pfpUrl = data.avatar_url || '';
-          state.currentUser.bannerUrl = data.banner_url || '';
-          state.currentUser.nameColor = data.name_color || '#ffffff';
-          state.currentUser.bio = data.bio || '';
-        } else {
-          const defaultName = userEmail ? userEmail.split('@')[0] : 'User';
-          const username = defaultName.toLowerCase().replace(/[^a-z0-9]/g, '');
-          await supabaseClient.from('profiles').upsert({
-            id: userId,
-            username: username,
-            display_name: defaultName
-          });
-          state.currentUser.id = userId;
-          state.currentUser.name = defaultName;
-          state.currentUser.initial = defaultName.charAt(0).toUpperCase();
-          state.currentUser.handle = `@${username}`;
-        }
-      } catch (err) {
-        console.warn("fetchUserProfile error:", err);
-      }
-      updateUserProfileUI();
-    }
-
-    function updateUserProfileUI() {
-      const user = state.currentUser;
-      if (!user) return;
-
-      const userPfp = document.getElementById('user-pfp');
-      const memberPfp = document.getElementById('member-user-pfp');
-      
-      const updatePfpElem = (elem) => {
-        if (!elem) return;
-        if (user.pfpUrl) {
-          elem.style.backgroundImage = `url('${user.pfpUrl}')`;
-          elem.style.backgroundSize = 'cover';
-          elem.style.backgroundPosition = 'center';
-          elem.innerText = '';
-        } else {
-          elem.style.backgroundImage = 'none';
-          elem.style.backgroundColor = user.pfpBg || '#1a1a1e';
-          elem.innerText = user.initial || 'Y';
-        }
-      };
-
-      updatePfpElem(userPfp);
-      updatePfpElem(memberPfp);
-
-      const displayNameEl = document.getElementById('user-display-name');
-      if (displayNameEl) {
-        displayNameEl.innerText = user.name || 'You';
-        displayNameEl.style.color = user.nameColor || '#ffffff';
-      }
-
-      const userHandleEl = document.getElementById('user-handle');
-      if (userHandleEl) userHandleEl.innerText = user.handle || '@you';
-
-      const memberNameEl = document.getElementById('member-user-display-name');
-      if (memberNameEl) {
-        memberNameEl.innerText = user.name || 'You';
-        memberNameEl.style.color = user.nameColor || '#ffffff';
-      }
-
-      const memberHandleEl = document.getElementById('member-user-handle');
-      if (memberHandleEl) memberHandleEl.innerText = user.handle || '@you';
-    }
-
-    function logout() {
-      if (supabaseClient) {
-        supabaseClient.auth.signOut();
-      }
-      localStorage.removeItem('sunrise_guest_user');
-      state.isAuthenticated = false;
-      state.currentUser.id = null;
-
-      const authContainer = document.getElementById('auth-container');
-      const mainApp = document.getElementById('main-app');
-
-      if (authContainer) authContainer.classList.remove('hidden');
-      if (mainApp) mainApp.classList.add('opacity-0', 'pointer-events-none');
-    }
-
-    function loadLocalMessageCache() {
-      try {
-        const raw = localStorage.getItem('sunrise_messages_cache');
-        if (raw) {
-          const cache = JSON.parse(raw);
-          Object.keys(cache).forEach(k => {
-            if (state.channels[k]) {
-              state.channels[k].messages = cache[k] || [];
-            }
-          });
-        }
-      } catch (e) {
-        console.warn("Failed to load local message cache:", e);
-      }
-    }
-
-    async function fetchChannelMessages(channelKey) {
-      const channel = state.channels[channelKey];
-      if (!channel) return;
-
-      if (supabaseClient) {
-        try {
-          if (!channel.id) {
-            const { data: chData } = await supabaseClient
-              .from('channels')
-              .select('id')
-              .ilike('name', channel.title)
-              .maybeSingle();
-
-            if (chData) channel.id = chData.id;
-          }
-
-          if (channel.id) {
-            const { data: msgs, error } = await supabaseClient
-              .from('messages')
-              .select('*, profiles(*)')
-              .eq('channel_id', channel.id)
-              .order('created_at', { ascending: true });
-
-            if (!error && msgs) {
-              channel.messages = msgs.map(m => {
-                const profile = m.profiles || {};
-                const created = new Date(m.created_at);
-                const timeStr = `Today at ${created.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
-                
-                let textContent = m.content || '';
-                let imgUrl = null;
-
-                if (textContent.includes('\nhttps://') || textContent.startsWith('https://') || textContent.startsWith('data:image')) {
-                  const lines = textContent.split('\n');
-                  const lastLine = lines[lines.length - 1];
-                  if (lastLine.startsWith('https://') || lastLine.startsWith('data:image')) {
-                    imgUrl = lastLine;
-                    textContent = lines.slice(0, lines.length - 1).join('\n');
-                  }
-                }
-
-                return {
-                  id: m.id,
-                  author: profile.display_name || 'User',
-                  initial: (profile.display_name || 'U').charAt(0).toUpperCase(),
-                  time: timeStr,
-                  text: textContent,
-                  imageUrl: imgUrl,
-                  nameColor: profile.name_color || '#ffffff',
-                  avatarUrl: profile.avatar_url || ''
-                };
-              });
-
-              saveLocalMessageCache();
-              if (state.activeChannel === channelKey) renderMessages();
-            }
-          }
-        } catch (err) {
-          console.warn("fetchChannelMessages error:", err);
-        }
-      }
-    }
-
-    // ==========================================
-    // CHAT IMAGE & GIF ATTACHMENT HANDLERS
-    // ==========================================
-    function handleChatFileUpload(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        state.pendingAttachment = e.target.result;
-        const previewImg = document.getElementById('preview-attach-img');
-        const previewBox = document.getElementById('attachment-preview');
-        if (previewImg) previewImg.src = state.pendingAttachment;
-        if (previewBox) previewBox.classList.remove('hidden');
-      };
-      reader.readAsDataURL(file);
-    }
-
-    function removeAttachment() {
-      state.pendingAttachment = null;
-      const previewBox = document.getElementById('attachment-preview');
-      const fileInput = document.getElementById('chat-file-input');
-      if (previewBox) previewBox.classList.add('hidden');
-      if (fileInput) fileInput.value = '';
-    }
-
-    function toggleGifPicker(forceState) {
-      const popover = document.getElementById('gif-picker-popover');
-      if (!popover) return;
-      if (typeof forceState === 'boolean') {
-        if (forceState) popover.classList.remove('hidden');
-        else popover.classList.add('hidden');
-      } else {
-        popover.classList.toggle('hidden');
-      }
-    }
-
-    function selectGif(gifUrl) {
-      state.pendingAttachment = gifUrl;
-      toggleGifPicker(false);
-      const previewImg = document.getElementById('preview-attach-img');
-      const previewBox = document.getElementById('attachment-preview');
-      if (previewImg) previewImg.src = state.pendingAttachment;
-      if (previewBox) previewBox.classList.remove('hidden');
-    }
-
-    // ==========================================
-    // SETTINGS MODAL LOGIC
-    // ==========================================
-    function openSettingsModal() {
-      const modal = document.getElementById('settings-modal');
-      if (!modal) return;
-      modal.classList.remove('hidden');
-      setTimeout(() => {
-        modal.classList.remove('opacity-0');
-      }, 10);
-
-      // Populate current user values into form inputs
-      const user = state.currentUser || {};
-
-      const displayNameInput = document.getElementById('setting-display-name');
-      if (displayNameInput) displayNameInput.value = user.name || '';
-
-      const pfpUrlInput = document.getElementById('setting-pfp-url');
-      if (pfpUrlInput) pfpUrlInput.value = user.pfpUrl || '';
-      
-      const pfpBgInput = document.getElementById('setting-pfp-bg');
-      if (pfpBgInput) pfpBgInput.value = user.pfpBg || '#1a1a1e';
-      
-      const pfpBgVal = document.getElementById('setting-pfp-bg-val');
-      if (pfpBgVal) pfpBgVal.innerText = user.pfpBg || '#1a1a1e';
-
-      const bannerUrlInput = document.getElementById('setting-banner-url');
-      if (bannerUrlInput) bannerUrlInput.value = user.bannerUrl || '';
-
-      const bannerBgInput = document.getElementById('setting-banner-color');
-      if (bannerBgInput) bannerBgInput.value = user.bannerBg || '#222228';
-
-      const bannerBgVal = document.getElementById('setting-banner-val');
-      if (bannerBgVal) bannerBgVal.innerText = user.bannerBg || '#222228';
-
-      const nameColorInput = document.getElementById('setting-name-color');
-      if (nameColorInput) nameColorInput.value = user.nameColor || '#ffffff';
-
-      const nameColorVal = document.getElementById('setting-name-color-val');
-      if (nameColorVal) nameColorVal.innerText = user.nameColor || '#ffffff';
-
-      const bioInput = document.getElementById('setting-bio');
-      if (bioInput) bioInput.value = user.bio || '';
-
-      updateSettingsPreview();
-    }
-
-    function closeSettingsModal() {
-      const modal = document.getElementById('settings-modal');
-      if (!modal) return;
-      modal.classList.add('opacity-0');
-      setTimeout(() => {
-        modal.classList.add('hidden');
-      }, 200);
-    }
-
-    function switchSettingsTab(tabName) {
-      const tabs = ['profile', 'appearance', 'cursor', 'tags'];
-      tabs.forEach(t => {
-        const tabBtn = document.getElementById(`set-tab-${t}`);
-        const section = document.getElementById(`settings-section-${t}`);
-        if (t === tabName) {
-          if (tabBtn) tabBtn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium bg-sunrise-surface text-white flex items-center justify-between transition-all interactive-target';
-          if (section) section.classList.remove('hidden');
-        } else {
-          if (tabBtn) tabBtn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target';
-          if (section) section.classList.add('hidden');
-        }
-      });
-      lucide.createIcons();
-      setupCursorListeners();
-    }
-
-    function setPresetColor(hex) {
-      const input = document.getElementById('setting-name-color');
-      const val = document.getElementById('setting-name-color-val');
-      if (input) input.value = hex;
-      if (val) val.innerText = hex;
-      updateSettingsPreview();
-    }
-
-    function updateSettingsPreview() {
-      const displayName = (document.getElementById('setting-display-name')?.value || '').trim();
-      const pfpUrl = (document.getElementById('setting-pfp-url')?.value || '').trim();
-      const pfpBg = document.getElementById('setting-pfp-bg')?.value || '#1a1a1e';
-      const bannerUrl = (document.getElementById('setting-banner-url')?.value || '').trim();
-      const bannerBg = document.getElementById('setting-banner-color')?.value || '#222228';
-      const nameColor = document.getElementById('setting-name-color')?.value || '#ffffff';
-      const bio = document.getElementById('setting-bio')?.value || '';
-
-      const pfpBgVal = document.getElementById('setting-pfp-bg-val');
-      if (pfpBgVal) pfpBgVal.innerText = pfpBg;
-
-      const bannerVal = document.getElementById('setting-banner-val');
-      if (bannerVal) bannerVal.innerText = bannerBg;
-
-      const nameColorVal = document.getElementById('setting-name-color-val');
-      if (nameColorVal) nameColorVal.innerText = nameColor;
-
-      const charCount = document.getElementById('bio-char-count');
-      if (charCount) charCount.innerText = `${bio.length}/120`;
-
-      // Preview Avatar
-      const previewPfp = document.getElementById('preview-pfp');
-      if (previewPfp) {
-        if (pfpUrl) {
-          previewPfp.style.backgroundImage = `url('${pfpUrl}')`;
-          previewPfp.style.backgroundSize = 'cover';
-          previewPfp.style.backgroundPosition = 'center';
-          previewPfp.innerText = '';
-        } else {
-          previewPfp.style.backgroundImage = 'none';
-          previewPfp.style.backgroundColor = pfpBg;
-          previewPfp.innerText = displayName ? displayName.charAt(0).toUpperCase() : (state.currentUser ? state.currentUser.initial : 'Y');
-        }
-      }
-
-      // Preview Banner
-      const previewBanner = document.getElementById('preview-banner');
-      if (previewBanner) {
-        if (bannerUrl) {
-          previewBanner.style.backgroundImage = `url('${bannerUrl}')`;
-          previewBanner.style.backgroundSize = 'cover';
-          previewBanner.style.backgroundPosition = 'center';
-        } else {
-          previewBanner.style.backgroundImage = 'none';
-          previewBanner.style.backgroundColor = bannerBg;
-        }
-      }
-
-      // Preview Name & Bio
-      const previewName = document.getElementById('preview-name');
-      if (previewName) {
-        previewName.innerText = displayName || (state.currentUser && state.currentUser.name) || 'You';
-        previewName.style.color = nameColor;
-      }
-
-      const previewHandle = document.getElementById('preview-handle');
-      if (previewHandle) previewHandle.innerText = (state.currentUser && state.currentUser.handle) || '@you';
-
-      const previewBio = document.getElementById('preview-bio');
-      if (previewBio) previewBio.innerText = bio || 'No bio provided yet.';
-    }
-
-    function saveSettings(e) {
-      e.preventDefault();
-      if (!state.currentUser) return;
-      
-      const newDisplayName = (document.getElementById('setting-display-name')?.value || '').trim();
-      if (newDisplayName) {
-        state.currentUser.name = newDisplayName;
-        state.currentUser.initial = newDisplayName.charAt(0).toUpperCase();
-      }
-
-      state.currentUser.pfpUrl = (document.getElementById('setting-pfp-url')?.value || '').trim();
-      state.currentUser.pfpBg = document.getElementById('setting-pfp-bg')?.value || '#1a1a1e';
-      state.currentUser.bannerUrl = (document.getElementById('setting-banner-url')?.value || '').trim();
-      state.currentUser.bannerBg = document.getElementById('setting-banner-color')?.value || '#222228';
-      state.currentUser.nameColor = document.getElementById('setting-name-color')?.value || '#ffffff';
-      state.currentUser.bio = (document.getElementById('setting-bio')?.value || '').trim();
-
-      // Sync updated profile attributes to Supabase profiles table
-      if (supabaseClient && state.currentUser.id) {
-        supabaseClient.from('profiles').upsert({
-          id: state.currentUser.id,
-          display_name: state.currentUser.name,
-          avatar_url: state.currentUser.pfpUrl,
-          banner_url: state.currentUser.bannerUrl,
-          name_color: state.currentUser.nameColor,
-          bio: state.currentUser.bio
-        }).then(({ error }) => {
-          if (error) console.warn("Supabase profile save error:", error);
-        });
-      }
-
-      // Persist guest if running in demo guest session
-      if (!state.currentUser.id) {
-        localStorage.setItem('sunrise_guest_user', JSON.stringify(state.currentUser));
-      }
-
-      updateUserProfileUI();
-      renderMessages();
-      showToast('Profile settings saved!');
-    }
-
-    function showToast(message) {
-      const toast = document.getElementById('settings-toast');
-      const msgEl = document.getElementById('toast-message');
-      if (msgEl) msgEl.innerText = message;
-      if (toast) {
-        toast.classList.remove('translate-y-[-20px]', 'opacity-0');
-        toast.classList.add('translate-y-0', 'opacity-100');
-
-        setTimeout(() => {
-          toast.classList.remove('translate-y-0', 'opacity-100');
-          toast.classList.add('translate-y-[-20px]', 'opacity-0');
-        }, 2500);
-      }
-    }
-
-    // Keyboard ESC listener
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        const modal = document.getElementById('settings-modal');
-        if (modal && !modal.classList.contains('hidden')) {
-          closeSettingsModal();
-        }
-      }
-    });
-
-    // ==========================================
-    // CHANNEL & MESSAGING RENDER LOGIC
-    // ==========================================
-    function renderChannels() {
-      const infoContainer = document.getElementById('category-info');
-      const channelsContainer = document.getElementById('category-channels');
-
-      if (infoContainer) infoContainer.innerHTML = '';
-      if (channelsContainer) channelsContainer.innerHTML = '';
-
-      Object.keys(state.channels).forEach(key => {
-        const channel = state.channels[key];
-        const isActive = state.activeChannel === key;
-
-        const btn = document.createElement('a');
-        btn.href = '#';
-        btn.onclick = (e) => {
-          e.preventDefault();
-          switchChannel(key);
-        };
-
-        btn.className = `flex items-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium transition-all group interactive-target ${
-          isActive 
-            ? 'bg-sunrise-hover text-white font-semibold' 
-            : 'text-sunrise-muted hover:text-white hover:bg-sunrise-hover/50'
-        }`;
-
-        btn.innerHTML = `
-          <i data-lucide="hash" class="w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-sunrise-muted group-hover:text-white'}"></i>
-          <span class="truncate">${channel.title}</span>
+    function renderServers() {
+      const container = document.getElementById('server-list-container');
+      if (!container) return;
+      container.innerHTML = '';
+
+      state.servers.forEach(server => {
+        const isActive = state.activeMode === 'server' && state.activeServerId === server.id;
+        const btnWrapper = document.createElement('div');
+        btnWrapper.className = 'relative group interactive-target';
+
+        btnWrapper.innerHTML = `
+          <div class="absolute -left-2.5 top-1/2 -translate-y-1/2 w-1.5 ${isActive ? 'h-8 bg-white' : 'h-0 group-hover:h-5 bg-white/70'} rounded-r-full transition-all duration-200"></div>
+          <button onclick="switchServer('${server.id}')" class="w-11 h-11 rounded-3xl bg-sunrise-charcoal border border-sunrise-border flex items-center justify-center text-xs font-bold text-sunrise-muted group-hover:bg-sunrise-hover group-hover:text-white ${isActive ? '!rounded-xl !bg-white !text-sunrise-pure font-extrabold' : ''} transition-all duration-300" style="${isActive ? '' : `color: ${server.color}`}">
+            ${server.abbr}
+          </button>
+          <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
+            ${server.name}
+          </div>
         `;
+        container.appendChild(btnWrapper);
+      });
 
-        if (channel.category === 'info' && infoContainer) {
-          infoContainer.appendChild(btn);
-        } else if (channelsContainer) {
-          channelsContainer.appendChild(btn);
+      const dmIndicator = document.getElementById('dm-active-indicator');
+      const dmBtn = document.getElementById('btn-mode-dms');
+      if (state.activeMode === 'dms') {
+        if (dmIndicator) dmIndicator.classList.remove('opacity-0');
+        if (dmBtn) dmBtn.classList.add('!rounded-xl', '!bg-white', '!text-sunrise-pure');
+      } else {
+        if (dmIndicator) dmIndicator.classList.add('opacity-0');
+        if (dmBtn) dmBtn.classList.remove('!rounded-xl', '!bg-white', '!text-sunrise-pure');
+      }
+    }
+
+    function switchMode(mode) {
+      state.activeMode = mode;
+      renderServers();
+      if (mode === 'dms') {
+        if (state.dms.length > 0 && !state.activeDmId) {
+          state.activeDmId = state.dms[0].id;
         }
+        renderSidebarForDms();
+        renderDmChat();
+      } else {
+        switchServer(state.activeServerId);
+      }
+    }
+
+    function switchServer(serverId) {
+      state.activeMode = 'server';
+      state.activeServerId = serverId;
+      renderServers();
+
+      const server = state.servers.find(s => s.id === serverId);
+      if (!server) return;
+
+      const headerTitle = document.getElementById('sidebar-header-title');
+      const headerBadge = document.getElementById('sidebar-header-badge');
+      if (headerTitle) headerTitle.innerText = server.name;
+      if (headerBadge) headerBadge.style.backgroundColor = server.color || '#ffffff';
+
+      // Default to first channel
+      let firstChanId = 'general';
+      if (server.categories.length > 0 && server.categories[0].channels.length > 0) {
+        firstChanId = server.categories[0].channels[0].id;
+      }
+
+      renderSidebarForServer(server);
+      switchChannel(firstChanId);
+    }
+
+    function renderSidebarForServer(server) {
+      const container = document.getElementById('sidebar-nav-content');
+      if (!container) return;
+      container.innerHTML = '';
+
+      server.categories.forEach(cat => {
+        const catDiv = document.createElement('div');
+        catDiv.className = 'space-y-1';
+
+        let channelsHtml = '';
+        cat.channels.forEach(ch => {
+          const isActive = state.activeChannelId === ch.id && state.activeMode === 'server';
+          const iconName = ch.type === 'voice' ? 'volume-2' : 'hash';
+          channelsHtml += `
+            <button onclick="switchChannel('${ch.id}')" class="w-full flex items-center justify-between px-2 py-1.5 rounded-md text-xs font-medium transition-all group interactive-target ${isActive ? 'bg-sunrise-hover text-white font-semibold' : 'text-sunrise-muted hover:text-white hover:bg-sunrise-hover/50'}">
+              <div class="flex items-center gap-2 truncate">
+                <i data-lucide="${iconName}" class="w-3.5 h-3.5 ${isActive ? 'text-white' : 'text-sunrise-muted group-hover:text-white'}"></i>
+                <span class="truncate">${ch.name}</span>
+              </div>
+            </button>
+          `;
+        });
+
+        catDiv.innerHTML = `
+          <div class="flex items-center justify-between text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1 uppercase">
+            <span>${cat.name}</span>
+            <button onclick="openCreateChannelModal()" class="hover:text-white"><i data-lucide="plus" class="w-3 h-3"></i></button>
+          </div>
+          <nav class="space-y-0.5">${channelsHtml}</nav>
+        `;
+        container.appendChild(catDiv);
       });
 
       lucide.createIcons();
       setupCursorListeners();
     }
 
-    function saveLocalMessageCache() {
-      try {
-        const cache = {};
-        Object.keys(state.channels).forEach(k => {
-          cache[k] = state.channels[k].messages || [];
+    function renderSidebarForDms() {
+      const container = document.getElementById('sidebar-nav-content');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const headerTitle = document.getElementById('sidebar-header-title');
+      const headerBadge = document.getElementById('sidebar-header-badge');
+      if (headerTitle) headerTitle.innerText = 'Direct Messages';
+      if (headerBadge) headerBadge.style.backgroundColor = '#10b981';
+
+      let dmsHtml = '';
+      state.dms.forEach(dm => {
+        const isActive = state.activeDmId === dm.id && state.activeMode === 'dms';
+        dmsHtml += `
+          <button onclick="switchDm('${dm.id}')" class="w-full flex items-center gap-2.5 px-2 py-2 rounded-lg text-xs font-medium transition-all group interactive-target ${isActive ? 'bg-sunrise-hover text-white font-semibold' : 'text-sunrise-muted hover:text-white hover:bg-sunrise-hover/50'}">
+            <div class="relative shrink-0">
+              <div class="w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs text-white" style="background-color: ${dm.user.pfpBg || '#1a1a1e'}">
+                ${dm.user.initial}
+              </div>
+              <div class="absolute bottom-0 right-0 w-2 h-2 rounded-full ring-2 ring-sunrise-pure ${dm.user.status === 'online' ? 'bg-emerald-500' : 'bg-amber-500'}"></div>
+            </div>
+            <div class="truncate text-left flex-1 min-w-0">
+              <div class="truncate font-semibold text-white leading-tight">${dm.user.name}</div>
+              <div class="truncate text-[10px] text-sunrise-muted leading-tight">${dm.user.handle}</div>
+            </div>
+          </button>
+        `;
+      });
+
+      container.innerHTML = `
+        <div class="text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1 uppercase">Direct Messages</div>
+        <div class="space-y-1">${dmsHtml}</div>
+      `;
+
+      lucide.createIcons();
+      setupCursorListeners();
+    }
+
+    function switchChannel(channelId) {
+      state.activeMode = 'server';
+      state.activeChannelId = channelId;
+
+      // Find channel metadata
+      let currentChannel = null;
+      const currentServer = state.servers.find(s => s.id === state.activeServerId);
+      if (currentServer) {
+        currentServer.categories.forEach(cat => {
+          const found = cat.channels.find(c => c.id === channelId);
+          if (found) currentChannel = found;
         });
-        localStorage.setItem('sunrise_messages_cache', JSON.stringify(cache));
-      } catch (e) {
-        console.warn("Failed to save local message cache:", e);
       }
-    }
 
-    function loadGuestMessages() {
-      loadLocalMessageCache();
-    }
+      if (!currentChannel) return;
 
-    function subscribeRealtimeMessages() {
-      if (!supabaseClient) return;
-      try {
-        supabaseClient
-          .channel('public:messages')
-          .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
-            if (payload.new && payload.new.channel_id) {
-              const chKey = Object.keys(state.channels).find(k => state.channels[k].id === payload.new.channel_id);
-              if (chKey) {
-                await fetchChannelMessages(chKey);
-              }
-            }
-          })
-          .subscribe();
-      } catch (e) {
-        console.warn("Realtime subscription error:", e);
+      // Check if Voice Channel
+      if (currentChannel.type === 'voice') {
+        connectVoice(currentChannel);
+      } else {
+        const voiceStage = document.getElementById('voice-stage-container');
+        const chatMessages = document.getElementById('chat-messages');
+        const inputBar = document.getElementById('chat-input-bar');
+        if (voiceStage) voiceStage.classList.add('hidden');
+        if (chatMessages) chatMessages.classList.remove('hidden');
+        if (inputBar) inputBar.classList.remove('hidden');
       }
-    }
 
-    async function switchChannel(channelKey) {
-      if (!state.channels[channelKey]) return;
-      state.activeChannel = channelKey;
-
-      const current = state.channels[channelKey];
+      // Update Channel Title Bar
       const titleEl = document.getElementById('current-channel-title');
       const descEl = document.getElementById('current-channel-desc');
+      const iconEl = document.getElementById('header-channel-icon');
       const inputEl = document.getElementById('message-input');
 
-      if (titleEl) titleEl.innerText = current.title;
-      if (descEl) descEl.innerText = current.desc;
-      if (inputEl) inputEl.placeholder = `Message #${current.title}`;
+      if (titleEl) titleEl.innerText = currentChannel.name;
+      if (descEl) descEl.innerText = currentChannel.desc || '';
+      if (iconEl) iconEl.innerHTML = `<i data-lucide="${currentChannel.type === 'voice' ? 'volume-2' : 'hash'}" class="w-4 h-4"></i>`;
+      if (inputEl) inputEl.placeholder = `Message #${currentChannel.name}`;
 
-      renderChannels();
-      renderMessages(); // Instantly isolate channel view
-
-      await fetchChannelMessages(channelKey);
-
-      // Mobile Menu Close
-      const sidebar = document.getElementById('channel-sidebar');
-      if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
-        sidebar.classList.add('-translate-x-full');
-      }
+      if (currentServer) renderSidebarForServer(currentServer);
+      renderMessages();
+      renderMemberList();
     }
 
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+    function switchDm(dmId) {
+      state.activeMode = 'dms';
+      state.activeDmId = dmId;
+      renderSidebarForDms();
+      renderDmChat();
+      renderMemberList();
     }
 
+    // ==========================================
+    // VOICE ROOM LIVE STAGE LOGIC
+    // ==========================================
+    function connectVoice(channel) {
+      state.voiceState.connected = true;
+      state.voiceState.channelId = channel.id;
+      state.voiceState.channelName = channel.name;
+
+      SoundFx.playJoin();
+      showToast(`Connected to Voice Stage: ${channel.name}`);
+
+      const activeBar = document.getElementById('active-voice-bar');
+      const barName = document.getElementById('voice-bar-channel-name');
+      if (activeBar) activeBar.classList.remove('hidden');
+      if (barName) barName.innerText = channel.name;
+
+      // Display Voice Stage view on main canvas
+      const voiceStage = document.getElementById('voice-stage-container');
+      const chatMessages = document.getElementById('chat-messages');
+      const inputBar = document.getElementById('chat-input-bar');
+
+      if (voiceStage) voiceStage.classList.remove('hidden');
+      if (chatMessages) chatMessages.classList.add('hidden');
+      if (inputBar) inputBar.classList.add('hidden');
+
+      renderVoiceStage();
+    }
+
+    function disconnectVoice() {
+      SoundFx.playLeave();
+      state.voiceState.connected = false;
+      state.voiceState.channelId = null;
+
+      const activeBar = document.getElementById('active-voice-bar');
+      if (activeBar) activeBar.classList.add('hidden');
+
+      // Revert view to general channel
+      switchChannel('general');
+      showToast('Disconnected from Voice Stage');
+    }
+
+    function toggleMuteVoice() {
+      state.voiceState.muted = !state.voiceState.muted;
+      const btn = document.getElementById('btn-voice-mute');
+      if (btn) btn.classList.toggle('text-rose-400', state.voiceState.muted);
+      showToast(state.voiceState.muted ? 'Microphone Muted' : 'Microphone Unmuted');
+      renderVoiceStage();
+    }
+
+    function toggleDeafenVoice() {
+      state.voiceState.deafened = !state.voiceState.deafened;
+      const btn = document.getElementById('btn-voice-deafen');
+      if (btn) btn.classList.toggle('text-rose-400', state.voiceState.deafened);
+      showToast(state.voiceState.deafened ? 'Deafened Sound' : 'Undeafened');
+      renderVoiceStage();
+    }
+
+    function toggleScreenShare() {
+      state.voiceState.screenSharing = !state.voiceState.screenSharing;
+      const btn = document.getElementById('btn-voice-screenshare');
+      if (btn) btn.classList.toggle('text-emerald-400', state.voiceState.screenSharing);
+      showToast(state.voiceState.screenSharing ? 'Screen Share Active' : 'Stopped Screen Share');
+      renderVoiceStage();
+    }
+
+    function renderVoiceStage() {
+      const grid = document.getElementById('voice-stage-grid');
+      if (!grid) return;
+
+      const user = state.currentUser;
+      grid.innerHTML = `
+        <div class="bg-sunrise-surface border border-sunrise-border rounded-2xl p-6 flex flex-col items-center justify-center space-y-3 relative group">
+          <div class="relative">
+            <div class="w-20 h-20 rounded-full bg-sunrise-charcoal border-2 ${state.voiceState.muted ? 'border-rose-500' : 'border-emerald-400 animate-voice-pulse'} flex items-center justify-center font-bold text-2xl text-white shadow-xl">
+              ${user.initial}
+            </div>
+            ${state.voiceState.muted ? '<div class="absolute bottom-0 right-0 bg-rose-500 p-1.5 rounded-full text-white"><i data-lucide="mic-off" class="w-3.5 h-3.5"></i></div>' : ''}
+          </div>
+          <div class="text-center">
+            <div class="font-bold text-sm text-white">${user.name}</div>
+            <div class="text-[10px] text-emerald-400 font-mono">${state.voiceState.muted ? 'MUTED' : 'SPEAKING...'}</div>
+          </div>
+        </div>
+
+        <div class="bg-sunrise-surface border border-sunrise-border rounded-2xl p-6 flex flex-col items-center justify-center space-y-3 relative opacity-80">
+          <div class="w-20 h-20 rounded-full bg-indigo-900 border-2 border-emerald-400/50 flex items-center justify-center font-bold text-2xl text-white shadow-xl">
+            AI
+          </div>
+          <div class="text-center">
+            <div class="font-bold text-sm text-white">Sunrise AI Stage Bot</div>
+            <div class="text-[10px] text-sunrise-muted font-mono">LISTENING</div>
+          </div>
+        </div>
+      `;
+
+      lucide.createIcons();
+    }
+
+    // ==========================================
+    // CHAT & MESSAGING ENGINE
+    // ==========================================
     function renderMessages() {
       const container = document.getElementById('chat-messages');
       if (!container) return;
       container.innerHTML = '';
 
-      const channel = state.channels[state.activeChannel];
-      if (!channel) return;
+      if (state.activeMode === 'dms') {
+        renderDmChat();
+        return;
+      }
 
-      // Render channel welcome header
-      const welcomeHeader = document.createElement('div');
-      welcomeHeader.className = 'py-6 mb-4 border-b border-sunrise-border/50';
-      welcomeHeader.innerHTML = `
+      const chanId = state.activeChannelId;
+      let msgs = state.channelMessages[chanId] || [];
+
+      // Filter query support
+      if (state.searchQuery) {
+        msgs = msgs.filter(m => m.text.toLowerCase().includes(state.searchQuery.toLowerCase()));
+      }
+
+      // Channel Welcome Banner
+      const welcome = document.createElement('div');
+      welcome.className = 'py-6 mb-4 border-b border-sunrise-border/50';
+      welcome.innerHTML = `
         <div class="w-12 h-12 rounded-2xl bg-sunrise-surface border border-sunrise-border flex items-center justify-center text-white mb-3 shadow-lg">
           <i data-lucide="hash" class="w-6 h-6"></i>
         </div>
-        <h3 class="text-lg font-bold text-white">Welcome to #${channel.title}!</h3>
-        <p class="text-xs text-sunrise-muted mt-1">${channel.desc || 'This is the start of the #' + channel.title + ' channel.'}</p>
+        <h3 class="text-lg font-bold text-white">Welcome to #${state.activeChannelId}!</h3>
+        <p class="text-xs text-sunrise-muted mt-1">This is the start of the #${state.activeChannelId} channel.</p>
       `;
-      container.appendChild(welcomeHeader);
+      container.appendChild(welcome);
 
-      if (!channel.messages || channel.messages.length === 0) {
-        const emptyNotice = document.createElement('p');
-        emptyNotice.className = 'text-xs text-sunrise-muted/60 italic py-2';
-        emptyNotice.innerText = 'No messages in this channel yet. Be the first to say hello!';
-        container.appendChild(emptyNotice);
+      if (msgs.length === 0) {
+        const empty = document.createElement('p');
+        empty.className = 'text-xs text-sunrise-muted italic py-2';
+        empty.innerText = 'No messages found.';
+        container.appendChild(empty);
       } else {
-        channel.messages.forEach((msg) => {
-          const msgEl = document.createElement('div');
-          msgEl.className = 'flex items-start gap-3 group hover:bg-sunrise-hover/30 p-2 rounded-lg transition-colors relative';
-          
-          const pfpBg = msg.avatarUrl ? '' : `style="background-color: ${msg.pfpBg || '#1a1a1e'};"`;
-          const pfpContent = msg.avatarUrl 
-            ? `<div class="w-8 h-8 rounded-full bg-cover bg-center shrink-0 border border-white/20" style="background-image: url('${msg.avatarUrl}')"></div>`
-            : `<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-white/20 font-bold text-xs text-white" ${pfpBg}>${msg.initial || (msg.author ? msg.author.charAt(0).toUpperCase() : 'U')}</div>`;
-
-          const authorColor = msg.nameColor || '#ffffff';
-          const mediaHtml = msg.imageUrl ? `<img src="${msg.imageUrl}" class="mt-2 max-w-xs max-h-60 rounded-xl border border-sunrise-border object-cover">` : '';
-
-          msgEl.innerHTML = `
-            ${pfpContent}
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-0.5">
-                <span class="text-xs font-semibold" style="color: ${authorColor}">${msg.author || 'User'}</span>
-                <span class="text-[10px] text-sunrise-muted">${msg.time || 'Just now'}</span>
-              </div>
-              ${msg.text ? `<p class="text-xs text-white/90 leading-relaxed break-words font-normal">${escapeHtml(msg.text || msg.content || '')}</p>` : ''}
-              ${mediaHtml}
-            </div>
-          `;
+        msgs.forEach(msg => {
+          const msgEl = createMessageElement(msg, chanId);
           container.appendChild(msgEl);
         });
       }
+
+      container.scrollTop = container.scrollHeight;
+      updatePinnedBadgeCount();
+      lucide.createIcons();
+      setupCursorListeners();
+    }
+
+    function renderDmChat() {
+      const container = document.getElementById('chat-messages');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const dm = state.dms.find(d => d.id === state.activeDmId);
+      if (!dm) return;
+
+      const header = document.createElement('div');
+      header.className = 'py-6 mb-4 border-b border-sunrise-border/50 text-center';
+      header.innerHTML = `
+        <div class="w-16 h-16 rounded-full mx-auto flex items-center justify-center font-bold text-xl text-white mb-3 shadow-xl" style="background-color: ${dm.user.pfpBg || '#1a1a1e'}">
+          ${dm.user.initial}
+        </div>
+        <h3 class="text-base font-bold text-white">${dm.user.name}</h3>
+        <p class="text-xs text-sunrise-muted mt-1">${dm.user.bio || 'Direct message history'}</p>
+      `;
+      container.appendChild(header);
+
+      dm.messages.forEach(msg => {
+        const msgEl = createMessageElement(msg, null);
+        container.appendChild(msgEl);
+      });
 
       container.scrollTop = container.scrollHeight;
       lucide.createIcons();
       setupCursorListeners();
     }
 
-    async function handleSendMessage(e) {
+    function createMessageElement(msg, chanId) {
+      const msgEl = document.createElement('div');
+      msgEl.className = `flex items-start gap-3 group hover:bg-sunrise-hover/30 p-2 rounded-lg transition-colors relative ${msg.pinned ? 'bg-amber-500/5 border-l-2 border-amber-400' : ''}`;
+
+      // Reply Quote Block
+      let replyHtml = '';
+      if (msg.replyTo) {
+        replyHtml = `
+          <div class="flex items-center gap-1.5 text-[10px] text-sunrise-muted mb-1 italic">
+            <i data-lucide="corner-up-left" class="w-3 h-3"></i>
+            <span class="font-semibold text-white">${escapeHtml(msg.replyTo.author)}</span>: ${escapeHtml(msg.replyTo.text)}
+          </div>
+        `;
+      }
+
+      // Reactions Badges
+      let reactionsHtml = '';
+      if (msg.reactions && Object.keys(msg.reactions).length > 0) {
+        reactionsHtml = '<div class="flex flex-wrap gap-1 mt-2">';
+        Object.keys(msg.reactions).forEach(emoji => {
+          const count = msg.reactions[emoji].length;
+          reactionsHtml += `
+            <button onclick="toggleReaction('${msg.id}', '${emoji}')" class="px-2 py-0.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-full text-[10px] text-white font-medium flex items-center gap-1 interactive-target">
+              <span>${emoji}</span>
+              <span class="font-mono text-sunrise-muted">${count}</span>
+            </button>
+          `;
+        });
+        reactionsHtml += '</div>';
+      }
+
+      // Media Attachment HTML
+      const mediaHtml = msg.imageUrl ? `<img src="${msg.imageUrl}" class="mt-2 max-w-xs max-h-60 rounded-xl border border-sunrise-border object-cover">` : '';
+
+      msgEl.innerHTML = `
+        <div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 font-bold text-xs text-white border border-white/20 cursor-pointer interactive-target" style="background-color: ${msg.pfpBg || '#1a1a1e'}" onclick="openUserProfileByName('${escapeHtml(msg.author)}')">
+          ${msg.initial || msg.author.charAt(0)}
+        </div>
+        <div class="flex-1 min-w-0">
+          ${replyHtml}
+          <div class="flex items-center gap-2 mb-0.5">
+            <span class="text-xs font-semibold cursor-pointer hover:underline" style="color: ${msg.nameColor || '#ffffff'}" onclick="openUserProfileByName('${escapeHtml(msg.author)}')">${escapeHtml(msg.author)}</span>
+            ${msg.isBot ? '<span class="text-[9px] font-bold px-1 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded">BOT</span>' : ''}
+            <span class="text-[10px] text-sunrise-muted">${msg.time}</span>
+          </div>
+          <p class="text-xs text-white/90 leading-relaxed break-words">${escapeHtml(msg.text)}</p>
+          ${mediaHtml}
+          ${reactionsHtml}
+        </div>
+
+        <!-- Hover Action Toolbar -->
+        <div class="absolute right-2 -top-3 hidden group-hover:flex items-center gap-1 bg-sunrise-charcoal border border-sunrise-border rounded-lg p-1 shadow-lg z-10">
+          <button onclick="addQuickReaction('${msg.id}', '👍')" class="p-1 hover:bg-sunrise-hover rounded text-xs">👍</button>
+          <button onclick="addQuickReaction('${msg.id}', '❤️')" class="p-1 hover:bg-sunrise-hover rounded text-xs">❤️</button>
+          <button onclick="addQuickReaction('${msg.id}', '🔥')" class="p-1 hover:bg-sunrise-hover rounded text-xs">🔥</button>
+          <button onclick="startReply('${msg.id}')" class="p-1 hover:bg-sunrise-hover rounded text-sunrise-muted hover:text-white" title="Reply"><i data-lucide="reply" class="w-3.5 h-3.5"></i></button>
+          <button onclick="togglePinMessage('${msg.id}')" class="p-1 hover:bg-sunrise-hover rounded text-sunrise-muted hover:text-amber-400" title="Pin Message"><i data-lucide="pin" class="w-3.5 h-3.5"></i></button>
+        </div>
+      `;
+
+      return msgEl;
+    }
+
+    function handleSendMessage(e) {
       e.preventDefault();
       const input = document.getElementById('message-input');
       if (!input) return;
@@ -1928,87 +1678,699 @@
 
       if (!text && !state.pendingAttachment) return;
 
-      const channelKey = state.activeChannel;
-      const channel = state.channels[channelKey];
       input.value = '';
-
       const attachment = state.pendingAttachment;
       removeAttachment();
 
       const now = new Date();
       const timeStr = `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
-      // 1. Instantly render and store local message so chat never disappears
-      const localMsg = {
+      const newMsg = {
         id: 'msg-' + Date.now(),
-        author: state.currentUser ? state.currentUser.name : 'You',
-        initial: state.currentUser ? state.currentUser.initial : 'Y',
+        author: state.currentUser.name,
+        initial: state.currentUser.initial,
         time: timeStr,
         text: text,
-        imageUrl: attachment || null,
-        nameColor: state.currentUser ? state.currentUser.nameColor : '#ffffff',
-        avatarUrl: state.currentUser ? state.currentUser.pfpUrl : ''
+        imageUrl: attachment,
+        nameColor: state.currentUser.nameColor,
+        replyTo: state.replyingToMsg,
+        reactions: {}
       };
 
-      if (!channel.messages) channel.messages = [];
-      channel.messages.push(localMsg);
-      saveLocalMessageCache();
+      SoundFx.playSend();
+      cancelReply();
+
+      if (state.activeMode === 'dms') {
+        const dm = state.dms.find(d => d.id === state.activeDmId);
+        if (dm) {
+          dm.messages.push(newMsg);
+          renderDmChat();
+          // Trigger AI Bot Response if messaging AI Bot
+          if (dm.user.id === 'bot-ai') {
+            triggerAiBotResponse(text);
+          }
+        }
+      } else {
+        const chanId = state.activeChannelId;
+        if (!state.channelMessages[chanId]) state.channelMessages[chanId] = [];
+        state.channelMessages[chanId].push(newMsg);
+        renderMessages();
+
+        // Check if @Sunrise Bot mentioned
+        if (text.toLowerCase().includes('@sunrise')) {
+          triggerAiBotResponse(text, chanId);
+        }
+      }
+    }
+
+    function triggerAiBotResponse(userPrompt, chanId = null) {
+      setTimeout(() => {
+        SoundFx.playReceive();
+        const responses = [
+          "Sunrise AI is operational! Audio Stage and Multi-Server routing are synced.",
+          "Got it! Let me know if you need to open the Quick Switcher (`Ctrl + K`) or tweak Theme variables.",
+          "I am monitoring all active voice stages and message streams. How else can I assist your team?"
+        ];
+        const aiText = responses[Math.floor(Math.random() * responses.length)];
+        const now = new Date();
+
+        const botMsg = {
+          id: 'bot-' + Date.now(),
+          author: 'Sunrise AI Bot',
+          initial: 'AI',
+          time: `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`,
+          text: aiText,
+          nameColor: '#34d399',
+          isBot: true,
+          pfpBg: '#10b981'
+        };
+
+        if (chanId) {
+          if (!state.channelMessages[chanId]) state.channelMessages[chanId] = [];
+          state.channelMessages[chanId].push(botMsg);
+          renderMessages();
+        } else {
+          const dm = state.dms.find(d => d.id === 'dm-bot');
+          if (dm) {
+            dm.messages.push(botMsg);
+            renderDmChat();
+          }
+        }
+      }, 1000);
+    }
+
+    // Reactions & Pins
+    function addQuickReaction(msgId, emoji) {
+      toggleReaction(msgId, emoji);
+    }
+
+    function toggleReaction(msgId, emoji) {
+      const msgs = state.channelMessages[state.activeChannelId] || [];
+      const msg = msgs.find(m => m.id === msgId);
+      if (!msg) return;
+
+      if (!msg.reactions) msg.reactions = {};
+      if (!msg.reactions[emoji]) msg.reactions[emoji] = [];
+
+      const user = state.currentUser.name;
+      const idx = msg.reactions[emoji].indexOf(user);
+      if (idx > -1) {
+        msg.reactions[emoji].splice(idx, 1);
+        if (msg.reactions[emoji].length === 0) delete msg.reactions[emoji];
+      } else {
+        msg.reactions[emoji].push(user);
+      }
       renderMessages();
+    }
 
-      // 2. Asynchronously insert to Supabase if session exists
-      let userId = state.currentUser ? state.currentUser.id : null;
-      if (!userId && supabaseClient) {
-        try {
-          const { data: { session } } = await supabaseClient.auth.getSession();
-          if (session && session.user) userId = session.user.id;
-        } catch (err) {
-          console.warn("Session check error:", err);
-        }
+    function togglePinMessage(msgId) {
+      const msgs = state.channelMessages[state.activeChannelId] || [];
+      const msg = msgs.find(m => m.id === msgId);
+      if (!msg) return;
+      msg.pinned = !msg.pinned;
+      showToast(msg.pinned ? 'Message Pinned' : 'Message Unpinned');
+      renderMessages();
+    }
+
+    function startReply(msgId) {
+      const msgs = state.channelMessages[state.activeChannelId] || [];
+      const msg = msgs.find(m => m.id === msgId);
+      if (!msg) return;
+
+      state.replyingToMsg = msg;
+      const bar = document.getElementById('reply-preview-bar');
+      const author = document.getElementById('reply-target-author');
+      const text = document.getElementById('reply-target-text');
+
+      if (bar) bar.classList.remove('hidden');
+      if (author) author.innerText = msg.author;
+      if (text) text.innerText = msg.text;
+    }
+
+    function cancelReply() {
+      state.replyingToMsg = null;
+      const bar = document.getElementById('reply-preview-bar');
+      if (bar) bar.classList.add('hidden');
+    }
+
+    function filterMessages(val) {
+      state.searchQuery = val.trim();
+      renderMessages();
+    }
+
+    // ==========================================
+    // PINNED MESSAGES DRAWER
+    // ==========================================
+    function openPinnedDrawer() {
+      const modal = document.getElementById('pinned-drawer-modal');
+      const list = document.getElementById('pinned-messages-list');
+      if (!modal || !list) return;
+
+      modal.classList.remove('hidden');
+      list.innerHTML = '';
+
+      const msgs = (state.channelMessages[state.activeChannelId] || []).filter(m => m.pinned);
+      if (msgs.length === 0) {
+        list.innerHTML = '<p class="text-xs text-sunrise-muted italic p-2">No pinned messages in this channel.</p>';
+      } else {
+        msgs.forEach(msg => {
+          const card = document.createElement('div');
+          card.className = 'p-3 bg-sunrise-surface border border-sunrise-border rounded-xl space-y-1';
+          card.innerHTML = `
+            <div class="flex items-center justify-between text-xs font-semibold text-white">
+              <span>${escapeHtml(msg.author)}</span>
+              <button onclick="togglePinMessage('${msg.id}'); openPinnedDrawer();" class="text-sunrise-muted hover:text-rose-400"><i data-lucide="pin-off" class="w-3.5 h-3.5"></i></button>
+            </div>
+            <p class="text-xs text-white/80">${escapeHtml(msg.text)}</p>
+          `;
+          list.appendChild(card);
+        });
       }
+      lucide.createIcons();
+    }
 
-      if (supabaseClient && userId) {
-        try {
-          await fetchUserProfile(userId, state.currentUser ? state.currentUser.email : '');
+    function closePinnedDrawer() {
+      const modal = document.getElementById('pinned-drawer-modal');
+      if (modal) modal.classList.add('hidden');
+    }
 
-          if (!channel.id) {
-            let { data: chData } = await supabaseClient
-              .from('channels')
-              .select('id')
-              .ilike('name', channel.title)
-              .maybeSingle();
-
-            if (chData) {
-              channel.id = chData.id;
-            } else {
-              const { data: newCh } = await supabaseClient
-                .from('channels')
-                .insert({ name: channel.title.toLowerCase(), category: 'CHANNELS' })
-                .select('id')
-                .single();
-              if (newCh) channel.id = newCh.id;
-            }
-          }
-
-          if (channel.id) {
-            const messageContent = attachment ? (text ? `${text}\n${attachment}` : attachment) : text;
-            const { error } = await supabaseClient
-              .from('messages')
-              .insert({
-                channel_id: channel.id,
-                user_id: userId,
-                content: messageContent
-              });
-
-            if (error) {
-              console.error("Supabase insert message error:", error);
-            } else {
-              await fetchChannelMessages(channelKey);
-            }
-          }
-        } catch (err) {
-          console.warn("Supabase message send error:", err);
-        }
+    function updatePinnedBadgeCount() {
+      const badge = document.getElementById('pinned-count-badge');
+      if (!badge) return;
+      const msgs = (state.channelMessages[state.activeChannelId] || []).filter(m => m.pinned);
+      if (msgs.length > 0) {
+        badge.innerText = msgs.length;
+        badge.classList.remove('hidden');
+      } else {
+        badge.classList.add('hidden');
       }
+    }
+
+    // ==========================================
+    // QUICK SWITCHER (CTRL + K)
+    // ==========================================
+    function openQuickSwitcher() {
+      const modal = document.getElementById('quick-switcher-modal');
+      const input = document.getElementById('quick-switcher-input');
+      if (!modal) return;
+      modal.classList.remove('hidden');
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      renderQuickSwitcherResults('');
+    }
+
+    function closeQuickSwitcher() {
+      const modal = document.getElementById('quick-switcher-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function renderQuickSwitcherResults(query) {
+      const container = document.getElementById('quick-switcher-results');
+      if (!container) return;
+      container.innerHTML = '';
+
+      const q = query.toLowerCase().trim();
+
+      // Collect servers & channels
+      state.servers.forEach(srv => {
+        srv.categories.forEach(cat => {
+          cat.channels.forEach(ch => {
+            if (!q || ch.name.toLowerCase().includes(q) || srv.name.toLowerCase().includes(q)) {
+              const item = document.createElement('button');
+              item.className = 'w-full p-2 hover:bg-sunrise-surface rounded-lg text-left flex items-center justify-between text-xs interactive-target';
+              item.onclick = () => {
+                switchServer(srv.id);
+                switchChannel(ch.id);
+                closeQuickSwitcher();
+              };
+              item.innerHTML = `
+                <div class="flex items-center gap-2">
+                  <i data-lucide="${ch.type === 'voice' ? 'volume-2' : 'hash'}" class="w-3.5 h-3.5 text-sunrise-muted"></i>
+                  <span class="font-bold text-white">${ch.name}</span>
+                </div>
+                <span class="text-[10px] text-sunrise-muted font-mono">${srv.name}</span>
+              `;
+              container.appendChild(item);
+            }
+          });
+        });
+      });
+
+      lucide.createIcons();
+    }
+
+    // Global Shortcut Ctrl/Cmd + K
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        openQuickSwitcher();
+      } else if (e.key === 'Escape') {
+        closeQuickSwitcher();
+        closePinnedDrawer();
+        closeUserProfile();
+      }
+    });
+
+    // ==========================================
+    // DISCORD-STYLE USER PROFILE POPOVER
+    // ==========================================
+    function openUserProfileByName(name) {
+      let targetUser = {
+        name: name,
+        handle: `@${name.toLowerCase().replace(/\s+/g, '')}`,
+        initial: name.charAt(0).toUpperCase(),
+        pfpBg: '#1a1a1e',
+        status: 'online',
+        roles: ['MEMBER'],
+        bio: 'Sunrise Workspace Community Member.'
+      };
+      if (name === state.currentUser.name) targetUser = state.currentUser;
+
+      openUserProfile(targetUser);
+    }
+
+    function openCurrentUserProfile() {
+      openUserProfile(state.currentUser);
+    }
+
+    function openUserProfile(user) {
+      const modal = document.getElementById('user-profile-modal');
+      const content = document.getElementById('user-profile-card-content');
+      if (!modal || !content) return;
+
+      let rolesBadgeHtml = '';
+      (user.roles || ['MEMBER']).forEach(r => {
+        rolesBadgeHtml += `<span class="text-[9px] font-bold px-2 py-0.5 bg-white/10 border border-white/20 text-white rounded">${r}</span>`;
+      });
+
+      content.innerHTML = `
+        <div class="h-24 w-full bg-cover bg-center" style="background-color: ${user.bannerBg || '#222228'}; ${user.bannerUrl ? `background-image: url('${user.bannerUrl}')` : ''}"></div>
+        <div class="px-5 pb-5 pt-0 relative">
+          <div class="relative -mt-10 mb-3 inline-block">
+            <div class="w-16 h-16 rounded-full border-4 border-sunrise-charcoal bg-cover bg-center flex items-center justify-center font-bold text-xl text-white shadow-xl" style="background-color: ${user.pfpBg || '#1a1a1e'}; ${user.pfpUrl ? `background-image: url('${user.pfpUrl}')` : ''}">
+              ${user.pfpUrl ? '' : user.initial}
+            </div>
+            <div class="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 rounded-full ring-2 ring-sunrise-charcoal"></div>
+          </div>
+
+          <div class="space-y-1">
+            <h4 class="font-bold text-base text-white">${escapeHtml(user.name)}</h4>
+            <p class="text-xs text-sunrise-muted">${escapeHtml(user.handle)}</p>
+          </div>
+
+          <div class="flex flex-wrap gap-1.5 my-3">${rolesBadgeHtml}</div>
+
+          <div class="w-full h-[1px] bg-sunrise-border my-3"></div>
+
+          <div>
+            <h5 class="text-[10px] font-bold uppercase text-sunrise-muted tracking-wider mb-1">About Me</h5>
+            <p class="text-xs text-white/90 leading-relaxed font-normal">${escapeHtml(user.bio || 'No bio provided.')}</p>
+          </div>
+
+          <div class="mt-4 pt-3 border-t border-sunrise-border flex justify-end">
+            <button onclick="closeUserProfile(); switchMode('dms');" class="px-4 py-2 bg-white text-sunrise-pure text-xs font-bold rounded-lg hover:bg-neutral-200 flex items-center gap-1.5">
+              <i data-lucide="message-square" class="w-3.5 h-3.5"></i>
+              <span>Send Direct Message</span>
+            </button>
+          </div>
+        </div>
+      `;
+
+      modal.classList.remove('hidden');
+      lucide.createIcons();
+    }
+
+    function closeUserProfile() {
+      const modal = document.getElementById('user-profile-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    // ==========================================
+    // MEMBER LIST SIDEBAR RENDER
+    // ==========================================
+    function renderMemberList() {
+      const container = document.getElementById('member-sidebar-content');
+      if (!container) return;
+
+      container.innerHTML = `
+        <div>
+          <h3 class="text-[10px] font-bold text-sunrise-muted uppercase tracking-widest mb-2 px-1">
+            Online — 3
+          </h3>
+          <div class="space-y-1">
+            <div onclick="openCurrentUserProfile()" class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sunrise-hover/60 cursor-pointer transition-colors group interactive-target">
+              <div class="relative shrink-0">
+                <div class="w-7 h-7 rounded-full bg-sunrise-surface border border-white/20 flex items-center justify-center font-bold text-xs text-white">
+                  ${state.currentUser.initial}
+                </div>
+                <div class="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-sunrise-charcoal"></div>
+              </div>
+              <div class="truncate min-w-0 flex-1">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-semibold text-white/90 truncate">${escapeHtml(state.currentUser.name)}</span>
+                  <span class="text-[9px] font-bold px-1 bg-white/10 text-white rounded">YOU</span>
+                </div>
+              </div>
+            </div>
+
+            <div onclick="openUserProfileByName('Sarah Chen')" class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sunrise-hover/60 cursor-pointer transition-colors group interactive-target">
+              <div class="relative shrink-0">
+                <div class="w-7 h-7 rounded-full bg-rose-500 flex items-center justify-center font-bold text-xs text-white">S</div>
+                <div class="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-sunrise-charcoal"></div>
+              </div>
+              <div class="truncate min-w-0 flex-1">
+                <span class="text-xs font-semibold text-white/90 truncate">Sarah Chen</span>
+              </div>
+            </div>
+
+            <div onclick="openUserProfileByName('Sunrise AI Bot')" class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sunrise-hover/60 cursor-pointer transition-colors group interactive-target">
+              <div class="relative shrink-0">
+                <div class="w-7 h-7 rounded-full bg-emerald-500 flex items-center justify-center font-bold text-xs text-white">AI</div>
+                <div class="absolute bottom-0 right-0 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-sunrise-charcoal"></div>
+              </div>
+              <div class="truncate min-w-0 flex-1">
+                <span class="text-xs font-semibold text-emerald-400 truncate">Sunrise AI Bot</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ==========================================
+    // CREATE SERVER & CHANNEL MODALS
+    // ==========================================
+    function openCreateServerModal() {
+      const modal = document.getElementById('create-server-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeCreateServerModal() {
+      const modal = document.getElementById('create-server-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function handleCreateServerSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('new-server-name').value.trim();
+      const abbr = document.getElementById('new-server-abbr').value.trim().toUpperCase();
+      const color = document.getElementById('new-server-color').value;
+
+      if (!name || !abbr) return;
+
+      const newServer = {
+        id: 'srv-' + Date.now(),
+        name: name,
+        abbr: abbr,
+        color: color,
+        categories: [
+          {
+            name: 'Text Channels',
+            channels: [
+              { id: 'general-' + Date.now(), name: 'general', type: 'text', desc: 'General chatter' }
+            ]
+          }
+        ]
+      };
+
+      state.servers.push(newServer);
+      closeCreateServerModal();
+      switchServer(newServer.id);
+      showToast(`Server '${name}' created!`);
+    }
+
+    let selectedNewChannelType = 'text';
+    function openCreateChannelModal() {
+      const modal = document.getElementById('create-channel-modal');
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    function closeCreateChannelModal() {
+      const modal = document.getElementById('create-channel-modal');
+      if (modal) modal.classList.add('hidden');
+    }
+
+    function setChannelType(type) {
+      selectedNewChannelType = type;
+      const textBtn = document.getElementById('type-btn-text');
+      const voiceBtn = document.getElementById('type-btn-voice');
+
+      if (type === 'voice') {
+        textBtn.className = 'p-3 border border-sunrise-border bg-sunrise-pure rounded-xl text-left flex items-center gap-2';
+        voiceBtn.className = 'p-3 border border-white/40 bg-sunrise-surface rounded-xl text-left flex items-center gap-2';
+      } else {
+        textBtn.className = 'p-3 border border-white/40 bg-sunrise-surface rounded-xl text-left flex items-center gap-2';
+        voiceBtn.className = 'p-3 border border-sunrise-border bg-sunrise-pure rounded-xl text-left flex items-center gap-2';
+      }
+    }
+
+    function handleCreateChannelSubmit(e) {
+      e.preventDefault();
+      const name = document.getElementById('new-channel-name').value.trim().toLowerCase().replace(/\s+/g, '-');
+      const desc = document.getElementById('new-channel-desc').value.trim();
+
+      if (!name) return;
+
+      const currentServer = state.servers.find(s => s.id === state.activeServerId);
+      if (currentServer && currentServer.categories.length > 0) {
+        const newChan = {
+          id: 'chan-' + Date.now(),
+          name: selectedNewChannelType === 'voice' ? `🔊 ${name}` : name,
+          type: selectedNewChannelType,
+          desc: desc || 'Custom channel'
+        };
+
+        currentServer.categories[0].channels.push(newChan);
+        closeCreateChannelModal();
+        renderSidebarForServer(currentServer);
+        switchChannel(newChan.id);
+        showToast(`Channel #${name} created!`);
+      }
+    }
+
+    // ==========================================
+    // ROLE TAGS & SETTINGS MANAGERS
+    // ==========================================
+    function renderRolesManager() {
+      const container = document.getElementById('roles-manager-list');
+      if (!container) return;
+      container.innerHTML = '';
+
+      state.roles.forEach(role => {
+        const tag = document.createElement('div');
+        tag.className = 'px-3 py-1.5 rounded-lg border text-xs font-bold flex items-center gap-2';
+        tag.style.borderColor = role.color;
+        tag.style.color = role.color;
+        tag.style.backgroundColor = `${role.color}15`;
+
+        tag.innerHTML = `
+          <span>${role.name}</span>
+          <button onclick="deleteCustomRole('${role.id}')" class="hover:opacity-80"><i data-lucide="x" class="w-3 h-3"></i></button>
+        `;
+        container.appendChild(tag);
+      });
+      lucide.createIcons();
+    }
+
+    function addCustomRole() {
+      const name = document.getElementById('new-role-name').value.trim().toUpperCase();
+      const color = document.getElementById('new-role-color').value;
+      if (!name) return;
+
+      state.roles.push({ id: 'role-' + Date.now(), name, color });
+      document.getElementById('new-role-name').value = '';
+      renderRolesManager();
+      showToast(`Role tag ${name} added!`);
+    }
+
+    function deleteCustomRole(roleId) {
+      state.roles = state.roles.filter(r => r.id !== roleId);
+      renderRolesManager();
+    }
+
+    // ==========================================
+    // ATTACHMENT & GIF HANDLING
+    // ==========================================
+    function handleChatFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        state.pendingAttachment = evt.target.result;
+        const img = document.getElementById('preview-attach-img');
+        const box = document.getElementById('attachment-preview');
+        if (img) img.src = state.pendingAttachment;
+        if (box) box.classList.remove('hidden');
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function removeAttachment() {
+      state.pendingAttachment = null;
+      const box = document.getElementById('attachment-preview');
+      if (box) box.classList.add('hidden');
+    }
+
+    function toggleGifPicker(force) {
+      const popover = document.getElementById('gif-picker-popover');
+      if (!popover) return;
+      if (typeof force === 'boolean') {
+        popover.classList.toggle('hidden', !force);
+      } else {
+        popover.classList.toggle('hidden');
+      }
+    }
+
+    function selectGif(url) {
+      state.pendingAttachment = url;
+      toggleGifPicker(false);
+      const img = document.getElementById('preview-attach-img');
+      const box = document.getElementById('attachment-preview');
+      if (img) img.src = url;
+      if (box) box.classList.remove('hidden');
+    }
+
+    // ==========================================
+    // UTILITY & AUTH SYSTEM
+    // ==========================================
+    function showToast(msg) {
+      const toast = document.getElementById('settings-toast');
+      const text = document.getElementById('toast-message');
+      if (text) text.innerText = msg;
+      if (toast) {
+        toast.classList.remove('translate-y-[-20px]', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        setTimeout(() => {
+          toast.classList.remove('translate-y-0', 'opacity-100');
+          toast.classList.add('translate-y-[-20px]', 'opacity-0');
+        }, 2500);
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function switchAuthTab(mode) {
+      state.authMode = mode;
+      const tabLogin = document.getElementById('tab-login');
+      const tabSignup = document.getElementById('tab-signup');
+      const fields = document.getElementById('signup-fields');
+      const btnText = document.querySelector('#auth-submit-btn span');
+
+      if (mode === 'signup') {
+        if (tabLogin) tabLogin.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
+        if (tabSignup) tabSignup.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
+        if (fields) fields.classList.remove('hidden');
+        if (btnText) btnText.innerText = 'Create Account';
+      } else {
+        if (tabLogin) tabLogin.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
+        if (tabSignup) tabSignup.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
+        if (fields) fields.classList.add('hidden');
+        if (btnText) btnText.innerText = 'Log In';
+      }
+    }
+
+    function handleAuthSubmit(e) {
+      e.preventDefault();
+      const email = document.getElementById('auth-email').value.trim();
+      const name = document.getElementById('auth-display-name')?.value.trim() || email.split('@')[0];
+      enterApp(name);
+    }
+
+    function continueAsGuest() {
+      enterApp('Guest Creator');
+    }
+
+    function enterApp(name) {
+      state.isAuthenticated = true;
+      state.currentUser.name = name;
+      state.currentUser.initial = name.charAt(0).toUpperCase();
+
+      document.getElementById('auth-container')?.classList.add('hidden');
+      document.getElementById('main-app')?.classList.remove('opacity-0', 'pointer-events-none');
+
+      updateUserProfileUI();
+      renderServers();
+      switchServer('sunrise-hq');
+    }
+
+    function logout() {
+      state.isAuthenticated = false;
+      document.getElementById('auth-container')?.classList.remove('hidden');
+      document.getElementById('main-app')?.classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    function updateUserProfileUI() {
+      const u = state.currentUser;
+      const pfp = document.getElementById('user-pfp');
+      const dName = document.getElementById('user-display-name');
+      const handle = document.getElementById('user-handle');
+
+      if (pfp) pfp.innerText = u.initial;
+      if (dName) dName.innerText = u.name;
+      if (handle) handle.innerText = u.handle;
+    }
+
+    function openSettingsModal() {
+      const modal = document.getElementById('settings-modal');
+      if (modal) {
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.remove('opacity-0'), 10);
+      }
+      renderRolesManager();
+    }
+
+    function closeSettingsModal() {
+      const modal = document.getElementById('settings-modal');
+      if (modal) {
+        modal.classList.add('opacity-0');
+        setTimeout(() => modal.classList.add('hidden'), 200);
+      }
+    }
+
+    function switchSettingsTab(tab) {
+      ['profile', 'appearance', 'cursor', 'tags', 'audio'].forEach(t => {
+        const btn = document.getElementById(`set-tab-${t}`);
+        const sec = document.getElementById(`settings-section-${t}`);
+        if (t === tab) {
+          if (btn) btn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium bg-sunrise-surface text-white flex items-center justify-between transition-all interactive-target';
+          if (sec) sec.classList.remove('hidden');
+        } else {
+          if (btn) btn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target';
+          if (sec) sec.classList.add('hidden');
+        }
+      });
+      lucide.createIcons();
+    }
+
+    function saveSettings(e) {
+      e.preventDefault();
+      const dName = document.getElementById('setting-display-name').value.trim();
+      const bio = document.getElementById('setting-bio').value.trim();
+      if (dName) {
+        state.currentUser.name = dName;
+        state.currentUser.initial = dName.charAt(0).toUpperCase();
+      }
+      state.currentUser.bio = bio;
+      updateUserProfileUI();
+      showToast('Profile settings saved successfully!');
+    }
+
+    function updateSettingsPreview() {
+      const dName = document.getElementById('setting-display-name')?.value || state.currentUser.name;
+      const bio = document.getElementById('setting-bio')?.value || state.currentUser.bio;
+      
+      const prevName = document.getElementById('preview-name');
+      const prevBio = document.getElementById('preview-bio');
+      if (prevName) prevName.innerText = dName;
+      if (prevBio) prevBio.innerText = bio || 'No bio provided.';
     }
 
     function toggleMobileMenu() {
@@ -2016,13 +2378,17 @@
       if (sidebar) sidebar.classList.toggle('-translate-x-full');
     }
 
+    function toggleMemberList() {
+      const sidebar = document.getElementById('member-sidebar');
+      if (sidebar) sidebar.classList.toggle('hidden');
+    }
+
     // App Initialization
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setupCursorListeners();
-      loadLocalMessageCache();
+      applyCursorStyles();
       initLoadingScreen();
-      checkSession();
     });
   </script>
 </body>
