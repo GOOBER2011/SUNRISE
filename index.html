@@ -111,7 +111,7 @@
     }
 
     /* ========================================== */
-    /* BLACK & WHITE ANIMATED AURORA BACKGROUND   */
+    /* ENHANCED B&W ANIMATED AURORA CANVAS        */
     /* ========================================== */
     @keyframes auroraShift {
       0% { background-position: 0% 50%; }
@@ -119,29 +119,52 @@
       100% { background-position: 0% 50%; }
     }
 
-    @keyframes auroraGlow {
-      0% { transform: scale(1) rotate(0deg); opacity: 0.25; }
-      50% { transform: scale(1.2) rotate(6deg); opacity: 0.55; }
-      100% { transform: scale(1) rotate(0deg); opacity: 0.25; }
+    @keyframes auroraFlow1 {
+      0% { transform: translate(-10%, -10%) rotate(0deg) scale(1); opacity: 0.25; }
+      50% { transform: translate(12%, 15%) rotate(180deg) scale(1.3); opacity: 0.55; }
+      100% { transform: translate(-10%, -10%) rotate(360deg) scale(1); opacity: 0.25; }
+    }
+
+    @keyframes auroraFlow2 {
+      0% { transform: translate(15%, 10%) rotate(0deg) scale(1.2); opacity: 0.35; }
+      50% { transform: translate(-15%, -12%) rotate(-180deg) scale(0.9); opacity: 0.15; }
+      100% { transform: translate(15%, 10%) rotate(-360deg) scale(1.2); opacity: 0.35; }
     }
 
     .aurora-bg {
       position: relative;
-      background: linear-gradient(135deg, #000000 0%, #0c0c0e 25%, #18181c 50%, #070709 75%, #000000 100%);
-      background-size: 300% 300%;
-      animation: auroraShift 20s ease infinite;
+      background: linear-gradient(135deg, #000000, #08080a, #111115, #040405, #000000);
+      background-size: 400% 400%;
+      animation: auroraShift 22s ease infinite;
       overflow: hidden;
     }
 
     .aurora-bg::before {
       content: "";
       position: absolute;
-      inset: -30%;
-      background: radial-gradient(ellipse at 50% 25%, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 40%, transparent 70%),
-                  radial-gradient(ellipse at 20% 75%, rgba(255, 255, 255, 0.08) 0%, transparent 60%),
-                  radial-gradient(ellipse at 80% 80%, rgba(255, 255, 255, 0.06) 0%, transparent 50%);
-      filter: blur(40px);
-      animation: auroraGlow 14s ease-in-out infinite;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 60%, rgba(200, 200, 210, 0.08) 0%, transparent 45%);
+      filter: blur(55px);
+      animation: auroraFlow1 18s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .aurora-bg::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(ellipse at 50% 80%, rgba(255, 255, 255, 0.09) 0%, transparent 60%),
+                  radial-gradient(ellipse at 20% 20%, rgba(180, 180, 190, 0.05) 0%, transparent 40%);
+      filter: blur(70px);
+      animation: auroraFlow2 25s ease-in-out infinite;
       pointer-events: none;
       z-index: 0;
     }
@@ -453,6 +476,8 @@
         <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm41b3I5ZWpneXlsbW9uaTFmZmYyMmZvZTVuYXlhOWIxdDRwb3drOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0AMJzC6f02acGE6s/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
         <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXVjbnA3bndwbzNhNG5rcjdyb25iOWlqMXVpOWx2MnByY3MzaXRzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/d31w24psGYeedC64/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
         <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2RmejNhNWZsd2R4bHAxaDlyMGs0NWpneTlzZWtwMWY3Nm5lMHltZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT0xezQGU5xCDJuCPe/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1MGdveGthMDltZjJrcmhkamdrdm4zaTBucHBsaG5ocmV2dDF0MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3q2K5jinAlChoCLS/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHlyZWJxeTNua2pldzR0NmE0cG5wM2hxaXdzMXlhdmdhZmVyd3ZxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26u4cqiYI30juCOGY/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
       </div>
     </div>
 
@@ -530,17 +555,20 @@
   <!-- 5. USER SETTINGS MODAL                     -->
   <!-- ========================================== -->
   <div id="settings-modal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-200">
+    <!-- Toast Notification -->
     <div id="settings-toast" class="fixed top-6 right-6 z-[210] bg-white text-sunrise-pure font-semibold text-xs px-4 py-2.5 rounded-lg shadow-xl flex items-center gap-2 translate-y-[-20px] opacity-0 transition-all duration-300 pointer-events-none">
-      <i data-lucide="check-circle-2" class="w-4 h-4 text-black"></i>
+      <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
       <span id="toast-message">Settings saved successfully!</span>
     </div>
 
     <div class="w-full max-w-4xl h-[85vh] max-h-[700px] bg-sunrise-charcoal border border-sunrise-border rounded-2xl shadow-2xl flex overflow-hidden relative">
       
+      <!-- Close Button -->
       <button onclick="closeSettingsModal()" class="absolute top-4 right-4 z-20 p-2 text-sunrise-muted hover:text-white hover:bg-sunrise-hover rounded-full transition-colors interactive-target" title="Esc to close">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
 
+      <!-- Settings Sidebar -->
       <aside class="w-48 sm:w-56 bg-sunrise-pure border-r border-sunrise-border p-4 flex flex-col justify-between shrink-0">
         <div>
           <h2 class="text-xs font-bold uppercase tracking-wider text-sunrise-muted px-2 mb-3">Settings</h2>
@@ -561,6 +589,13 @@
                 <span>Cursor</span>
               </div>
             </button>
+            <button id="set-tab-tags" onclick="switchSettingsTab('tags')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
+              <div class="flex items-center gap-2">
+                <i data-lucide="tag" class="w-3.5 h-3.5"></i>
+                <span>Server Tags</span>
+              </div>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 bg-sunrise-surface border border-sunrise-border text-sunrise-muted rounded">SOON</span>
+            </button>
           </nav>
         </div>
 
@@ -570,24 +605,29 @@
         </button>
       </aside>
 
+      <!-- Settings Content Area -->
       <main class="flex-1 overflow-y-auto p-6 relative">
         
         <!-- SECTION 1: USER PROFILE -->
         <div id="settings-section-profile" class="space-y-6">
           <div>
             <h3 class="text-base font-bold text-white">User Profile</h3>
-            <p class="text-xs text-sunrise-muted">Customize your identity.</p>
+            <p class="text-xs text-sunrise-muted">Customize how you look across workspaces.</p>
           </div>
 
           <form onsubmit="saveSettings(event)" class="space-y-5">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               
+              <!-- Form Fields -->
               <div class="space-y-4">
+
+                <!-- Display Name Field -->
                 <div>
                   <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Display Name</label>
                   <input type="text" id="setting-display-name" oninput="updateSettingsPreview()" placeholder="Your Display Name" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
                 </div>
 
+                <!-- Avatar Settings -->
                 <div>
                   <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Avatar Image</label>
                   <div class="flex items-center gap-2 mb-2">
@@ -600,6 +640,54 @@
                   </div>
                 </div>
 
+                <!-- Avatar Background Fallback Color -->
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Avatar BG Color</label>
+                  <div class="flex items-center gap-2">
+                    <input type="color" id="setting-pfp-bg" oninput="updateSettingsPreview()" value="#141417" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                    <span class="text-xs text-sunrise-muted font-mono" id="setting-pfp-bg-val">#141417</span>
+                  </div>
+                </div>
+
+                <!-- Banner Customization -->
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Banner Image</label>
+                  <div class="flex items-center gap-2 mb-2">
+                    <input type="url" id="setting-banner-url" oninput="updateSettingsPreview()" placeholder="https://example.com/banner.jpg" class="flex-1 bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+                    <input type="file" id="banner-file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'banner')">
+                    <button type="button" onclick="document.getElementById('banner-file-input').click()" class="px-3 py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/40 text-xs font-semibold rounded-lg text-white transition-all flex items-center gap-1.5 shrink-0 interactive-target">
+                      <i data-lucide="upload" class="w-3.5 h-3.5"></i>
+                      <span>Upload</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Banner Color</label>
+                  <div class="flex items-center gap-2">
+                    <input type="color" id="setting-banner-color" oninput="updateSettingsPreview()" value="#1f1f24" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                    <span class="text-xs text-sunrise-muted font-mono" id="setting-banner-val">#1f1f24</span>
+                  </div>
+                </div>
+
+                <!-- Name Color Picker & Swatches -->
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Display Name Color</label>
+                  <div class="flex items-center gap-3 mb-2">
+                    <input type="color" id="setting-name-color" oninput="updateSettingsPreview()" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                    <span class="text-xs text-sunrise-muted font-mono" id="setting-name-color-val">#ffffff</span>
+                  </div>
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <button type="button" onclick="setPresetColor('#ffffff')" class="w-6 h-6 rounded-full bg-white border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Pure White"></button>
+                    <button type="button" onclick="setPresetColor('#38bdf8')" class="w-6 h-6 rounded-full bg-sky-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Subtle Cyan"></button>
+                    <button type="button" onclick="setPresetColor('#a78bfa')" class="w-6 h-6 rounded-full bg-violet-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Soft Violet"></button>
+                    <button type="button" onclick="setPresetColor('#fb7185')" class="w-6 h-6 rounded-full bg-rose-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Crimson"></button>
+                    <button type="button" onclick="setPresetColor('#34d399')" class="w-6 h-6 rounded-full bg-emerald-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Emerald"></button>
+                    <button type="button" onclick="setPresetColor('#fbbf24')" class="w-6 h-6 rounded-full bg-amber-400 border border-sunrise-border hover:scale-110 transition-transform interactive-target" title="Amber"></button>
+                  </div>
+                </div>
+
+                <!-- User Bio -->
                 <div>
                   <div class="flex justify-between items-center mb-1.5">
                     <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted">About Me (Bio)</label>
@@ -609,12 +697,17 @@
                 </div>
               </div>
 
+              <!-- Real-time Live Profile Card Preview -->
               <div>
                 <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2">Live Preview</label>
                 <div class="w-full bg-sunrise-pure border border-sunrise-border rounded-xl overflow-hidden shadow-xl">
-                  <div id="preview-banner" class="h-24 w-full bg-cover bg-center transition-all relative" style="background-color: #121215;"></div>
+                  
+                  <!-- Preview Banner -->
+                  <div id="preview-banner" class="h-24 w-full bg-cover bg-center transition-all relative" style="background-color: #1f1f24;"></div>
 
+                  <!-- Preview Content -->
                   <div class="px-4 pb-4 pt-0 relative">
+                    <!-- Preview Avatar -->
                     <div class="relative -mt-10 mb-3 inline-block">
                       <div id="preview-pfp" class="w-16 h-16 rounded-full bg-sunrise-surface border-4 border-sunrise-pure bg-cover bg-center flex items-center justify-center font-bold text-lg text-white shadow-lg overflow-hidden" style="background-color: #141417;">
                         Y
@@ -622,6 +715,7 @@
                       <div class="absolute bottom-1 right-1 w-3.5 h-3.5 bg-white rounded-full ring-2 ring-sunrise-pure"></div>
                     </div>
 
+                    <!-- User Metadata -->
                     <div class="space-y-1">
                       <h4 id="preview-name" class="font-bold text-sm text-white truncate" style="color: #ffffff;">You</h4>
                       <p id="preview-handle" class="text-xs text-sunrise-muted truncate">@you</p>
@@ -629,16 +723,19 @@
 
                     <div class="w-full h-[1px] bg-sunrise-border/80 my-3"></div>
 
+                    <!-- Bio Preview -->
                     <div>
                       <h5 class="text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1">About Me</h5>
-                      <p id="preview-bio" class="text-xs text-white/90 leading-relaxed font-normal whitespace-pre-line">Monochrome minimal workspace.</p>
+                      <p id="preview-bio" class="text-xs text-white/90 leading-relaxed font-normal whitespace-pre-line">Monochrome workspace environment.</p>
                     </div>
                   </div>
+
                 </div>
               </div>
 
             </div>
 
+            <!-- Save Action Button -->
             <div class="pt-4 border-t border-sunrise-border flex justify-end">
               <button type="submit" class="px-5 py-2 bg-white text-sunrise-pure font-semibold text-xs rounded-lg hover:bg-neutral-200 transition-colors shadow-lg shadow-white/5 flex items-center gap-2 interactive-target">
                 <i data-lucide="check" class="w-3.5 h-3.5 stroke-[2.5]"></i>
@@ -648,34 +745,128 @@
           </form>
         </div>
 
-        <!-- SECTION 2: APPEARANCE -->
+        <!-- SECTION 2: APPEARANCE & THEME ENGINE -->
         <div id="settings-section-appearance" class="space-y-6 hidden">
           <div>
-            <h3 class="text-base font-bold text-white">Appearance & Themes</h3>
-            <p class="text-xs text-sunrise-muted">Monochrome shades palette control.</p>
+            <h3 class="text-base font-bold text-white">Appearance & Theme Engine</h3>
+            <p class="text-xs text-sunrise-muted">Select workspace theme presets or craft your custom color system.</p>
           </div>
 
-          <div class="grid grid-cols-2 gap-3">
-            <button type="button" onclick="selectThemePreset('obsidian')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
-              <div class="flex items-center gap-1.5 mb-2">
-                <div class="w-3.5 h-3.5 rounded-full bg-[#000000] border border-white/20"></div>
-                <div class="w-3.5 h-3.5 rounded-full bg-[#0a0a0c]"></div>
-                <div class="w-3.5 h-3.5 rounded-full bg-white"></div>
-              </div>
-              <h4 class="text-xs font-semibold text-white">Deep Obsidian</h4>
-              <p class="text-[10px] text-sunrise-muted">Pure black & white</p>
-            </button>
+          <!-- Theme Presets Grid -->
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-3">Theme Presets</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              
+              <!-- Preset 1: Obsidian B&W -->
+              <button type="button" onclick="selectThemePreset('obsidian')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#000000] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#0a0a0c]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-white"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Pure Obsidian</h4>
+                <p class="text-[10px] text-sunrise-muted">Black & white standard</p>
+              </button>
 
-            <button type="button" onclick="selectThemePreset('charcoal')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
-              <div class="flex items-center gap-1.5 mb-2">
-                <div class="w-3.5 h-3.5 rounded-full bg-[#0a0a0a] border border-white/20"></div>
-                <div class="w-3.5 h-3.5 rounded-full bg-[#171717]"></div>
-                <div class="w-3.5 h-3.5 rounded-full bg-[#e5e5e5]"></div>
-              </div>
-              <h4 class="text-xs font-semibold text-white">Soft Charcoal</h4>
-              <p class="text-[10px] text-sunrise-muted">Subtle zinc tones</p>
-            </button>
+              <!-- Preset 2: Charcoal -->
+              <button type="button" onclick="selectThemePreset('charcoal')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#09090b] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#121215]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-white"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Deep Charcoal</h4>
+                <p class="text-[10px] text-sunrise-muted">Monochrome zinc</p>
+              </button>
+
+              <!-- Preset 3: Midnight Blue -->
+              <button type="button" onclick="selectThemePreset('midnight')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#0b0e17] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#111625]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#38bdf8]"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Midnight Blue</h4>
+                <p class="text-[10px] text-sunrise-muted">Deep ocean glow</p>
+              </button>
+
+              <!-- Preset 4: Obsidian Emerald -->
+              <button type="button" onclick="selectThemePreset('emerald')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#06120e] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#0e1f18]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#34d399]"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Obsidian Emerald</h4>
+                <p class="text-[10px] text-sunrise-muted">Dark matrix forest</p>
+              </button>
+
+              <!-- Preset 5: Crimson Synth -->
+              <button type="button" onclick="selectThemePreset('crimson')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#14090d] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#1f1016]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#fb7185]"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Crimson Synth</h4>
+                <p class="text-[10px] text-sunrise-muted">Neon rose dark</p>
+              </button>
+
+              <!-- Preset 6: Cyberpunk Gold -->
+              <button type="button" onclick="selectThemePreset('gold')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
+                <div class="flex items-center gap-1.5 mb-2">
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#121008] border border-white/20"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#1c180e]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#facc15]"></div>
+                </div>
+                <h4 class="text-xs font-semibold text-white">Cyberpunk Gold</h4>
+                <p class="text-[10px] text-sunrise-muted">Industrial amber glow</p>
+              </button>
+
+            </div>
           </div>
+
+          <div class="w-full h-[1px] bg-sunrise-border/80 my-4"></div>
+
+          <!-- Custom Color Controls -->
+          <div class="space-y-4">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2">Custom Palette Controls</label>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Canvas Background</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="theme-pure-picker" oninput="updateCustomThemeVar('--sunrise-pure', this.value)" value="#000000" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="theme-pure-val">#000000</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Sidebar Surface</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="theme-charcoal-picker" oninput="updateCustomThemeVar('--sunrise-charcoal', this.value)" value="#0a0a0c" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="theme-charcoal-val">#0a0a0c</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Accent & Highlight</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="theme-white-picker" oninput="updateCustomThemeVar('--sunrise-white', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="theme-white-val">#ffffff</span>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Cards & Inputs</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="theme-surface-picker" oninput="updateCustomThemeVar('--sunrise-surface', this.value)" value="#141417" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="theme-surface-val">#141417</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
 
         <!-- SECTION 3: CURSOR CUSTOMIZATION -->
@@ -685,6 +876,7 @@
             <p class="text-xs text-sunrise-muted">Modify physics, colors, sizing, and trailing speed for your pointer.</p>
           </div>
 
+          <!-- Enable/Disable Custom Cursor Toggle -->
           <div class="p-4 bg-sunrise-surface border border-sunrise-border rounded-xl flex items-center justify-between">
             <div>
               <h4 class="text-xs font-bold text-white">Enable Custom Dual Cursor</h4>
@@ -695,6 +887,116 @@
               <div class="w-9 h-5 bg-sunrise-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-white"></div>
             </label>
           </div>
+
+          <!-- Cursor Style Presets -->
+          <div>
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2.5">Cursor Presets</label>
+            <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+              <button type="button" onclick="selectCursorPreset('classic')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+                <div class="text-xs font-semibold text-white">Classic White</div>
+                <div class="text-[10px] text-sunrise-muted">Snappy trailing dot</div>
+              </button>
+              <button type="button" onclick="selectCursorPreset('cyber')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+                <div class="text-xs font-semibold text-sky-400">Cyber Neon</div>
+                <div class="text-[10px] text-sunrise-muted">Cyan dot & rose ring</div>
+              </button>
+              <button type="button" onclick="selectCursorPreset('crimson')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+                <div class="text-xs font-semibold text-rose-400">Crimson Glow</div>
+                <div class="text-[10px] text-sunrise-muted">Bold red trailing</div>
+              </button>
+              <button type="button" onclick="selectCursorPreset('emerald')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+                <div class="text-xs font-semibold text-emerald-400">Emerald Pulse</div>
+                <div class="text-[10px] text-sunrise-muted">Vibrant matrix green</div>
+              </button>
+              <button type="button" onclick="selectCursorPreset('minimal')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+                <div class="text-xs font-semibold text-zinc-400">Minimal Dark</div>
+                <div class="text-[10px] text-sunrise-muted">Subtle zinc tone</div>
+              </button>
+            </div>
+          </div>
+
+          <!-- Colors & Sliders Grid -->
+          <div class="space-y-4 pt-2">
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted">Fine-Tuning Controls</label>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <!-- Dot Color -->
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Center Dot Color</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="cursor-dot-color-picker" oninput="updateCursorParam('dotColor', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="cursor-dot-color-val">#ffffff</span>
+                </div>
+              </div>
+
+              <!-- Ring Color -->
+              <div>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Trailing Ring Color</label>
+                <div class="flex items-center gap-2">
+                  <input type="color" id="cursor-ring-color-picker" oninput="updateCursorParam('ringColor', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="cursor-ring-color-val">#ffffff</span>
+                </div>
+              </div>
+
+              <!-- Follow Speed Slider -->
+              <div class="col-span-1 sm:col-span-2">
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                  <span>Ring Follow Speed (Lerp)</span>
+                  <span id="cursor-speed-val" class="font-mono text-white">0.45 (Fast)</span>
+                </div>
+                <input type="range" id="cursor-speed-slider" min="0.10" max="0.85" step="0.05" value="0.45" oninput="updateCursorParam('followSpeed', parseFloat(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
+                <div class="flex justify-between text-[9px] text-sunrise-muted/60 mt-0.5">
+                  <span>Delayed Trailing (0.10)</span>
+                  <span>Snappy Response (0.85)</span>
+                </div>
+              </div>
+
+              <!-- Dot Size Slider -->
+              <div>
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                  <span>Center Dot Size</span>
+                  <span id="cursor-dot-size-val" class="font-mono text-white">8px</span>
+                </div>
+                <input type="range" id="cursor-dot-size-slider" min="4" max="20" step="1" value="8" oninput="updateCursorParam('dotSize', parseInt(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
+              </div>
+
+              <!-- Ring Size Slider -->
+              <div>
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                  <span>Outer Ring Size</span>
+                  <span id="cursor-ring-size-val" class="font-mono text-white">32px</span>
+                </div>
+                <input type="range" id="cursor-ring-size-slider" min="16" max="64" step="2" value="32" oninput="updateCursorParam('ringSize', parseInt(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
+              </div>
+
+              <!-- Ring Border Width Slider -->
+              <div class="col-span-1 sm:col-span-2">
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                  <span>Ring Border Thickness</span>
+                  <span id="cursor-border-val" class="font-mono text-white">1px</span>
+                </div>
+                <input type="range" id="cursor-border-slider" min="1" max="4" step="1" value="1" oninput="updateCursorParam('borderWidth', parseInt(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SECTION 4: SERVER TAGS (IN DEVELOPMENT) -->
+        <div id="settings-section-tags" class="space-y-6 hidden">
+          <div>
+            <h3 class="text-base font-bold text-white">Server Tags</h3>
+            <p class="text-xs text-sunrise-muted">Manage role tags and group badge highlights.</p>
+          </div>
+
+          <div class="border border-dashed border-sunrise-border rounded-xl p-8 text-center space-y-3">
+            <div class="w-12 h-12 rounded-full bg-sunrise-surface border border-sunrise-border flex items-center justify-center mx-auto text-sunrise-muted">
+              <i data-lucide="tag" class="w-6 h-6"></i>
+            </div>
+            <div>
+              <h4 class="text-xs font-bold text-white">Server Tags (In Development)</h4>
+              <p class="text-xs text-sunrise-muted max-w-sm mx-auto mt-1">Custom server tags, role colors, and badge permissions will be configurable here when server backend controls launch.</p>
+            </div>
+          </div>
         </div>
 
       </main>
@@ -703,12 +1005,13 @@
   </div>
 
   <!-- ========================================== -->
-  <!-- JAVASCRIPT STATE & INTERACTION LOGIC      -->
+  <!-- JAVASCRIPT STATE, CURSOR & INTERACTION     -->
   <!-- ========================================== -->
   <script>
+    // System State Architecture
     const state = {
       isAuthenticated: false,
-      authMode: 'login',
+      authMode: 'login', // 'login' | 'signup'
       activeChannel: 'general',
       pendingAttachment: null,
 
@@ -719,9 +1022,18 @@
         followSpeed: 0.45,
         dotSize: 8,
         ringSize: 32,
-        borderWidth: 1
+        borderWidth: 1,
+        preset: 'classic'
       },
 
+      cursorPresets: {
+        classic: { dotColor: '#ffffff', ringColor: '#ffffff', followSpeed: 0.45, dotSize: 8, ringSize: 32, borderWidth: 1 },
+        cyber:   { dotColor: '#38bdf8', ringColor: '#f43f5e', followSpeed: 0.60, dotSize: 6, ringSize: 36, borderWidth: 2 },
+        crimson: { dotColor: '#f43f5e', ringColor: '#fda4af', followSpeed: 0.50, dotSize: 10, ringSize: 30, borderWidth: 2 },
+        emerald: { dotColor: '#10b981', ringColor: '#6ee7b7', followSpeed: 0.55, dotSize: 8, ringSize: 34, borderWidth: 1 },
+        minimal: { dotColor: '#a1a1aa', ringColor: '#52525b', followSpeed: 0.40, dotSize: 6, ringSize: 28, borderWidth: 1 }
+      },
+      
       theme: {
         preset: 'obsidian',
         pure: '#000000',
@@ -734,7 +1046,11 @@
 
       themePresets: {
         obsidian: { pure: '#000000', charcoal: '#0a0a0c', surface: '#141417', hover: '#1f1f24', border: '#26262c', white: '#ffffff' },
-        charcoal: { pure: '#0a0a0a', charcoal: '#121212', surface: '#1c1c1c', hover: '#262626', border: '#333333', white: '#e5e5e5' }
+        charcoal: { pure: '#09090b', charcoal: '#121215', surface: '#1a1a1e', hover: '#22222a', border: '#222228', white: '#ffffff' },
+        midnight: { pure: '#0b0e17', charcoal: '#111625', surface: '#192033', hover: '#232c45', border: '#232d47', white: '#38bdf8' },
+        emerald:  { pure: '#06120e', charcoal: '#0e1f18', surface: '#152e24', hover: '#1d3d30', border: '#1e4234', white: '#34d399' },
+        crimson:  { pure: '#14090d', charcoal: '#1f1016', surface: '#2b1720', hover: '#3b1f2c', border: '#3e202f', white: '#fb7185' },
+        gold:     { pure: '#121008', charcoal: '#1c180e', surface: '#292416', hover: '#38311e', border: '#3b341f', white: '#facc15' }
       },
 
       currentUser: {
@@ -746,7 +1062,7 @@
         pfpUrl: '',
         pfpBg: '#141417',
         bannerUrl: '',
-        bannerBg: '#121215',
+        bannerBg: '#1f1f24',
         nameColor: '#ffffff',
         bio: 'Monochrome minimal workspace.'
       },
@@ -763,7 +1079,7 @@
           id: null,
           category: 'info',
           title: 'announcements',
-          desc: 'Official updates',
+          desc: 'Official updates from the owner',
           messages: []
         },
         'general': {
@@ -779,10 +1095,20 @@
           title: 'dev-log',
           desc: 'Development progress and tech notes',
           messages: []
+        },
+        'random': {
+          id: null,
+          category: 'channels',
+          title: 'random',
+          desc: 'Off-topic chat and casual ideas',
+          messages: []
         }
       }
     };
 
+    // ==========================================
+    // INITIALIZATION & CURSOR SYSTEM LOGIC
+    // ==========================================
     let cursorX = 0, cursorY = 0;
     let ringX = 0, ringY = 0;
     let cursorAnimFrame = null;
@@ -851,12 +1177,38 @@
       document.body.classList.remove('native-cursor');
       dot.style.display = 'block';
       ring.style.display = 'block';
+
+      dot.style.backgroundColor = state.cursor.dotColor;
+      dot.style.width = `${state.cursor.dotSize}px`;
+      dot.style.height = `${state.cursor.dotSize}px`;
+
+      ring.style.borderColor = state.cursor.ringColor;
+      ring.style.width = `${state.cursor.ringSize}px`;
+      ring.style.height = `${state.cursor.ringSize}px`;
+      ring.style.borderWidth = `${state.cursor.borderWidth}px`;
     }
 
     function toggleCustomCursor(enabled) {
       state.cursor.enabled = enabled;
       applyCursorStyles();
       if (enabled) setupCursorListeners();
+    }
+
+    function selectCursorPreset(presetName) {
+      if (state.cursorPresets[presetName]) {
+        state.cursor = { ...state.cursor, ...state.cursorPresets[presetName], preset: presetName };
+        applyCursorStyles();
+        
+        const dotPicker = document.getElementById('cursor-dot-color-picker');
+        const ringPicker = document.getElementById('cursor-ring-color-picker');
+        if (dotPicker) dotPicker.value = state.cursor.dotColor;
+        if (ringPicker) ringPicker.value = state.cursor.ringColor;
+      }
+    }
+
+    function updateCursorParam(param, value) {
+      state.cursor[param] = value;
+      applyCursorStyles();
     }
 
     function selectThemePreset(presetKey) {
@@ -871,6 +1223,13 @@
       root.style.setProperty('--sunrise-hover', p.hover);
       root.style.setProperty('--sunrise-border', p.border);
       root.style.setProperty('--sunrise-white', p.white);
+
+      const pureP = document.getElementById('theme-pure-picker');
+      if (pureP) pureP.value = p.pure;
+    }
+
+    function updateCustomThemeVar(varName, value) {
+      document.documentElement.style.setProperty(varName, value);
     }
 
     function handleFileUpload(event, type) {
@@ -881,12 +1240,18 @@
         if (type === 'pfp') {
           const input = document.getElementById('setting-pfp-url');
           if (input) input.value = e.target.result;
+        } else if (type === 'banner') {
+          const input = document.getElementById('setting-banner-url');
+          if (input) input.value = e.target.result;
         }
         updateSettingsPreview();
       };
       reader.readAsDataURL(file);
     }
 
+    // ==========================================
+    // AUTHENTICATION & USER SESSION LOGIC
+    // ==========================================
     function switchAuthTab(mode) {
       state.authMode = mode;
       const tabLogin = document.getElementById('tab-login');
@@ -966,8 +1331,10 @@
           email: 'guest@workspace.app',
           pfpUrl: '',
           pfpBg: '#141417',
+          bannerUrl: '',
+          bannerBg: '#1f1f24',
           nameColor: '#ffffff',
-          bio: 'Exploring as guest.'
+          bio: 'Monochrome minimal workspace.'
         };
       }
       state.currentUser = guestUser;
@@ -1038,7 +1405,21 @@
           state.currentUser.initial = state.currentUser.name.charAt(0).toUpperCase();
           state.currentUser.handle = `@${data.username || userEmail.split('@')[0]}`;
           state.currentUser.pfpUrl = data.avatar_url || '';
+          state.currentUser.bannerUrl = data.banner_url || '';
+          state.currentUser.nameColor = data.name_color || '#ffffff';
           state.currentUser.bio = data.bio || '';
+        } else {
+          const defaultName = userEmail ? userEmail.split('@')[0] : 'User';
+          const username = defaultName.toLowerCase().replace(/[^a-z0-9]/g, '');
+          await supabaseClient.from('profiles').upsert({
+            id: userId,
+            username: username,
+            display_name: defaultName
+          });
+          state.currentUser.id = userId;
+          state.currentUser.name = defaultName;
+          state.currentUser.initial = defaultName.charAt(0).toUpperCase();
+          state.currentUser.handle = `@${username}`;
         }
       } catch (err) {
         console.warn("fetchUserProfile error:", err);
@@ -1071,10 +1452,22 @@
       updatePfpElem(memberPfp);
 
       const displayNameEl = document.getElementById('user-display-name');
-      if (displayNameEl) displayNameEl.innerText = user.name || 'You';
+      if (displayNameEl) {
+        displayNameEl.innerText = user.name || 'You';
+        displayNameEl.style.color = user.nameColor || '#ffffff';
+      }
 
       const userHandleEl = document.getElementById('user-handle');
       if (userHandleEl) userHandleEl.innerText = user.handle || '@you';
+
+      const memberNameEl = document.getElementById('member-user-display-name');
+      if (memberNameEl) {
+        memberNameEl.innerText = user.name || 'You';
+        memberNameEl.style.color = user.nameColor || '#ffffff';
+      }
+
+      const memberHandleEl = document.getElementById('member-user-handle');
+      if (memberHandleEl) memberHandleEl.innerText = user.handle || '@you';
     }
 
     function logout() {
@@ -1137,12 +1530,26 @@
                 const created = new Date(m.created_at);
                 const timeStr = `Today at ${created.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
                 
+                let textContent = m.content || '';
+                let imgUrl = null;
+
+                if (textContent.includes('\nhttps://') || textContent.startsWith('https://') || textContent.startsWith('data:image')) {
+                  const lines = textContent.split('\n');
+                  const lastLine = lines[lines.length - 1];
+                  if (lastLine.startsWith('https://') || lastLine.startsWith('data:image')) {
+                    imgUrl = lastLine;
+                    textContent = lines.slice(0, lines.length - 1).join('\n');
+                  }
+                }
+
                 return {
                   id: m.id,
                   author: profile.display_name || 'User',
                   initial: (profile.display_name || 'U').charAt(0).toUpperCase(),
                   time: timeStr,
-                  text: m.content || '',
+                  text: textContent,
+                  imageUrl: imgUrl,
+                  nameColor: profile.name_color || '#ffffff',
                   avatarUrl: profile.avatar_url || ''
                 };
               });
@@ -1157,6 +1564,9 @@
       }
     }
 
+    // ==========================================
+    // CHAT IMAGE & GIF ATTACHMENT HANDLERS
+    // ==========================================
     function handleChatFileUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1200,18 +1610,46 @@
       if (previewBox) previewBox.classList.remove('hidden');
     }
 
+    // ==========================================
+    // SETTINGS MODAL LOGIC
+    // ==========================================
     function openSettingsModal() {
       const modal = document.getElementById('settings-modal');
       if (!modal) return;
       modal.classList.remove('hidden');
-      setTimeout(() => { modal.classList.remove('opacity-0'); }, 10);
+      setTimeout(() => {
+        modal.classList.remove('opacity-0');
+      }, 10);
 
+      // Populate current user values into form inputs
       const user = state.currentUser || {};
+
       const displayNameInput = document.getElementById('setting-display-name');
       if (displayNameInput) displayNameInput.value = user.name || '';
 
       const pfpUrlInput = document.getElementById('setting-pfp-url');
       if (pfpUrlInput) pfpUrlInput.value = user.pfpUrl || '';
+      
+      const pfpBgInput = document.getElementById('setting-pfp-bg');
+      if (pfpBgInput) pfpBgInput.value = user.pfpBg || '#141417';
+      
+      const pfpBgVal = document.getElementById('setting-pfp-bg-val');
+      if (pfpBgVal) pfpBgVal.innerText = user.pfpBg || '#141417';
+
+      const bannerUrlInput = document.getElementById('setting-banner-url');
+      if (bannerUrlInput) bannerUrlInput.value = user.bannerUrl || '';
+
+      const bannerBgInput = document.getElementById('setting-banner-color');
+      if (bannerBgInput) bannerBgInput.value = user.bannerBg || '#1f1f24';
+
+      const bannerBgVal = document.getElementById('setting-banner-val');
+      if (bannerBgVal) bannerBgVal.innerText = user.bannerBg || '#1f1f24';
+
+      const nameColorInput = document.getElementById('setting-name-color');
+      if (nameColorInput) nameColorInput.value = user.nameColor || '#ffffff';
+
+      const nameColorVal = document.getElementById('setting-name-color-val');
+      if (nameColorVal) nameColorVal.innerText = user.nameColor || '#ffffff';
 
       const bioInput = document.getElementById('setting-bio');
       if (bioInput) bioInput.value = user.bio || '';
@@ -1223,11 +1661,13 @@
       const modal = document.getElementById('settings-modal');
       if (!modal) return;
       modal.classList.add('opacity-0');
-      setTimeout(() => { modal.classList.add('hidden'); }, 200);
+      setTimeout(() => {
+        modal.classList.add('hidden');
+      }, 200);
     }
 
     function switchSettingsTab(tabName) {
-      const tabs = ['profile', 'appearance', 'cursor'];
+      const tabs = ['profile', 'appearance', 'cursor', 'tags'];
       tabs.forEach(t => {
         const tabBtn = document.getElementById(`set-tab-${t}`);
         const section = document.getElementById(`settings-section-${t}`);
@@ -1243,29 +1683,72 @@
       setupCursorListeners();
     }
 
+    function setPresetColor(hex) {
+      const input = document.getElementById('setting-name-color');
+      const val = document.getElementById('setting-name-color-val');
+      if (input) input.value = hex;
+      if (val) val.innerText = hex;
+      updateSettingsPreview();
+    }
+
     function updateSettingsPreview() {
       const displayName = (document.getElementById('setting-display-name')?.value || '').trim();
       const pfpUrl = (document.getElementById('setting-pfp-url')?.value || '').trim();
+      const pfpBg = document.getElementById('setting-pfp-bg')?.value || '#141417';
+      const bannerUrl = (document.getElementById('setting-banner-url')?.value || '').trim();
+      const bannerBg = document.getElementById('setting-banner-color')?.value || '#1f1f24';
+      const nameColor = document.getElementById('setting-name-color')?.value || '#ffffff';
       const bio = document.getElementById('setting-bio')?.value || '';
+
+      const pfpBgVal = document.getElementById('setting-pfp-bg-val');
+      if (pfpBgVal) pfpBgVal.innerText = pfpBg;
+
+      const bannerVal = document.getElementById('setting-banner-val');
+      if (bannerVal) bannerVal.innerText = bannerBg;
+
+      const nameColorVal = document.getElementById('setting-name-color-val');
+      if (nameColorVal) nameColorVal.innerText = nameColor;
 
       const charCount = document.getElementById('bio-char-count');
       if (charCount) charCount.innerText = `${bio.length}/120`;
 
+      // Preview Avatar
       const previewPfp = document.getElementById('preview-pfp');
       if (previewPfp) {
         if (pfpUrl) {
           previewPfp.style.backgroundImage = `url('${pfpUrl}')`;
           previewPfp.style.backgroundSize = 'cover';
+          previewPfp.style.backgroundPosition = 'center';
           previewPfp.innerText = '';
         } else {
           previewPfp.style.backgroundImage = 'none';
-          previewPfp.style.backgroundColor = '#141417';
-          previewPfp.innerText = displayName ? displayName.charAt(0).toUpperCase() : 'Y';
+          previewPfp.style.backgroundColor = pfpBg;
+          previewPfp.innerText = displayName ? displayName.charAt(0).toUpperCase() : (state.currentUser ? state.currentUser.initial : 'Y');
         }
       }
 
+      // Preview Banner
+      const previewBanner = document.getElementById('preview-banner');
+      if (previewBanner) {
+        if (bannerUrl) {
+          previewBanner.style.backgroundImage = `url('${bannerUrl}')`;
+          previewBanner.style.backgroundSize = 'cover';
+          previewBanner.style.backgroundPosition = 'center';
+        } else {
+          previewBanner.style.backgroundImage = 'none';
+          previewBanner.style.backgroundColor = bannerBg;
+        }
+      }
+
+      // Preview Name & Bio
       const previewName = document.getElementById('preview-name');
-      if (previewName) previewName.innerText = displayName || 'You';
+      if (previewName) {
+        previewName.innerText = displayName || (state.currentUser && state.currentUser.name) || 'You';
+        previewName.style.color = nameColor;
+      }
+
+      const previewHandle = document.getElementById('preview-handle');
+      if (previewHandle) previewHandle.innerText = (state.currentUser && state.currentUser.handle) || '@you';
 
       const previewBio = document.getElementById('preview-bio');
       if (previewBio) previewBio.innerText = bio || 'Monochrome minimal workspace.';
@@ -1282,15 +1765,29 @@
       }
 
       state.currentUser.pfpUrl = (document.getElementById('setting-pfp-url')?.value || '').trim();
+      state.currentUser.pfpBg = document.getElementById('setting-pfp-bg')?.value || '#141417';
+      state.currentUser.bannerUrl = (document.getElementById('setting-banner-url')?.value || '').trim();
+      state.currentUser.bannerBg = document.getElementById('setting-banner-color')?.value || '#1f1f24';
+      state.currentUser.nameColor = document.getElementById('setting-name-color')?.value || '#ffffff';
       state.currentUser.bio = (document.getElementById('setting-bio')?.value || '').trim();
 
+      // Sync updated profile attributes to Supabase profiles table
       if (supabaseClient && state.currentUser.id) {
         supabaseClient.from('profiles').upsert({
           id: state.currentUser.id,
           display_name: state.currentUser.name,
           avatar_url: state.currentUser.pfpUrl,
+          banner_url: state.currentUser.bannerUrl,
+          name_color: state.currentUser.nameColor,
           bio: state.currentUser.bio
+        }).then(({ error }) => {
+          if (error) console.warn("Supabase profile save error:", error);
         });
+      }
+
+      // Persist guest if running in demo guest session
+      if (!state.currentUser.id) {
+        localStorage.setItem('sunrise_guest_user', JSON.stringify(state.currentUser));
       }
 
       updateUserProfileUI();
@@ -1313,6 +1810,19 @@
       }
     }
 
+    // Keyboard ESC listener
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const modal = document.getElementById('settings-modal');
+        if (modal && !modal.classList.contains('hidden')) {
+          closeSettingsModal();
+        }
+      }
+    });
+
+    // ==========================================
+    // CHANNEL & MESSAGING RENDER LOGIC
+    // ==========================================
     function renderChannels() {
       const infoContainer = document.getElementById('category-info');
       const channelsContainer = document.getElementById('category-channels');
@@ -1365,6 +1875,10 @@
       }
     }
 
+    function loadGuestMessages() {
+      loadLocalMessageCache();
+    }
+
     function subscribeRealtimeMessages() {
       if (!supabaseClient) return;
       try {
@@ -1402,6 +1916,7 @@
 
       await fetchChannelMessages(channelKey);
 
+      // Mobile Menu Close
       const sidebar = document.getElementById('channel-sidebar');
       if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
         sidebar.classList.add('-translate-x-full');
@@ -1425,6 +1940,7 @@
       const channel = state.channels[state.activeChannel];
       if (!channel) return;
 
+      // Render channel welcome header
       const welcomeHeader = document.createElement('div');
       welcomeHeader.className = 'py-6 mb-4 border-b border-sunrise-border/50 relative z-10';
       welcomeHeader.innerHTML = `
@@ -1450,20 +1966,22 @@
           const msgEl = document.createElement('div');
           msgEl.className = 'flex items-start gap-3 group hover:bg-white/[0.03] p-2 rounded-lg transition-colors relative z-10';
           
+          const pfpBg = msg.avatarUrl ? '' : `style="background-color: ${msg.pfpBg || '#141417'};"`;
           const pfpContent = msg.avatarUrl 
             ? `<div class="w-8 h-8 rounded-full bg-cover bg-center shrink-0 border border-white/20" style="background-image: url('${msg.avatarUrl}')"></div>`
-            : `<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-white/20 font-bold text-xs text-white bg-sunrise-surface">${msg.initial || 'U'}</div>`;
+            : `<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-white/20 font-bold text-xs text-white" ${pfpBg}>${msg.initial || (msg.author ? msg.author.charAt(0).toUpperCase() : 'U')}</div>`;
 
+          const authorColor = msg.nameColor || '#ffffff';
           const mediaHtml = msg.imageUrl ? `<img src="${msg.imageUrl}" class="mt-2 max-w-xs max-h-60 rounded-xl border border-sunrise-border object-cover">` : '';
 
           msgEl.innerHTML = `
             ${pfpContent}
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-2 mb-0.5">
-                <span class="text-xs font-semibold text-white">${msg.author || 'User'}</span>
+                <span class="text-xs font-semibold" style="color: ${authorColor}">${msg.author || 'User'}</span>
                 <span class="text-[10px] text-sunrise-muted">${msg.time || 'Just now'}</span>
               </div>
-              ${msg.text ? `<p class="text-xs text-white/90 leading-relaxed break-words font-normal">${escapeHtml(msg.text)}</p>` : ''}
+              ${msg.text ? `<p class="text-xs text-white/90 leading-relaxed break-words font-normal">${escapeHtml(msg.text || msg.content || '')}</p>` : ''}
               ${mediaHtml}
             </div>
           `;
@@ -1494,6 +2012,7 @@
       const now = new Date();
       const timeStr = `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
+      // 1. Instantly render and store local message
       const localMsg = {
         id: 'msg-' + Date.now(),
         author: state.currentUser ? state.currentUser.name : 'You',
@@ -1501,6 +2020,7 @@
         time: timeStr,
         text: text,
         imageUrl: attachment || null,
+        nameColor: state.currentUser ? state.currentUser.nameColor : '#ffffff',
         avatarUrl: state.currentUser ? state.currentUser.pfpUrl : ''
       };
 
@@ -1509,10 +2029,21 @@
       saveLocalMessageCache();
       renderMessages();
 
+      // 2. Asynchronously insert to Supabase if session exists
       let userId = state.currentUser ? state.currentUser.id : null;
+      if (!userId && supabaseClient) {
+        try {
+          const { data: { session } } = await supabaseClient.auth.getSession();
+          if (session && session.user) userId = session.user.id;
+        } catch (err) {
+          console.warn("Session check error:", err);
+        }
+      }
 
       if (supabaseClient && userId) {
         try {
+          await fetchUserProfile(userId, state.currentUser ? state.currentUser.email : '');
+
           if (!channel.id) {
             let { data: chData } = await supabaseClient
               .from('channels')
@@ -1520,18 +2051,33 @@
               .ilike('name', channel.title)
               .maybeSingle();
 
-            if (chData) channel.id = chData.id;
+            if (chData) {
+              channel.id = chData.id;
+            } else {
+              const { data: newCh } = await supabaseClient
+                .from('channels')
+                .insert({ name: channel.title.toLowerCase(), category: 'CHANNELS' })
+                .select('id')
+                .single();
+              if (newCh) channel.id = newCh.id;
+            }
           }
 
           if (channel.id) {
             const messageContent = attachment ? (text ? `${text}\n${attachment}` : attachment) : text;
-            await supabaseClient
+            const { error } = await supabaseClient
               .from('messages')
               .insert({
                 channel_id: channel.id,
                 user_id: userId,
                 content: messageContent
               });
+
+            if (error) {
+              console.error("Supabase insert message error:", error);
+            } else {
+              await fetchChannelMessages(channelKey);
+            }
           }
         } catch (err) {
           console.warn("Supabase message send error:", err);
@@ -1544,6 +2090,7 @@
       if (sidebar) sidebar.classList.toggle('-translate-x-full');
     }
 
+    // App Initialization
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setupCursorListeners();
