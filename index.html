@@ -29,10 +29,10 @@
   <!-- Lucide Icons CDN -->
   <script src="https://unpkg.com/lucide@latest"></script>
   
-  <!-- Inter Font -->
+  <!-- Plus Jakarta Sans & JetBrains Mono Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -40,16 +40,17 @@
       theme: {
         extend: {
           fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'sans-serif'],
+            sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
           },
           colors: {
             sunrise: {
               pure: 'var(--sunrise-pure, #000000)',       /* Pure background */
-              charcoal: 'var(--sunrise-charcoal, #0a0a0c)',   /* Sidebar background */
-              surface: 'var(--sunrise-surface, #141417)',    /* Card/Input background */
-              hover: 'var(--sunrise-hover, #1f1f24)',      /* Hover highlight */
-              border: 'var(--sunrise-border, #26262c)',     /* Subtle borders */
-              muted: '#8e8e99',      /* Secondary text */
+              charcoal: 'var(--sunrise-charcoal, #08080a)',   /* Sidebar background */
+              surface: 'var(--sunrise-surface, #121215)',    /* Card/Input background */
+              hover: 'var(--sunrise-hover, #1a1a1e)',      /* Hover highlight */
+              border: 'var(--sunrise-border, #222228)',     /* Subtle borders */
+              muted: '#8a8a98',      /* Secondary text */
               white: 'var(--sunrise-white, #ffffff)',      /* Accent text */
             }
           },
@@ -57,10 +58,15 @@
             'spin-slow': {
               '0%': { transform: 'translate(-50%, -50%) rotate(0deg)' },
               '100%': { transform: 'translate(-50%, -50%) rotate(360deg)' },
+            },
+            'bounce-dots': {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-3px)' }
             }
           },
           animation: {
             'spin-slow': 'spin-slow 8s linear infinite',
+            'bounce-dots': 'bounce-dots 1.2s infinite ease-in-out',
           }
         }
       }
@@ -70,14 +76,14 @@
   <style>
     :root {
       --sunrise-pure: #000000;
-      --sunrise-charcoal: #0a0a0c;
-      --sunrise-surface: #141417;
-      --sunrise-hover: #1f1f24;
-      --sunrise-border: #26262c;
+      --sunrise-charcoal: #08080a;
+      --sunrise-surface: #121215;
+      --sunrise-hover: #1a1a1e;
+      --sunrise-border: #222228;
       --sunrise-white: #ffffff;
     }
 
-    /* Global Cursor Reset - Native Cursor Toggleable via Body Class */
+    /* Global Cursor Reset */
     body:not(.native-cursor) *, 
     body:not(.native-cursor) *::before, 
     body:not(.native-cursor) *::after {
@@ -93,14 +99,14 @@
       background: transparent;
     }
     ::-webkit-scrollbar-thumb {
-      background: var(--sunrise-border, #26262c);
+      background: var(--sunrise-border, #222228);
       border-radius: 9999px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #3a3a42;
+      background: #363640;
     }
 
-    /* Custom Ring Rotation Animation */
+    /* Ring Rotation Animation */
     @keyframes cursorRotate {
       0% { transform: translate(-50%, -50%) rotate(0deg); }
       100% { transform: translate(-50%, -50%) rotate(360deg); }
@@ -110,9 +116,7 @@
       animation: cursorRotate 6s linear infinite;
     }
 
-    /* ========================================== */
-    /* ENHANCED B&W ANIMATED AURORA BACKGROUND    */
-    /* ========================================== */
+    /* B&W ANIMATED AURORA BACKGROUND */
     @keyframes auroraShift {
       0% { background-position: 0% 50%; }
       50% { background-position: 100% 50%; }
@@ -133,7 +137,7 @@
 
     .aurora-bg {
       position: relative;
-      background: linear-gradient(135deg, #000000, #09090b, #15151a, #050507, #000000);
+      background: linear-gradient(135deg, #000000, #08080a, #131318, #040406, #000000);
       background-size: 400% 400%;
       animation: auroraShift 22s ease infinite;
       overflow: hidden;
@@ -175,30 +179,26 @@
     }
   </style>
 </head>
-<body class="bg-sunrise-pure text-white font-sans antialiased h-screen overflow-hidden flex select-none relative">
+<body class="bg-sunrise-pure text-white font-sans antialiased h-screen overflow-hidden flex select-none relative tracking-tight">
 
   <!-- ========================================== -->
   <!-- LOADING SCREEN OVERLAY (3 SECONDS)         -->
   <!-- ========================================== -->
   <div id="loading-screen" class="fixed inset-0 z-[99999] bg-[#000000] flex flex-col items-center justify-center transition-opacity duration-500">
     <div class="relative w-20 h-20 flex items-center justify-center mb-6">
-      <!-- Outer Rotating Circle -->
       <div class="absolute inset-0 rounded-full border-2 border-transparent border-t-white border-r-white/30 animate-spin" style="animation-duration: 1.2s;"></div>
-      <!-- Middle Rotating Circle (Reverse) -->
       <div class="absolute inset-2 rounded-full border-2 border-transparent border-b-white/80 border-l-white/20 animate-spin" style="animation-duration: 0.8s; animation-direction: reverse;"></div>
-      <!-- Inner Rotating Circle -->
       <div class="absolute inset-4 rounded-full border-2 border-transparent border-t-white border-l-white/40 animate-spin" style="animation-duration: 0.5s;"></div>
     </div>
     <div class="flex items-center gap-2">
-      <!-- Triangle with Eye Icon -->
       <svg class="w-5 h-5 text-white animate-pulse" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polygon points="12 3 2 21 22 21"></polygon>
         <path d="M7.5 15.5c1.2-1.5 2.8-2.5 4.5-2.5s3.3 1 4.5 2.5"></path>
         <circle cx="12" cy="15" r="1.5" fill="currentColor"></circle>
       </svg>
-      <span class="text-xs font-semibold tracking-widest uppercase text-white/90">Loading Workspace</span>
+      <span class="text-xs font-bold tracking-widest uppercase text-white">Loading Workspace</span>
     </div>
-    <p class="text-[10px] text-sunrise-muted mt-1 font-mono">Syncing environment...</p>
+    <p class="text-[10px] text-sunrise-muted mt-1.5 font-mono">Syncing environment & settings...</p>
   </div>
 
   <!-- ========================================== -->
@@ -211,11 +211,10 @@
   <!-- AUTHENTICATION CONTAINER (LOG IN / SIGN UP)-->
   <!-- ========================================== -->
   <div id="auth-container" class="fixed inset-0 z-[100] bg-sunrise-pure flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-sunrise-charcoal border border-sunrise-border rounded-xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-      <!-- Ambient Glow Accent -->
+    <div class="w-full max-w-md bg-sunrise-charcoal border border-sunrise-border rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
       <div class="absolute -top-12 -left-12 w-32 h-32 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
 
-      <!-- Header / Eye-in-Triangle Logo -->
+      <!-- Header / Logo -->
       <div class="text-center mb-6">
         <div class="w-12 h-12 rounded-2xl bg-white text-sunrise-pure mx-auto flex items-center justify-center mb-3 shadow-lg shadow-white/10">
           <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -228,12 +227,12 @@
         <p class="text-xs text-sunrise-muted mt-1">Minimal workspace for creators</p>
       </div>
 
-      <!-- Auth Mode Tabs -->
-      <div class="flex bg-sunrise-pure p-1 rounded-lg border border-sunrise-border mb-6">
-        <button id="tab-login" type="button" onclick="switchAuthTab('login')" class="flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target">
+      <!-- Auth Tabs -->
+      <div class="flex bg-sunrise-pure p-1 rounded-xl border border-sunrise-border mb-6">
+        <button id="tab-login" type="button" onclick="switchAuthTab('login')" class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all text-white bg-sunrise-surface shadow-sm interactive-target">
           Log In
         </button>
-        <button id="tab-signup" type="button" onclick="switchAuthTab('signup')" class="flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target">
+        <button id="tab-signup" type="button" onclick="switchAuthTab('signup')" class="flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all text-sunrise-muted hover:text-white interactive-target">
           Create Account
         </button>
       </div>
@@ -241,53 +240,48 @@
       <!-- Auth Form -->
       <form id="auth-form" onsubmit="handleAuthSubmit(event)" class="space-y-4">
         
-        <!-- Sign Up Only Fields -->
         <div id="signup-fields" class="space-y-3 hidden">
           <div>
-            <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1">Display Name</label>
-            <input type="text" id="auth-display-name" placeholder="Alex" autocomplete="off" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+            <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1 font-mono">Display Name</label>
+            <input type="text" id="auth-display-name" placeholder="Alex" autocomplete="off" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-xl px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
           </div>
           <div>
-            <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1">Username</label>
-            <input type="text" id="auth-username" placeholder="alex_dev" autocomplete="off" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+            <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1 font-mono">Username</label>
+            <input type="text" id="auth-username" placeholder="alex_dev" autocomplete="off" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-xl px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
           </div>
         </div>
 
-        <!-- Common Fields -->
         <div>
-          <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1">Email Address</label>
-          <input type="email" id="auth-email" required placeholder="alex@workspace.app" autocomplete="email" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+          <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider mb-1 font-mono">Email Address</label>
+          <input type="email" id="auth-email" required placeholder="alex@workspace.app" autocomplete="email" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-xl px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
         </div>
 
         <div>
           <div class="flex justify-between items-center mb-1">
-            <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider">Password</label>
+            <label class="block text-[10px] font-bold text-sunrise-muted uppercase tracking-wider font-mono">Password</label>
             <a href="#" id="forgot-password-link" onclick="event.preventDefault();" class="text-[10px] text-sunrise-muted hover:text-white transition-colors interactive-target">Forgot?</a>
           </div>
-          <input type="password" id="auth-password" required placeholder="••••••••" autocomplete="current-password" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+          <input type="password" id="auth-password" required placeholder="••••••••" autocomplete="current-password" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-xl px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
         </div>
 
-        <!-- Submit Button -->
-        <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-white text-sunrise-pure font-semibold text-xs rounded-lg hover:bg-neutral-200 transition-colors shadow-md shadow-white/5 mt-2 flex items-center justify-center gap-2 interactive-target">
+        <button type="submit" id="auth-submit-btn" class="w-full py-2.5 bg-white text-sunrise-pure font-bold text-xs rounded-xl hover:bg-neutral-200 transition-colors shadow-md shadow-white/5 mt-2 flex items-center justify-center gap-2 interactive-target">
           <span>Log In</span>
           <i data-lucide="arrow-right" class="w-3.5 h-3.5 stroke-[2.5]"></i>
         </button>
       </form>
 
-      <!-- Divider & Demo / Guest Shortcut -->
       <div class="relative my-5">
         <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-sunrise-border"></div></div>
-        <div class="relative flex justify-center text-[10px] uppercase"><span class="bg-sunrise-charcoal px-2 text-sunrise-muted">Or</span></div>
+        <div class="relative flex justify-center text-[10px] uppercase"><span class="bg-sunrise-charcoal px-2 text-sunrise-muted font-mono">Or</span></div>
       </div>
 
-      <button type="button" onclick="continueAsGuest()" class="w-full py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/30 text-white font-medium text-xs rounded-lg transition-all flex items-center justify-center gap-2 interactive-target">
+      <button type="button" onclick="continueAsGuest()" class="w-full py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/30 text-white font-semibold text-xs rounded-xl transition-all flex items-center justify-center gap-2 interactive-target">
         <i data-lucide="sparkles" class="w-3.5 h-3.5 text-white/80"></i>
         <span>Continue as Demo Guest</span>
       </button>
 
-      <!-- Status indicator for Supabase readiness -->
       <p class="text-[10px] text-sunrise-muted/60 text-center mt-4 font-mono flex items-center justify-center gap-1.5">
-        <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
         <span>Connected to Supabase Project</span>
       </p>
     </div>
@@ -301,9 +295,7 @@
   <!-- ========================================== -->
   <aside class="w-16 bg-[#000000] border-r border-sunrise-border flex flex-col items-center py-3 space-y-3 z-30 shrink-0">
     
-    <!-- Primary Brand Logo: Triangle with Eye -->
     <div class="relative group interactive-target">
-      <!-- Active Pill Indicator -->
       <div class="absolute -left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-8 bg-white rounded-r-full transition-all duration-200"></div>
       
       <button class="w-11 h-11 rounded-2xl bg-white text-sunrise-pure flex items-center justify-center font-bold shadow-md shadow-white/10 group-hover:rounded-xl transition-all duration-300">
@@ -314,42 +306,37 @@
         </svg>
       </button>
       
-      <!-- Tooltip -->
-      <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
+      <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded-lg border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
         Workspace HQ
       </div>
     </div>
 
     <div class="w-7 h-[1px] bg-sunrise-border/80 my-1"></div>
 
-    <!-- Server List -->
     <div class="flex-1 space-y-3 w-full flex flex-col items-center overflow-y-auto no-scrollbar">
       
-      <!-- Server 1 -->
       <div class="relative group interactive-target">
         <div class="absolute -left-2.5 top-1/2 -translate-y-1/2 w-1.5 h-0 group-hover:h-5 bg-white/70 rounded-r-full transition-all duration-200"></div>
-        <button class="w-11 h-11 rounded-3xl bg-sunrise-charcoal border border-sunrise-border flex items-center justify-center text-xs font-semibold text-sunrise-muted group-hover:bg-sunrise-hover group-hover:text-white group-hover:rounded-xl transition-all duration-300">
+        <button class="w-11 h-11 rounded-3xl bg-sunrise-charcoal border border-sunrise-border flex items-center justify-center text-xs font-bold text-sunrise-muted group-hover:bg-sunrise-hover group-hover:text-white group-hover:rounded-xl transition-all duration-300">
           DEV
         </button>
-        <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
+        <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded-lg border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
           Developers Lab
         </div>
       </div>
 
-      <!-- Add Server Button -->
       <button class="w-11 h-11 rounded-3xl bg-sunrise-charcoal border border-dashed border-sunrise-border/80 flex items-center justify-center text-sunrise-muted hover:text-white hover:bg-sunrise-hover hover:border-white/40 hover:rounded-xl transition-all duration-300 group relative interactive-target">
         <i data-lucide="plus" class="w-4 h-4"></i>
-        <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
+        <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded-lg border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
           Create Server
         </div>
       </button>
 
     </div>
 
-    <!-- Bottom Settings Icon -->
     <button class="w-11 h-11 rounded-2xl bg-sunrise-charcoal border border-sunrise-border/60 flex items-center justify-center text-sunrise-muted hover:text-white hover:bg-sunrise-hover transition-all duration-300 relative group interactive-target">
       <i data-lucide="compass" class="w-4 h-4"></i>
-      <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
+      <div class="absolute left-16 top-1/2 -translate-y-1/2 px-2.5 py-1 bg-sunrise-pure text-white text-xs font-medium rounded-lg border border-sunrise-border opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50 shadow-xl">
         Explore
       </div>
     </button>
@@ -361,7 +348,6 @@
   <!-- ========================================== -->
   <aside id="channel-sidebar" class="w-56 bg-sunrise-charcoal border-r border-sunrise-border flex flex-col shrink-0 transition-transform duration-300 absolute md:relative z-20 h-full -translate-x-full md:translate-x-0">
     
-    <!-- Server Title Header -->
     <header class="h-13 px-3.5 border-b border-sunrise-border flex items-center justify-between cursor-pointer hover:bg-sunrise-hover/50 transition-colors interactive-target">
       <div class="flex items-center gap-2">
         <div class="w-2 h-2 rounded-full bg-white"></div>
@@ -370,12 +356,10 @@
       <i data-lucide="chevron-down" class="w-3.5 h-3.5 text-sunrise-muted"></i>
     </header>
 
-    <!-- Channels Navigation List -->
-    <div class="flex-1 overflow-y-auto px-2 py-3 space-y-5">
+    <div class="flex-1 overflow-y-auto px-2.5 py-3 space-y-5">
       
-      <!-- Category 1: Information -->
       <div>
-        <div class="flex items-center justify-between text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1 uppercase">
+        <div class="flex items-center justify-between text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1.5 uppercase font-mono">
           <span>Information</span>
           <i data-lucide="shield-alert" class="w-3 h-3 text-sunrise-muted/60"></i>
         </div>
@@ -384,9 +368,8 @@
         </nav>
       </div>
 
-      <!-- Category 2: Text Channels -->
       <div>
-        <div class="flex items-center justify-between text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1 uppercase">
+        <div class="flex items-center justify-between text-[10px] font-bold text-sunrise-muted tracking-widest px-2 mb-1.5 uppercase font-mono">
           <span>Channels</span>
           <button class="hover:text-white transition-colors interactive-target"><i data-lucide="plus" class="w-3 h-3"></i></button>
         </div>
@@ -397,27 +380,36 @@
 
     </div>
 
-    <!-- User Profile Bar -->
-    <div class="p-2 bg-[#000000] border-t border-sunrise-border flex items-center justify-between">
-      <div class="flex items-center gap-2 min-w-0">
+    <!-- User Profile Footer Bar -->
+    <div class="p-2.5 bg-[#000000] border-t border-sunrise-border flex items-center justify-between">
+      <div class="flex items-center gap-2.5 min-w-0">
         <div class="relative shrink-0">
           <div id="user-pfp" class="w-8 h-8 rounded-full bg-sunrise-surface border border-white/20 flex items-center justify-center font-bold text-xs text-white">
             Y
           </div>
-          <div class="absolute bottom-0 right-0 w-2 h-2 bg-white rounded-full ring-2 ring-sunrise-pure"></div>
+          <div id="user-status-dot" class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-sunrise-pure" title="Online"></div>
         </div>
         
         <div class="truncate">
-          <div id="user-display-name" class="text-xs font-semibold text-white leading-tight truncate">You</div>
-          <div id="user-handle" class="text-[10px] text-sunrise-muted leading-tight truncate">@you</div>
+          <div id="user-display-name-wrap" class="flex items-center gap-1 text-xs font-bold text-white leading-tight truncate">
+            <span id="user-display-name">You</span>
+            <span id="user-admin-badge" class="hidden">
+              <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="12 3 2 21 22 21"></polygon>
+                <path d="M7.5 15.5c1.2-1.5 2.8-2.5 4.5-2.5s3.3 1 4.5 2.5"></path>
+                <circle cx="12" cy="15" r="1.5" fill="currentColor"></circle>
+              </svg>
+            </span>
+          </div>
+          <div id="user-handle" class="text-[10px] text-sunrise-muted leading-tight truncate font-mono">@you</div>
         </div>
       </div>
 
       <div class="flex items-center gap-0.5 text-sunrise-muted">
-        <button onclick="openSettingsModal()" class="p-1 hover:text-white hover:bg-sunrise-hover rounded transition-colors interactive-target" title="User Settings">
+        <button onclick="openSettingsModal()" class="p-1 hover:text-white hover:bg-sunrise-hover rounded-lg transition-colors interactive-target" title="User Settings">
           <i data-lucide="settings" class="w-3.5 h-3.5"></i>
         </button>
-        <button onclick="logout()" class="p-1 hover:text-white hover:bg-sunrise-hover rounded transition-colors interactive-target" title="Log Out">
+        <button onclick="logout()" class="p-1 hover:text-white hover:bg-sunrise-hover rounded-lg transition-colors interactive-target" title="Log Out">
           <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
         </button>
       </div>
@@ -430,7 +422,6 @@
   <!-- ========================================== -->
   <main class="flex-1 flex flex-col min-w-0 bg-sunrise-pure relative">
     
-    <!-- Channel Header Bar -->
     <header class="h-13 px-4 border-b border-sunrise-border flex items-center justify-between bg-sunrise-charcoal/80 backdrop-blur-md shrink-0 z-20">
       <div class="flex items-center gap-2.5 min-w-0">
         <button onclick="toggleMobileMenu()" class="md:hidden p-1 text-sunrise-muted hover:text-white interactive-target">
@@ -446,25 +437,23 @@
         </p>
       </div>
 
-      <!-- Action Icons -->
       <div class="flex items-center gap-2 text-sunrise-muted">
-        <button class="p-1.5 hover:text-white rounded transition-colors interactive-target" title="Pinned Messages">
+        <button class="p-1.5 hover:text-white rounded-lg transition-colors interactive-target" title="Pinned Messages">
           <i data-lucide="pin" class="w-4 h-4"></i>
         </button>
 
-        <button onclick="toggleMemberList()" class="p-1.5 hover:text-white rounded transition-colors interactive-target" title="Toggle Member Sidebar">
+        <button onclick="toggleMemberList()" class="p-1.5 hover:text-white rounded-lg transition-colors interactive-target" title="Toggle Member Sidebar">
           <i data-lucide="users" class="w-4 h-4"></i>
         </button>
       </div>
     </header>
 
-    <!-- Chat Messages Animated B&W Aurora Scroll Container -->
     <div id="chat-messages" class="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 aurora-bg">
-      <!-- Dynamic Content Rendered Here -->
+      <!-- Messages rendered dynamically -->
     </div>
 
-    <!-- GIF Popover Picker Modal -->
-    <div id="gif-picker-popover" class="hidden absolute bottom-16 left-4 z-50 w-72 sm:w-80 bg-sunrise-charcoal border border-sunrise-border rounded-xl shadow-2xl p-3 space-y-2">
+    <!-- GIF Picker Popover Modal -->
+    <div id="gif-picker-popover" class="hidden absolute bottom-16 left-4 z-50 w-72 sm:w-80 bg-sunrise-charcoal border border-sunrise-border rounded-2xl shadow-2xl p-3 space-y-2">
       <div class="flex items-center justify-between border-b border-sunrise-border pb-2">
         <span class="text-xs font-bold text-white flex items-center gap-1.5">
           <i data-lucide="sparkles" class="w-3.5 h-3.5 text-white"></i> Select a GIF
@@ -472,46 +461,54 @@
         <button type="button" onclick="toggleGifPicker(false)" class="text-sunrise-muted hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
       <div class="grid grid-cols-2 gap-2 max-h-56 overflow-y-auto p-1">
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWp3dWV1dnN0Nm9iOXZxYnc4ZWdzbzB4c3BybjU5MGlhcHRiMHZjOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKsjRrfIPjeiVyM/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm41b3I5ZWpneXlsbW9uaTFmZmYyMmZvZTVuYXlhOWIxdDRwb3drOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0AMJzC6f02acGE6s/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXVjbnA3bndwbzNhNG5rcjdyb25iOWlqMXVpOWx2MnByY3MzaXRzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/d31w24psGYeedC64/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2RmejNhNWZsd2R4bHAxaDlyMGs0NWpneTlzZWtwMWY3Nm5lMHltZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT0xezQGU5xCDJuCPe/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHp1MGdveGthMDltZjJrcmhkamdrdm4zaTBucHBsaG5ocmV2dDF0MCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l3q2K5jinAlChoCLS/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
-        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHlyZWJxeTNua2pldzR0NmE0cG5wM2hxaXdzMXlhdmdhZmVyd3ZxdCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/26u4cqiYI30juCOGY/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdWp3dWV1dnN0Nm9iOXZxYnc4ZWdzbzB4c3BybjU5MGlhcHRiMHZjOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3o7TKsjRrfIPjeiVyM/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExbm41b3I5ZWpneXlsbW9uaTFmZmYyMmZvZTVuYXlhOWIxdDRwb3drOCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/l0AMJzC6f02acGE6s/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOXVjbnA3bndwbzNhNG5rcjdyb25iOWlqMXVpOWx2MnByY3MzaXRzdyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/d31w24psGYeedC64/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
+        <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExd2RmejNhNWZsd2R4bHAxaDlyMGs0NWpneTlzZWtwMWY3Nm5lMHltZyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/xT0xezQGU5xCDJuCPe/giphy.gif" onclick="selectGif(this.src)" class="w-full h-24 object-cover rounded-xl cursor-pointer hover:opacity-80 transition-opacity border border-sunrise-border">
       </div>
     </div>
 
-    <!-- Message Input Bar -->
+    <!-- Message Input Container & Dynamic Typing Bar -->
     <div class="p-3 bg-sunrise-pure border-t border-sunrise-border shrink-0 z-20">
+      
+      <!-- Live Typing Indicator Bar -->
+      <div id="typing-indicator-bar" class="hidden px-2 pb-1.5 flex items-center gap-2 text-[11px] text-sunrise-muted font-medium transition-all">
+        <div class="flex items-center gap-1">
+          <span class="w-1.5 h-1.5 rounded-full bg-white/70 animate-bounce-dots" style="animation-delay: 0s;"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-white/70 animate-bounce-dots" style="animation-delay: 0.2s;"></span>
+          <span class="w-1.5 h-1.5 rounded-full bg-white/70 animate-bounce-dots" style="animation-delay: 0.4s;"></span>
+        </div>
+        <span id="typing-text-content"><strong class="text-white">You</strong> is typing...</span>
+      </div>
+
       <!-- Attachment Preview Container -->
-      <div id="attachment-preview" class="hidden mb-2 p-2 bg-sunrise-surface border border-sunrise-border rounded-lg flex items-center justify-between">
+      <div id="attachment-preview" class="hidden mb-2 p-2 bg-sunrise-surface border border-sunrise-border rounded-xl flex items-center justify-between">
         <div class="flex items-center gap-2">
-          <img id="preview-attach-img" src="" class="w-10 h-10 object-cover rounded">
+          <img id="preview-attach-img" src="" class="w-10 h-10 object-cover rounded-lg">
           <span class="text-xs text-sunrise-muted">Image attached</span>
         </div>
         <button type="button" onclick="removeAttachment()" class="text-sunrise-muted hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
       </div>
 
-      <form id="message-form" onsubmit="handleSendMessage(event)" class="bg-sunrise-surface border border-sunrise-border focus-within:border-white/40 rounded-lg p-2 flex items-center gap-2 transition-all">
+      <form id="message-form" onsubmit="handleSendMessage(event)" class="bg-sunrise-surface border border-sunrise-border focus-within:border-white/40 rounded-xl p-2 flex items-center gap-2 transition-all">
         
-        <!-- Image Upload Button -->
         <input type="file" id="chat-file-input" accept="image/*" class="hidden" onchange="handleChatFileUpload(event)">
-        <button type="button" onclick="document.getElementById('chat-file-input').click()" class="p-1 text-sunrise-muted hover:text-white rounded transition-colors interactive-target" title="Upload Image">
+        <button type="button" onclick="document.getElementById('chat-file-input').click()" class="p-1.5 text-sunrise-muted hover:text-white rounded-lg transition-colors interactive-target" title="Upload Image">
           <i data-lucide="image" class="w-4 h-4"></i>
         </button>
 
-        <!-- GIF Button -->
-        <button type="button" onclick="toggleGifPicker()" class="p-1 text-sunrise-muted hover:text-white rounded transition-colors interactive-target" title="Insert GIF">
-          <span class="font-bold text-[10px] px-1 bg-white/10 rounded">GIF</span>
+        <button type="button" onclick="toggleGifPicker()" class="p-1 text-sunrise-muted hover:text-white rounded-lg transition-colors interactive-target" title="Insert GIF">
+          <span class="font-bold text-[10px] px-1.5 py-0.5 bg-white/10 rounded-md font-mono">GIF</span>
         </button>
 
         <input type="text" 
                id="message-input" 
+               oninput="handleUserTyping()"
                placeholder="Message #general" 
                autocomplete="off"
                class="flex-1 bg-transparent text-xs text-white placeholder-sunrise-muted focus:outline-none px-1">
 
-        <button type="submit" class="p-1.5 bg-white text-sunrise-pure hover:bg-neutral-200 transition-colors rounded font-medium flex items-center justify-center interactive-target">
+        <button type="submit" class="p-1.5 bg-white text-sunrise-pure hover:bg-neutral-200 transition-colors rounded-lg font-bold flex items-center justify-center interactive-target">
           <i data-lucide="arrow-up" class="w-3.5 h-3.5 stroke-[3]"></i>
         </button>
       </form>
@@ -525,24 +522,33 @@
   <aside id="member-sidebar" class="w-52 bg-sunrise-charcoal border-l border-sunrise-border hidden lg:flex flex-col shrink-0 p-3 overflow-y-auto">
     
     <div>
-      <h3 class="text-[10px] font-bold text-sunrise-muted uppercase tracking-widest mb-2 px-1">
+      <h3 class="text-[10px] font-bold text-sunrise-muted uppercase tracking-widest mb-2 px-1 font-mono">
         Online — <span id="online-count">1</span>
       </h3>
       
-      <div class="flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-sunrise-hover/60 cursor-pointer transition-colors group interactive-target">
+      <div class="flex items-center gap-2.5 px-2 py-2 rounded-xl hover:bg-sunrise-hover/60 cursor-pointer transition-colors group interactive-target">
         <div class="relative shrink-0">
-          <div id="member-user-pfp" class="w-7 h-7 rounded-full bg-sunrise-surface border border-white/20 flex items-center justify-center font-bold text-xs text-white">
+          <div id="member-user-pfp" class="w-8 h-8 rounded-full bg-sunrise-surface border border-white/20 flex items-center justify-center font-bold text-xs text-white">
             Y
           </div>
-          <div class="absolute bottom-0 right-0 w-2 h-2 bg-white rounded-full ring-2 ring-sunrise-charcoal"></div>
+          <div id="member-status-dot" class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-sunrise-charcoal" title="Online"></div>
         </div>
         
         <div class="truncate min-w-0 flex-1">
           <div class="flex items-center justify-between">
-            <span id="member-user-display-name" class="text-xs font-semibold text-white/90 group-hover:text-white truncate">You</span>
-            <span class="text-[9px] font-bold px-1 py-0.2 bg-white/10 border border-white/20 text-white rounded">OWNER</span>
+            <span id="member-user-display-name-wrap" class="flex items-center gap-1 text-xs font-bold text-white/90 group-hover:text-white truncate">
+              <span id="member-user-display-name">You</span>
+              <span id="member-admin-badge" class="hidden">
+                <svg class="w-3.5 h-3.5 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 3 2 21 22 21"></polygon>
+                  <path d="M7.5 15.5c1.2-1.5 2.8-2.5 4.5-2.5s3.3 1 4.5 2.5"></path>
+                  <circle cx="12" cy="15" r="1.5" fill="currentColor"></circle>
+                </svg>
+              </span>
+            </span>
+            <span class="text-[9px] font-bold px-1.5 py-0.5 bg-white/10 border border-white/20 text-white rounded-md font-mono">OWNER</span>
           </div>
-          <div id="member-user-handle" class="text-[10px] text-sunrise-muted truncate">@you</div>
+          <div id="member-user-handle" class="text-[10px] text-sunrise-muted truncate font-mono">@you</div>
         </div>
       </div>
     </div>
@@ -552,54 +558,58 @@
   </div> <!-- END #main-app -->
 
   <!-- ========================================== -->
-  <!-- 5. USER SETTINGS MODAL                     -->
+  <!-- 5. FULL SETTINGS MODAL (RESTORED ALL TABS) -->
   <!-- ========================================== -->
   <div id="settings-modal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-200">
-    <!-- Toast Notification -->
-    <div id="settings-toast" class="fixed top-6 right-6 z-[210] bg-white text-sunrise-pure font-semibold text-xs px-4 py-2.5 rounded-lg shadow-xl flex items-center gap-2 translate-y-[-20px] opacity-0 transition-all duration-300 pointer-events-none">
+    <div id="settings-toast" class="fixed top-6 right-6 z-[210] bg-white text-sunrise-pure font-bold text-xs px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 translate-y-[-20px] opacity-0 transition-all duration-300 pointer-events-none">
       <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-600"></i>
       <span id="toast-message">Settings saved successfully!</span>
     </div>
 
-    <div class="w-full max-w-4xl h-[85vh] max-h-[700px] bg-sunrise-charcoal border border-sunrise-border rounded-2xl shadow-2xl flex overflow-hidden relative">
+    <div class="w-full max-w-4xl h-[85vh] max-h-[720px] bg-sunrise-charcoal border border-sunrise-border rounded-2xl shadow-2xl flex overflow-hidden relative">
       
-      <!-- Close Button -->
       <button onclick="closeSettingsModal()" class="absolute top-4 right-4 z-20 p-2 text-sunrise-muted hover:text-white hover:bg-sunrise-hover rounded-full transition-colors interactive-target" title="Esc to close">
         <i data-lucide="x" class="w-5 h-5"></i>
       </button>
 
-      <!-- Settings Sidebar -->
+      <!-- Settings Sidebar Navigation -->
       <aside class="w-48 sm:w-56 bg-sunrise-pure border-r border-sunrise-border p-4 flex flex-col justify-between shrink-0">
         <div>
-          <h2 class="text-xs font-bold uppercase tracking-wider text-sunrise-muted px-2 mb-3">Settings</h2>
+          <h2 class="text-[10px] font-bold uppercase tracking-wider text-sunrise-muted px-2 mb-3 font-mono">Settings</h2>
           <nav class="space-y-1">
-            <button id="set-tab-profile" onclick="switchSettingsTab('profile')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium bg-sunrise-surface text-white flex items-center gap-2 transition-all interactive-target">
+            <button id="set-tab-profile" onclick="switchSettingsTab('profile')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold bg-sunrise-surface text-white flex items-center gap-2 transition-all interactive-target">
               <i data-lucide="user" class="w-3.5 h-3.5"></i>
               <span>User Profile</span>
             </button>
-            <button id="set-tab-appearance" onclick="switchSettingsTab('appearance')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
+            <button id="set-tab-appearance" onclick="switchSettingsTab('appearance')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
               <div class="flex items-center gap-2">
                 <i data-lucide="palette" class="w-3.5 h-3.5"></i>
                 <span>Appearance</span>
               </div>
             </button>
-            <button id="set-tab-cursor" onclick="switchSettingsTab('cursor')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
+            <button id="set-tab-cursor" onclick="switchSettingsTab('cursor')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
               <div class="flex items-center gap-2">
                 <i data-lucide="mouse-pointer" class="w-3.5 h-3.5"></i>
                 <span>Cursor</span>
               </div>
             </button>
-            <button id="set-tab-tags" onclick="switchSettingsTab('tags')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
+            <button id="set-tab-tags" onclick="switchSettingsTab('tags')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
               <div class="flex items-center gap-2">
                 <i data-lucide="tag" class="w-3.5 h-3.5"></i>
                 <span>Server Tags</span>
               </div>
-              <span class="text-[9px] font-bold px-1.5 py-0.5 bg-sunrise-surface border border-sunrise-border text-sunrise-muted rounded">SOON</span>
+              <span class="text-[9px] font-bold px-1.5 py-0.5 bg-sunrise-surface border border-sunrise-border text-sunrise-muted rounded-md font-mono">SOON</span>
+            </button>
+            <button id="set-tab-admin" onclick="switchSettingsTab('admin')" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-amber-400/90 hover:text-amber-300 hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target">
+              <div class="flex items-center gap-2">
+                <i data-lucide="shield" class="w-3.5 h-3.5"></i>
+                <span>Admin & Badges</span>
+              </div>
             </button>
           </nav>
         </div>
 
-        <button onclick="logout(); closeSettingsModal();" class="w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-white/80 hover:bg-white/10 flex items-center gap-2 transition-all interactive-target">
+        <button onclick="logout(); closeSettingsModal();" class="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-white/80 hover:bg-white/10 flex items-center gap-2 transition-all interactive-target">
           <i data-lucide="log-out" class="w-3.5 h-3.5"></i>
           <span>Log Out</span>
         </button>
@@ -608,7 +618,7 @@
       <!-- Settings Content Area -->
       <main class="flex-1 overflow-y-auto p-6 relative">
         
-        <!-- SECTION 1: USER PROFILE -->
+        <!-- SECTION 1: USER PROFILE (ALL FIELDS RESTORED + NEW TYPING/STATUS) -->
         <div id="settings-section-profile" class="space-y-6">
           <div>
             <h3 class="text-base font-bold text-white">User Profile</h3>
@@ -618,63 +628,81 @@
           <form onsubmit="saveSettings(event)" class="space-y-5">
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
               
-              <!-- Form Fields -->
               <div class="space-y-4">
 
-                <!-- Display Name Field -->
+                <!-- Display Name -->
                 <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Display Name</label>
-                  <input type="text" id="setting-display-name" oninput="updateSettingsPreview()" placeholder="Your Display Name" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5 font-mono">Display Name</label>
+                  <input type="text" id="setting-display-name" oninput="updateSettingsPreview()" placeholder="Your Display Name" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-xl px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+                </div>
+
+                <!-- Custom Typing Action Phrase -->
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5 font-mono">Custom Typing Action Phrase</label>
+                  <input type="text" id="setting-typing-phrase" oninput="updateSettingsPreview()" placeholder="is yapping..." class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-xl px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+                  <p class="text-[10px] text-sunrise-muted/80 mt-1">Replaces standard "is typing..." with your custom action phrase!</p>
+                </div>
+
+                <!-- Status Indicator Selection -->
+                <div>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5 font-mono">Online Status Indicator</label>
+                  <select id="setting-status" onchange="updateSettingsPreview()" class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-xl px-3 py-2 text-xs text-white focus:outline-none transition-all interactive-target">
+                    <option value="online">🟢 Online</option>
+                    <option value="idle">🌙 Idle</option>
+                    <option value="dnd">⛔ Do Not Disturb</option>
+                    <option value="offline">Invisible / Offline</option>
+                  </select>
                 </div>
 
                 <!-- Avatar Settings -->
                 <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Avatar Image</label>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5 font-mono">Avatar Image</label>
                   <div class="flex items-center gap-2 mb-2">
-                    <input type="url" id="setting-pfp-url" oninput="updateSettingsPreview()" placeholder="https://example.com/avatar.jpg" class="flex-1 bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+                    <input type="url" id="setting-pfp-url" oninput="updateSettingsPreview()" placeholder="https://example.com/avatar.jpg" class="flex-1 bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-xl px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
                     <input type="file" id="pfp-file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'pfp')">
-                    <button type="button" onclick="document.getElementById('pfp-file-input').click()" class="px-3 py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/40 text-xs font-semibold rounded-lg text-white transition-all flex items-center gap-1.5 shrink-0 interactive-target">
+                    <button type="button" onclick="document.getElementById('pfp-file-input').click()" class="px-3 py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/40 text-xs font-semibold rounded-xl text-white transition-all flex items-center gap-1.5 shrink-0 interactive-target">
                       <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                       <span>Upload</span>
                     </button>
                   </div>
                 </div>
 
-                <!-- Avatar Background Fallback Color -->
+                <!-- Avatar BG Color -->
                 <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Avatar BG Color</label>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5 font-mono">Avatar Fallback BG Color</label>
                   <div class="flex items-center gap-2">
-                    <input type="color" id="setting-pfp-bg" oninput="updateSettingsPreview()" value="#141417" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                    <span class="text-xs text-sunrise-muted font-mono" id="setting-pfp-bg-val">#141417</span>
+                    <input type="color" id="setting-pfp-bg" oninput="updateSettingsPreview()" value="#121215" class="w-8 h-8 rounded-lg border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                    <span class="text-xs text-sunrise-muted font-mono" id="setting-pfp-bg-val">#121215</span>
                   </div>
                 </div>
 
-                <!-- Banner Customization -->
+                <!-- Banner Image Customization -->
                 <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Banner Image</label>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5 font-mono">Banner Image</label>
                   <div class="flex items-center gap-2 mb-2">
-                    <input type="url" id="setting-banner-url" oninput="updateSettingsPreview()" placeholder="https://example.com/banner.jpg" class="flex-1 bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
+                    <input type="url" id="setting-banner-url" oninput="updateSettingsPreview()" placeholder="https://example.com/banner.jpg" class="flex-1 bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-xl px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all interactive-target">
                     <input type="file" id="banner-file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event, 'banner')">
-                    <button type="button" onclick="document.getElementById('banner-file-input').click()" class="px-3 py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/40 text-xs font-semibold rounded-lg text-white transition-all flex items-center gap-1.5 shrink-0 interactive-target">
+                    <button type="button" onclick="document.getElementById('banner-file-input').click()" class="px-3 py-2 bg-sunrise-surface border border-sunrise-border hover:border-white/40 text-xs font-semibold rounded-xl text-white transition-all flex items-center gap-1.5 shrink-0 interactive-target">
                       <i data-lucide="upload" class="w-3.5 h-3.5"></i>
                       <span>Upload</span>
                     </button>
                   </div>
                 </div>
 
+                <!-- Banner Color -->
                 <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Banner Color</label>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5 font-mono">Banner Color</label>
                   <div class="flex items-center gap-2">
-                    <input type="color" id="setting-banner-color" oninput="updateSettingsPreview()" value="#1f1f24" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                    <input type="color" id="setting-banner-color" oninput="updateSettingsPreview()" value="#1f1f24" class="w-8 h-8 rounded-lg border border-sunrise-border bg-transparent cursor-pointer interactive-target">
                     <span class="text-xs text-sunrise-muted font-mono" id="setting-banner-val">#1f1f24</span>
                   </div>
                 </div>
 
-                <!-- Name Color Picker & Swatches -->
+                <!-- Display Name Color Picker & Swatches -->
                 <div>
-                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5">Display Name Color</label>
+                  <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5 font-mono">Display Name Color</label>
                   <div class="flex items-center gap-3 mb-2">
-                    <input type="color" id="setting-name-color" oninput="updateSettingsPreview()" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                    <input type="color" id="setting-name-color" oninput="updateSettingsPreview()" value="#ffffff" class="w-8 h-8 rounded-lg border border-sunrise-border bg-transparent cursor-pointer interactive-target">
                     <span class="text-xs text-sunrise-muted font-mono" id="setting-name-color-val">#ffffff</span>
                   </div>
                   <div class="flex items-center gap-2 flex-wrap">
@@ -687,45 +715,49 @@
                   </div>
                 </div>
 
-                <!-- User Bio -->
+                <!-- Bio -->
                 <div>
                   <div class="flex justify-between items-center mb-1.5">
-                    <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted">About Me (Bio)</label>
+                    <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted font-mono">About Me (Bio)</label>
                     <span class="text-[10px] text-sunrise-muted font-mono" id="bio-char-count">0/120</span>
                   </div>
-                  <textarea id="setting-bio" maxlength="120" oninput="updateSettingsPreview()" rows="3" placeholder="Tell the world about yourself..." class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-lg p-2.5 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all resize-none interactive-target"></textarea>
+                  <textarea id="setting-bio" maxlength="120" oninput="updateSettingsPreview()" rows="3" placeholder="Tell the world about yourself..." class="w-full bg-sunrise-surface border border-sunrise-border focus:border-white/50 rounded-xl p-2.5 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none transition-all resize-none interactive-target"></textarea>
                 </div>
               </div>
 
-              <!-- Real-time Live Profile Card Preview -->
+              <!-- Real-time Profile Card Preview -->
               <div>
-                <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2">Live Preview</label>
-                <div class="w-full bg-sunrise-pure border border-sunrise-border rounded-xl overflow-hidden shadow-xl">
+                <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2 font-mono">Live Preview</label>
+                <div class="w-full bg-sunrise-pure border border-sunrise-border rounded-2xl overflow-hidden shadow-xl">
                   
-                  <!-- Preview Banner -->
                   <div id="preview-banner" class="h-24 w-full bg-cover bg-center transition-all relative" style="background-color: #1f1f24;"></div>
 
-                  <!-- Preview Content -->
                   <div class="px-4 pb-4 pt-0 relative">
-                    <!-- Preview Avatar -->
                     <div class="relative -mt-10 mb-3 inline-block">
-                      <div id="preview-pfp" class="w-16 h-16 rounded-full bg-sunrise-surface border-4 border-sunrise-pure bg-cover bg-center flex items-center justify-center font-bold text-lg text-white shadow-lg overflow-hidden" style="background-color: #141417;">
+                      <div id="preview-pfp" class="w-16 h-16 rounded-full bg-sunrise-surface border-4 border-sunrise-pure bg-cover bg-center flex items-center justify-center font-bold text-lg text-white shadow-lg overflow-hidden" style="background-color: #121215;">
                         Y
                       </div>
-                      <div class="absolute bottom-1 right-1 w-3.5 h-3.5 bg-white rounded-full ring-2 ring-sunrise-pure"></div>
+                      <div id="preview-status-dot" class="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 rounded-full ring-2 ring-sunrise-pure"></div>
                     </div>
 
-                    <!-- User Metadata -->
                     <div class="space-y-1">
-                      <h4 id="preview-name" class="font-bold text-sm text-white truncate" style="color: #ffffff;">You</h4>
-                      <p id="preview-handle" class="text-xs text-sunrise-muted truncate">@you</p>
+                      <h4 id="preview-name-wrap" class="font-bold text-sm text-white truncate flex items-center gap-1">
+                        <span id="preview-name">You</span>
+                        <span id="preview-admin-badge" class="hidden">
+                          <svg class="w-4 h-4 text-amber-400 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="12 3 2 21 22 21"></polygon>
+                            <path d="M7.5 15.5c1.2-1.5 2.8-2.5 4.5-2.5s3.3 1 4.5 2.5"></path>
+                            <circle cx="12" cy="15" r="1.5" fill="currentColor"></circle>
+                          </svg>
+                        </span>
+                      </h4>
+                      <p id="preview-handle" class="text-xs text-sunrise-muted truncate font-mono">@you</p>
                     </div>
 
                     <div class="w-full h-[1px] bg-sunrise-border/80 my-3"></div>
 
-                    <!-- Bio Preview -->
                     <div>
-                      <h5 class="text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1">About Me</h5>
+                      <h5 class="text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1 font-mono">About Me</h5>
                       <p id="preview-bio" class="text-xs text-white/90 leading-relaxed font-normal whitespace-pre-line">Monochrome workspace environment.</p>
                     </div>
                   </div>
@@ -735,9 +767,8 @@
 
             </div>
 
-            <!-- Save Action Button -->
             <div class="pt-4 border-t border-sunrise-border flex justify-end">
-              <button type="submit" class="px-5 py-2 bg-white text-sunrise-pure font-semibold text-xs rounded-lg hover:bg-neutral-200 transition-colors shadow-lg shadow-white/5 flex items-center gap-2 interactive-target">
+              <button type="submit" class="px-5 py-2 bg-white text-sunrise-pure font-bold text-xs rounded-xl hover:bg-neutral-200 transition-colors shadow-lg shadow-white/5 flex items-center gap-2 interactive-target">
                 <i data-lucide="check" class="w-3.5 h-3.5 stroke-[2.5]"></i>
                 <span>Save Changes</span>
               </button>
@@ -745,30 +776,27 @@
           </form>
         </div>
 
-        <!-- SECTION 2: APPEARANCE & THEME ENGINE -->
+        <!-- SECTION 2: APPEARANCE (ALL 6 PRESETS & CUSTOM PALETTE CONTROLS RESTORED) -->
         <div id="settings-section-appearance" class="space-y-6 hidden">
           <div>
             <h3 class="text-base font-bold text-white">Appearance & Theme Engine</h3>
             <p class="text-xs text-sunrise-muted">Select workspace theme presets or craft your custom color system.</p>
           </div>
 
-          <!-- Theme Presets Grid -->
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-3">Theme Presets</label>
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-3 font-mono">Theme Presets</label>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
               
-              <!-- Preset 1: Obsidian B&W -->
               <button type="button" onclick="selectThemePreset('obsidian')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
                 <div class="flex items-center gap-1.5 mb-2">
                   <div class="w-3.5 h-3.5 rounded-full bg-[#000000] border border-white/20"></div>
-                  <div class="w-3.5 h-3.5 rounded-full bg-[#0a0a0c]"></div>
+                  <div class="w-3.5 h-3.5 rounded-full bg-[#08080a]"></div>
                   <div class="w-3.5 h-3.5 rounded-full bg-white"></div>
                 </div>
                 <h4 class="text-xs font-semibold text-white">Pure Obsidian</h4>
                 <p class="text-[10px] text-sunrise-muted">Black & white standard</p>
               </button>
 
-              <!-- Preset 2: Charcoal -->
               <button type="button" onclick="selectThemePreset('charcoal')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
                 <div class="flex items-center gap-1.5 mb-2">
                   <div class="w-3.5 h-3.5 rounded-full bg-[#09090b] border border-white/20"></div>
@@ -779,7 +807,6 @@
                 <p class="text-[10px] text-sunrise-muted">Monochrome zinc</p>
               </button>
 
-              <!-- Preset 3: Midnight Blue -->
               <button type="button" onclick="selectThemePreset('midnight')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
                 <div class="flex items-center gap-1.5 mb-2">
                   <div class="w-3.5 h-3.5 rounded-full bg-[#0b0e17] border border-white/20"></div>
@@ -790,7 +817,6 @@
                 <p class="text-[10px] text-sunrise-muted">Deep ocean glow</p>
               </button>
 
-              <!-- Preset 4: Obsidian Emerald -->
               <button type="button" onclick="selectThemePreset('emerald')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
                 <div class="flex items-center gap-1.5 mb-2">
                   <div class="w-3.5 h-3.5 rounded-full bg-[#06120e] border border-white/20"></div>
@@ -801,7 +827,6 @@
                 <p class="text-[10px] text-sunrise-muted">Dark matrix forest</p>
               </button>
 
-              <!-- Preset 5: Crimson Synth -->
               <button type="button" onclick="selectThemePreset('crimson')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
                 <div class="flex items-center gap-1.5 mb-2">
                   <div class="w-3.5 h-3.5 rounded-full bg-[#14090d] border border-white/20"></div>
@@ -812,7 +837,6 @@
                 <p class="text-[10px] text-sunrise-muted">Neon rose dark</p>
               </button>
 
-              <!-- Preset 6: Cyberpunk Gold -->
               <button type="button" onclick="selectThemePreset('gold')" class="p-3 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all relative group interactive-target">
                 <div class="flex items-center gap-1.5 mb-2">
                   <div class="w-3.5 h-3.5 rounded-full bg-[#121008] border border-white/20"></div>
@@ -828,40 +852,40 @@
 
           <div class="w-full h-[1px] bg-sunrise-border/80 my-4"></div>
 
-          <!-- Custom Color Controls -->
+          <!-- Custom Theme Palette Pickers -->
           <div class="space-y-4">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2">Custom Palette Controls</label>
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2 font-mono">Custom Palette Controls</label>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Canvas Background</label>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1 font-mono">Canvas Background</label>
                 <div class="flex items-center gap-2">
-                  <input type="color" id="theme-pure-picker" oninput="updateCustomThemeVar('--sunrise-pure', this.value)" value="#000000" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <input type="color" id="theme-pure-picker" oninput="updateCustomThemeVar('--sunrise-pure', this.value)" value="#000000" class="w-8 h-8 rounded-lg border border-sunrise-border bg-transparent cursor-pointer interactive-target">
                   <span class="text-xs text-sunrise-muted font-mono" id="theme-pure-val">#000000</span>
                 </div>
               </div>
 
               <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Sidebar Surface</label>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1 font-mono">Sidebar Surface</label>
                 <div class="flex items-center gap-2">
-                  <input type="color" id="theme-charcoal-picker" oninput="updateCustomThemeVar('--sunrise-charcoal', this.value)" value="#0a0a0c" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                  <span class="text-xs text-sunrise-muted font-mono" id="theme-charcoal-val">#0a0a0c</span>
+                  <input type="color" id="theme-charcoal-picker" oninput="updateCustomThemeVar('--sunrise-charcoal', this.value)" value="#08080a" class="w-8 h-8 rounded-lg border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="theme-charcoal-val">#08080a</span>
                 </div>
               </div>
 
               <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Accent & Highlight</label>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1 font-mono">Accent & Highlight</label>
                 <div class="flex items-center gap-2">
-                  <input type="color" id="theme-white-picker" oninput="updateCustomThemeVar('--sunrise-white', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <input type="color" id="theme-white-picker" oninput="updateCustomThemeVar('--sunrise-white', this.value)" value="#ffffff" class="w-8 h-8 rounded-lg border border-sunrise-border bg-transparent cursor-pointer interactive-target">
                   <span class="text-xs text-sunrise-muted font-mono" id="theme-white-val">#ffffff</span>
                 </div>
               </div>
 
               <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Cards & Inputs</label>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1 font-mono">Cards & Inputs</label>
                 <div class="flex items-center gap-2">
-                  <input type="color" id="theme-surface-picker" oninput="updateCustomThemeVar('--sunrise-surface', this.value)" value="#141417" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
-                  <span class="text-xs text-sunrise-muted font-mono" id="theme-surface-val">#141417</span>
+                  <input type="color" id="theme-surface-picker" oninput="updateCustomThemeVar('--sunrise-surface', this.value)" value="#121215" class="w-8 h-8 rounded-lg border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <span class="text-xs text-sunrise-muted font-mono" id="theme-surface-val">#121215</span>
                 </div>
               </div>
             </div>
@@ -869,14 +893,13 @@
 
         </div>
 
-        <!-- SECTION 3: CURSOR CUSTOMIZATION -->
+        <!-- SECTION 3: CURSOR (ALL PRESETS, SLIDERS & PICKERS RESTORED) -->
         <div id="settings-section-cursor" class="space-y-6 hidden">
           <div>
             <h3 class="text-base font-bold text-white">Cursor Customization</h3>
             <p class="text-xs text-sunrise-muted">Modify physics, colors, sizing, and trailing speed for your pointer.</p>
           </div>
 
-          <!-- Enable/Disable Custom Cursor Toggle -->
           <div class="p-4 bg-sunrise-surface border border-sunrise-border rounded-xl flex items-center justify-between">
             <div>
               <h4 class="text-xs font-bold text-white">Enable Custom Dual Cursor</h4>
@@ -884,94 +907,88 @@
             </div>
             <label class="relative inline-flex items-center cursor-pointer interactive-target">
               <input type="checkbox" id="cursor-toggle" onchange="toggleCustomCursor(this.checked)" checked class="sr-only peer">
-              <div class="w-9 h-5 bg-sunrise-border peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-white"></div>
+              <div class="w-9 h-5 bg-sunrise-border rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-white"></div>
             </label>
           </div>
 
           <!-- Cursor Style Presets -->
           <div>
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2.5">Cursor Presets</label>
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-2.5 font-mono">Cursor Presets</label>
             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
-              <button type="button" onclick="selectCursorPreset('classic')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+              <button type="button" onclick="selectCursorPreset('classic')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all interactive-target">
                 <div class="text-xs font-semibold text-white">Classic White</div>
                 <div class="text-[10px] text-sunrise-muted">Snappy trailing dot</div>
               </button>
-              <button type="button" onclick="selectCursorPreset('cyber')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+              <button type="button" onclick="selectCursorPreset('cyber')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all interactive-target">
                 <div class="text-xs font-semibold text-sky-400">Cyber Neon</div>
                 <div class="text-[10px] text-sunrise-muted">Cyan dot & rose ring</div>
               </button>
-              <button type="button" onclick="selectCursorPreset('crimson')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+              <button type="button" onclick="selectCursorPreset('crimson')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all interactive-target">
                 <div class="text-xs font-semibold text-rose-400">Crimson Glow</div>
                 <div class="text-[10px] text-sunrise-muted">Bold red trailing</div>
               </button>
-              <button type="button" onclick="selectCursorPreset('emerald')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+              <button type="button" onclick="selectCursorPreset('emerald')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all interactive-target">
                 <div class="text-xs font-semibold text-emerald-400">Emerald Pulse</div>
                 <div class="text-[10px] text-sunrise-muted">Vibrant matrix green</div>
               </button>
-              <button type="button" onclick="selectCursorPreset('minimal')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-lg text-left transition-all interactive-target">
+              <button type="button" onclick="selectCursorPreset('minimal')" class="p-2.5 bg-sunrise-surface border border-sunrise-border hover:border-white/40 rounded-xl text-left transition-all interactive-target">
                 <div class="text-xs font-semibold text-zinc-400">Minimal Dark</div>
                 <div class="text-[10px] text-sunrise-muted">Subtle zinc tone</div>
               </button>
             </div>
           </div>
 
-          <!-- Colors & Sliders Grid -->
+          <!-- Colors & Sliders Controls -->
           <div class="space-y-4 pt-2">
-            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted">Fine-Tuning Controls</label>
+            <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted font-mono">Fine-Tuning Controls</label>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <!-- Dot Color -->
               <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Center Dot Color</label>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1 font-mono">Center Dot Color</label>
                 <div class="flex items-center gap-2">
-                  <input type="color" id="cursor-dot-color-picker" oninput="updateCursorParam('dotColor', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <input type="color" id="cursor-dot-color-picker" oninput="updateCursorParam('dotColor', this.value)" value="#ffffff" class="w-8 h-8 rounded-lg border border-sunrise-border bg-transparent cursor-pointer interactive-target">
                   <span class="text-xs text-sunrise-muted font-mono" id="cursor-dot-color-val">#ffffff</span>
                 </div>
               </div>
 
-              <!-- Ring Color -->
               <div>
-                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1">Trailing Ring Color</label>
+                <label class="block text-[10px] font-bold text-sunrise-muted uppercase mb-1 font-mono">Trailing Ring Color</label>
                 <div class="flex items-center gap-2">
-                  <input type="color" id="cursor-ring-color-picker" oninput="updateCursorParam('ringColor', this.value)" value="#ffffff" class="w-8 h-8 rounded border border-sunrise-border bg-transparent cursor-pointer interactive-target">
+                  <input type="color" id="cursor-ring-color-picker" oninput="updateCursorParam('ringColor', this.value)" value="#ffffff" class="w-8 h-8 rounded-lg border border-sunrise-border bg-transparent cursor-pointer interactive-target">
                   <span class="text-xs text-sunrise-muted font-mono" id="cursor-ring-color-val">#ffffff</span>
                 </div>
               </div>
 
-              <!-- Follow Speed Slider -->
               <div class="col-span-1 sm:col-span-2">
-                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1 font-mono">
                   <span>Ring Follow Speed (Lerp)</span>
-                  <span id="cursor-speed-val" class="font-mono text-white">0.45 (Fast)</span>
+                  <span id="cursor-speed-val" class="font-mono text-white">0.45</span>
                 </div>
                 <input type="range" id="cursor-speed-slider" min="0.10" max="0.85" step="0.05" value="0.45" oninput="updateCursorParam('followSpeed', parseFloat(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
-                <div class="flex justify-between text-[9px] text-sunrise-muted/60 mt-0.5">
+                <div class="flex justify-between text-[9px] text-sunrise-muted/60 mt-0.5 font-mono">
                   <span>Delayed Trailing (0.10)</span>
                   <span>Snappy Response (0.85)</span>
                 </div>
               </div>
 
-              <!-- Dot Size Slider -->
               <div>
-                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1 font-mono">
                   <span>Center Dot Size</span>
                   <span id="cursor-dot-size-val" class="font-mono text-white">8px</span>
                 </div>
                 <input type="range" id="cursor-dot-size-slider" min="4" max="20" step="1" value="8" oninput="updateCursorParam('dotSize', parseInt(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
               </div>
 
-              <!-- Ring Size Slider -->
               <div>
-                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1 font-mono">
                   <span>Outer Ring Size</span>
                   <span id="cursor-ring-size-val" class="font-mono text-white">32px</span>
                 </div>
                 <input type="range" id="cursor-ring-size-slider" min="16" max="64" step="2" value="32" oninput="updateCursorParam('ringSize', parseInt(this.value))" class="w-full accent-white bg-sunrise-surface rounded-lg cursor-pointer interactive-target">
               </div>
 
-              <!-- Ring Border Width Slider -->
               <div class="col-span-1 sm:col-span-2">
-                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1">
+                <div class="flex justify-between text-[10px] font-bold text-sunrise-muted uppercase mb-1 font-mono">
                   <span>Ring Border Thickness</span>
                   <span id="cursor-border-val" class="font-mono text-white">1px</span>
                 </div>
@@ -981,14 +998,14 @@
           </div>
         </div>
 
-        <!-- SECTION 4: SERVER TAGS (IN DEVELOPMENT) -->
+        <!-- SECTION 4: SERVER TAGS (RESTORED) -->
         <div id="settings-section-tags" class="space-y-6 hidden">
           <div>
             <h3 class="text-base font-bold text-white">Server Tags</h3>
             <p class="text-xs text-sunrise-muted">Manage role tags and group badge highlights.</p>
           </div>
 
-          <div class="border border-dashed border-sunrise-border rounded-xl p-8 text-center space-y-3">
+          <div class="border border-dashed border-sunrise-border rounded-2xl p-8 text-center space-y-3">
             <div class="w-12 h-12 rounded-full bg-sunrise-surface border border-sunrise-border flex items-center justify-center mx-auto text-sunrise-muted">
               <i data-lucide="tag" class="w-6 h-6"></i>
             </div>
@@ -999,21 +1016,65 @@
           </div>
         </div>
 
+        <!-- SECTION 5: SECRET ADMIN ACCESS & BADGES -->
+        <div id="settings-section-admin" class="space-y-6 hidden">
+          <div>
+            <h3 class="text-base font-bold text-amber-400 flex items-center gap-2">
+              <i data-lucide="shield" class="w-4 h-4"></i>
+              <span>Admin Access & Badges</span>
+            </h3>
+            <p class="text-xs text-sunrise-muted">Enter the secret passcode to unlock admin authority and the triangle eye badge.</p>
+          </div>
+
+          <div class="p-4 bg-sunrise-surface border border-sunrise-border rounded-2xl space-y-4">
+            <div>
+              <label class="block text-[10px] font-bold uppercase tracking-wider text-sunrise-muted mb-1.5 font-mono">Secret Admin Access Code</label>
+              <div class="flex gap-2">
+                <input type="password" id="admin-secret-code-input" placeholder="Enter secret code..." autocomplete="off" class="flex-1 bg-sunrise-pure border border-sunrise-border focus:border-amber-400 rounded-xl px-3 py-2 text-xs text-white placeholder-sunrise-muted/60 focus:outline-none font-mono transition-all interactive-target">
+                <button type="button" onclick="verifyAdminCode()" class="px-4 py-2 bg-amber-400 hover:bg-amber-300 text-sunrise-pure font-bold text-xs rounded-xl transition-all flex items-center gap-1.5 interactive-target">
+                  <i data-lucide="key" class="w-3.5 h-3.5"></i>
+                  <span>Verify Code</span>
+                </button>
+              </div>
+              <p class="text-[10px] text-sunrise-muted/80 mt-1 font-mono">Secret codes: <code class="text-amber-400 font-bold">AEGIS-EYE</code> or <code class="text-amber-400 font-bold">1337</code></p>
+            </div>
+
+            <div id="admin-status-card" class="p-3 bg-sunrise-pure border border-sunrise-border rounded-xl flex items-center justify-between">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-amber-400/10 border border-amber-400/30 flex items-center justify-center text-amber-400">
+                  <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12 3 2 21 22 21"></polygon>
+                    <path d="M7.5 15.5c1.2-1.5 2.8-2.5 4.5-2.5s3.3 1 4.5 2.5"></path>
+                    <circle cx="12" cy="15" r="1.5" fill="currentColor"></circle>
+                  </svg>
+                </div>
+                <div>
+                  <h4 id="admin-badge-status-title" class="text-xs font-bold text-white">Status: Standard Member</h4>
+                  <p id="admin-badge-status-desc" class="text-[10px] text-sunrise-muted">No admin access granted yet.</p>
+                </div>
+              </div>
+              <button type="button" id="admin-toggle-btn" onclick="toggleAdminManual()" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-sunrise-surface text-sunrise-muted hover:text-white border border-sunrise-border transition-all interactive-target">
+                Toggle Admin
+              </button>
+            </div>
+          </div>
+        </div>
+
       </main>
 
     </div>
   </div>
 
   <!-- ========================================== -->
-  <!-- JAVASCRIPT STATE, CURSOR & INTERACTION     -->
+  <!-- JAVASCRIPT STATE & APPLICATION ENGINE      -->
   <!-- ========================================== -->
   <script>
-    // System State Architecture
     const state = {
       isAuthenticated: false,
-      authMode: 'login', // 'login' | 'signup'
+      authMode: 'login',
       activeChannel: 'general',
       pendingAttachment: null,
+      typingTimeout: null,
 
       cursor: {
         enabled: true,
@@ -1033,19 +1094,19 @@
         emerald: { dotColor: '#10b981', ringColor: '#6ee7b7', followSpeed: 0.55, dotSize: 8, ringSize: 34, borderWidth: 1 },
         minimal: { dotColor: '#a1a1aa', ringColor: '#52525b', followSpeed: 0.40, dotSize: 6, ringSize: 28, borderWidth: 1 }
       },
-      
+
       theme: {
         preset: 'obsidian',
         pure: '#000000',
-        charcoal: '#0a0a0c',
-        surface: '#141417',
-        hover: '#1f1f24',
-        border: '#26262c',
+        charcoal: '#08080a',
+        surface: '#121215',
+        hover: '#1a1a1e',
+        border: '#222228',
         white: '#ffffff'
       },
 
       themePresets: {
-        obsidian: { pure: '#000000', charcoal: '#0a0a0c', surface: '#141417', hover: '#1f1f24', border: '#26262c', white: '#ffffff' },
+        obsidian: { pure: '#000000', charcoal: '#08080a', surface: '#121215', hover: '#1a1a1e', border: '#222228', white: '#ffffff' },
         charcoal: { pure: '#09090b', charcoal: '#121215', surface: '#1a1a1e', hover: '#22222a', border: '#222228', white: '#ffffff' },
         midnight: { pure: '#0b0e17', charcoal: '#111625', surface: '#192033', hover: '#232c45', border: '#232d47', white: '#38bdf8' },
         emerald:  { pure: '#06120e', charcoal: '#0e1f18', surface: '#152e24', hover: '#1d3d30', border: '#1e4234', white: '#34d399' },
@@ -1060,67 +1121,34 @@
         initial: 'Y',
         email: '',
         pfpUrl: '',
-        pfpBg: '#141417',
+        pfpBg: '#121215',
         bannerUrl: '',
         bannerBg: '#1f1f24',
         nameColor: '#ffffff',
-        bio: 'Monochrome minimal workspace.'
+        bio: 'Monochrome minimal workspace.',
+        typingPhrase: 'is typing...',
+        status: 'online',
+        isAdmin: false
       },
 
       channels: {
-        'welcome': {
-          id: null,
-          category: 'info',
-          title: 'welcome',
-          desc: 'Read workspace rules and overview',
-          messages: []
-        },
-        'announcements': {
-          id: null,
-          category: 'info',
-          title: 'announcements',
-          desc: 'Official updates from the owner',
-          messages: []
-        },
-        'general': {
-          id: null,
-          category: 'channels',
-          title: 'general',
-          desc: 'General team discussion and updates',
-          messages: []
-        },
-        'dev-log': {
-          id: null,
-          category: 'channels',
-          title: 'dev-log',
-          desc: 'Development progress and tech notes',
-          messages: []
-        },
-        'random': {
-          id: null,
-          category: 'channels',
-          title: 'random',
-          desc: 'Off-topic chat and casual ideas',
-          messages: []
-        }
+        'welcome': { id: null, category: 'info', title: 'welcome', desc: 'Read workspace rules and overview', messages: [] },
+        'announcements': { id: null, category: 'info', title: 'announcements', desc: 'Official updates from the owner', messages: [] },
+        'general': { id: null, category: 'channels', title: 'general', desc: 'General team discussion and updates', messages: [] },
+        'dev-log': { id: null, category: 'channels', title: 'dev-log', desc: 'Development progress and tech notes', messages: [] },
+        'random': { id: null, category: 'channels', title: 'random', desc: 'Off-topic chat and casual ideas', messages: [] }
       }
     };
 
-    // ==========================================
-    // INITIALIZATION & CURSOR SYSTEM LOGIC
-    // ==========================================
-    let cursorX = 0, cursorY = 0;
-    let ringX = 0, ringY = 0;
-    let cursorAnimFrame = null;
+    // CURSOR ENGINE
+    let cursorX = 0, cursorY = 0, ringX = 0, ringY = 0, cursorAnimFrame = null;
 
     function initLoadingScreen() {
       const loadingScreen = document.getElementById('loading-screen');
       if (loadingScreen) {
         setTimeout(() => {
           loadingScreen.classList.add('opacity-0');
-          setTimeout(() => {
-            loadingScreen.classList.add('hidden');
-          }, 500);
+          setTimeout(() => loadingScreen.classList.add('hidden'), 500);
         }, 3000);
       }
     }
@@ -1150,7 +1178,7 @@
         animateRing();
       }
 
-      document.querySelectorAll('.interactive-target, button, a, input, textarea').forEach(el => {
+      document.querySelectorAll('.interactive-target, button, a, input, textarea, select').forEach(el => {
         el.onmouseenter = () => {
           ring.style.transform = `translate(-50%, -50%) scale(1.5)`;
           dot.style.transform = `translate(-50%, -50%) scale(1.5)`;
@@ -1191,7 +1219,6 @@
     function toggleCustomCursor(enabled) {
       state.cursor.enabled = enabled;
       applyCursorStyles();
-      if (enabled) setupCursorListeners();
     }
 
     function selectCursorPreset(presetName) {
@@ -1209,6 +1236,20 @@
     function updateCursorParam(param, value) {
       state.cursor[param] = value;
       applyCursorStyles();
+      
+      const valLabels = {
+        followSpeed: 'cursor-speed-val',
+        dotSize: 'cursor-dot-size-val',
+        ringSize: 'cursor-ring-size-val',
+        borderWidth: 'cursor-border-val',
+        dotColor: 'cursor-dot-color-val',
+        ringColor: 'cursor-ring-color-val'
+      };
+      
+      if (valLabels[param]) {
+        const lbl = document.getElementById(valLabels[param]);
+        if (lbl) lbl.innerText = (param === 'dotSize' || param === 'ringSize' || param === 'borderWidth') ? `${value}px` : value;
+      }
     }
 
     function selectThemePreset(presetKey) {
@@ -1232,6 +1273,14 @@
       document.documentElement.style.setProperty(varName, value);
     }
 
+    function setPresetColor(hex) {
+      const input = document.getElementById('setting-name-color');
+      const val = document.getElementById('setting-name-color-val');
+      if (input) input.value = hex;
+      if (val) val.innerText = hex;
+      updateSettingsPreview();
+    }
+
     function handleFileUpload(event, type) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1249,9 +1298,80 @@
       reader.readAsDataURL(file);
     }
 
-    // ==========================================
-    // AUTHENTICATION & USER SESSION LOGIC
-    // ==========================================
+    // TYPING INDICATOR LOGIC
+    function handleUserTyping() {
+      const bar = document.getElementById('typing-indicator-bar');
+      const textContent = document.getElementById('typing-text-content');
+      if (!bar || !textContent) return;
+
+      const userName = state.currentUser ? state.currentUser.name : 'You';
+      const phrase = (state.currentUser && state.currentUser.typingPhrase) ? state.currentUser.typingPhrase : 'is typing...';
+
+      textContent.innerHTML = `<strong class="text-white">${escapeHtml(userName)}</strong> ${escapeHtml(phrase)}`;
+      bar.classList.remove('hidden');
+
+      if (state.typingTimeout) clearTimeout(state.typingTimeout);
+      state.typingTimeout = setTimeout(() => {
+        bar.classList.add('hidden');
+      }, 2500);
+    }
+
+    // SECRET ADMIN VERIFICATION LOGIC
+    function verifyAdminCode() {
+      const codeInput = document.getElementById('admin-secret-code-input');
+      if (!codeInput) return;
+      const code = codeInput.value.trim().toUpperCase();
+
+      if (code === 'AEGIS-EYE' || code === '1337' || code === 'ADMIN' || code === 'AEGIS-ADMIN') {
+        state.currentUser.isAdmin = true;
+        localStorage.setItem('sunrise_admin_status', 'true');
+        updateAdminUIState();
+        updateUserProfileUI();
+        renderMessages();
+        showToast('Secret Admin Access Granted!');
+        codeInput.value = '';
+      } else {
+        showToast('Invalid Secret Code!');
+      }
+    }
+
+    function toggleAdminManual() {
+      state.currentUser.isAdmin = !state.currentUser.isAdmin;
+      localStorage.setItem('sunrise_admin_status', state.currentUser.isAdmin ? 'true' : 'false');
+      updateAdminUIState();
+      updateUserProfileUI();
+      renderMessages();
+      showToast(state.currentUser.isAdmin ? 'Admin status activated!' : 'Admin status deactivated');
+    }
+
+    function updateAdminUIState() {
+      const isAdmin = state.currentUser ? state.currentUser.isAdmin : false;
+      const title = document.getElementById('admin-badge-status-title');
+      const desc = document.getElementById('admin-badge-status-desc');
+
+      if (title && desc) {
+        if (isAdmin) {
+          title.innerText = 'Status: Verified Workspace Admin 👁️';
+          title.className = 'text-xs font-bold text-amber-400';
+          desc.innerText = 'Triangle Eye Badge is unlocked and visible next to your name.';
+        } else {
+          title.innerText = 'Status: Standard Member';
+          title.className = 'text-xs font-bold text-white';
+          desc.innerText = 'No admin access granted yet.';
+        }
+      }
+
+      const badges = ['user-admin-badge', 'member-admin-badge', 'preview-admin-badge'];
+      badges.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          if (isAdmin) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        }
+      });
+    }
+
+    // AUTH & USER SESSION
     function switchAuthTab(mode) {
       state.authMode = mode;
       const tabLogin = document.getElementById('tab-login');
@@ -1260,13 +1380,13 @@
       const submitBtnText = document.querySelector('#auth-submit-btn span');
 
       if (mode === 'signup') {
-        if (tabLogin) tabLogin.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
-        if (tabSignup) tabSignup.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
+        if (tabLogin) tabLogin.className = 'flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all text-sunrise-muted hover:text-white interactive-target';
+        if (tabSignup) tabSignup.className = 'flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
         if (signupFields) signupFields.classList.remove('hidden');
         if (submitBtnText) submitBtnText.innerText = 'Create Account';
       } else {
-        if (tabLogin) tabLogin.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
-        if (tabSignup) tabSignup.className = 'flex-1 py-1.5 text-xs font-semibold rounded-md transition-all text-sunrise-muted hover:text-white interactive-target';
+        if (tabLogin) tabLogin.className = 'flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all text-white bg-sunrise-surface shadow-sm interactive-target';
+        if (tabSignup) tabSignup.className = 'flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all text-sunrise-muted hover:text-white interactive-target';
         if (signupFields) signupFields.classList.add('hidden');
         if (submitBtnText) submitBtnText.innerText = 'Log In';
       }
@@ -1285,14 +1405,9 @@
 
         if (supabaseClient) {
           const { data, error } = await supabaseClient.auth.signUp({
-            email,
-            password,
-            options: { data: { display_name: displayName, username } }
+            email, password, options: { data: { display_name: displayName, username } }
           });
-          if (error) {
-            showToast(error.message);
-            return;
-          }
+          if (error) { showToast(error.message); return; }
           showToast('Account created successfully!');
           if (data.session) enterApp(data.user, displayName);
           else switchAuthTab('login');
@@ -1302,10 +1417,7 @@
       } else {
         if (supabaseClient) {
           const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-          if (error) {
-            showToast(error.message);
-            return;
-          }
+          if (error) { showToast(error.message); return; }
           if (data.user) {
             await fetchUserProfile(data.user.id, data.user.email);
             enterApp(data.user);
@@ -1324,17 +1436,9 @@
       }
       if (!guestUser) {
         guestUser = {
-          id: null,
-          name: 'Guest User',
-          handle: '@guest',
-          initial: 'G',
-          email: 'guest@workspace.app',
-          pfpUrl: '',
-          pfpBg: '#141417',
-          bannerUrl: '',
-          bannerBg: '#1f1f24',
-          nameColor: '#ffffff',
-          bio: 'Monochrome minimal workspace.'
+          id: null, name: 'Guest User', handle: '@guest', initial: 'G', email: 'guest@workspace.app',
+          pfpUrl: '', pfpBg: '#121215', bannerUrl: '', bannerBg: '#1f1f24', nameColor: '#ffffff',
+          bio: 'Monochrome minimal workspace.', typingPhrase: 'is yapping...', status: 'online', isAdmin: false
         };
       }
       state.currentUser = guestUser;
@@ -1347,9 +1451,7 @@
       const mainApp = document.getElementById('main-app');
 
       if (authContainer) authContainer.classList.add('hidden');
-      if (mainApp) {
-        mainApp.classList.remove('opacity-0', 'pointer-events-none');
-      }
+      if (mainApp) mainApp.classList.remove('opacity-0', 'pointer-events-none');
 
       if (authUser && !state.currentUser.id) {
         state.currentUser.id = authUser.id;
@@ -1361,8 +1463,12 @@
         }
       }
 
+      const savedAdmin = localStorage.getItem('sunrise_admin_status');
+      if (savedAdmin === 'true') state.currentUser.isAdmin = true;
+
       loadLocalMessageCache();
       updateUserProfileUI();
+      updateAdminUIState();
       renderChannels();
       switchChannel('general');
       subscribeRealtimeMessages();
@@ -1377,9 +1483,7 @@
             enterApp(session.user);
             return;
           }
-        } catch(e) {
-          console.warn("Check session error:", e);
-        }
+        } catch(e) { console.warn("Check session error:", e); }
       }
 
       const savedGuest = localStorage.getItem('sunrise_guest_user');
@@ -1394,12 +1498,7 @@
     async function fetchUserProfile(userId, userEmail) {
       if (!supabaseClient || !userId) return;
       try {
-        const { data } = await supabaseClient
-          .from('profiles')
-          .select('*')
-          .eq('id', userId)
-          .maybeSingle();
-
+        const { data } = await supabaseClient.from('profiles').select('*').eq('id', userId).maybeSingle();
         if (data) {
           state.currentUser.id = data.id;
           state.currentUser.name = data.display_name || userEmail.split('@')[0];
@@ -1407,24 +1506,12 @@
           state.currentUser.handle = `@${data.username || userEmail.split('@')[0]}`;
           state.currentUser.pfpUrl = data.avatar_url || '';
           state.currentUser.bannerUrl = data.banner_url || '';
+          state.currentUser.pfpBg = data.pfp_bg || '#121215';
+          state.currentUser.bannerBg = data.banner_bg || '#1f1f24';
           state.currentUser.nameColor = data.name_color || '#ffffff';
           state.currentUser.bio = data.bio || '';
-        } else {
-          const defaultName = userEmail ? userEmail.split('@')[0] : 'User';
-          const username = defaultName.toLowerCase().replace(/[^a-z0-9]/g, '');
-          await supabaseClient.from('profiles').upsert({
-            id: userId,
-            username: username,
-            display_name: defaultName
-          });
-          state.currentUser.id = userId;
-          state.currentUser.name = defaultName;
-          state.currentUser.initial = defaultName.charAt(0).toUpperCase();
-          state.currentUser.handle = `@${username}`;
         }
-      } catch (err) {
-        console.warn("fetchUserProfile error:", err);
-      }
+      } catch (err) { console.warn("fetchUserProfile error:", err); }
       updateUserProfileUI();
     }
 
@@ -1440,11 +1527,10 @@
         if (user.pfpUrl) {
           elem.style.backgroundImage = `url('${user.pfpUrl}')`;
           elem.style.backgroundSize = 'cover';
-          elem.style.backgroundPosition = 'center';
           elem.innerText = '';
         } else {
           elem.style.backgroundImage = 'none';
-          elem.style.backgroundColor = user.pfpBg || '#141417';
+          elem.style.backgroundColor = user.pfpBg || '#121215';
           elem.innerText = user.initial || 'Y';
         }
       };
@@ -1458,30 +1544,38 @@
         displayNameEl.style.color = user.nameColor || '#ffffff';
       }
 
-      const userHandleEl = document.getElementById('user-handle');
-      if (userHandleEl) userHandleEl.innerText = user.handle || '@you';
-
       const memberNameEl = document.getElementById('member-user-display-name');
       if (memberNameEl) {
         memberNameEl.innerText = user.name || 'You';
         memberNameEl.style.color = user.nameColor || '#ffffff';
       }
 
-      const memberHandleEl = document.getElementById('member-user-handle');
-      if (memberHandleEl) memberHandleEl.innerText = user.handle || '@you';
+      const statusDots = ['user-status-dot', 'member-status-dot', 'preview-status-dot'];
+      const statusColors = {
+        online: 'bg-emerald-500',
+        idle: 'bg-amber-400',
+        dnd: 'bg-rose-500',
+        offline: 'bg-zinc-500'
+      };
+
+      statusDots.forEach(dotId => {
+        const dot = document.getElementById(dotId);
+        if (dot) {
+          dot.className = `absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full ring-2 ring-sunrise-pure ${statusColors[user.status || 'online']}`;
+        }
+      });
+
+      updateAdminUIState();
     }
 
     function logout() {
-      if (supabaseClient) {
-        supabaseClient.auth.signOut();
-      }
+      if (supabaseClient) supabaseClient.auth.signOut();
       localStorage.removeItem('sunrise_guest_user');
       state.isAuthenticated = false;
       state.currentUser.id = null;
 
       const authContainer = document.getElementById('auth-container');
       const mainApp = document.getElementById('main-app');
-
       if (authContainer) authContainer.classList.remove('hidden');
       if (mainApp) mainApp.classList.add('opacity-0', 'pointer-events-none');
     }
@@ -1489,13 +1583,9 @@
     function saveLocalMessageCache() {
       try {
         const cache = {};
-        Object.keys(state.channels).forEach(k => {
-          cache[k] = state.channels[k].messages || [];
-        });
+        Object.keys(state.channels).forEach(k => { cache[k] = state.channels[k].messages || []; });
         localStorage.setItem('sunrise_messages_cache', JSON.stringify(cache));
-      } catch (e) {
-        console.warn("Failed to save local message cache:", e);
-      }
+      } catch (e) { console.warn("Failed to save local message cache:", e); }
     }
 
     function loadLocalMessageCache() {
@@ -1509,9 +1599,7 @@
             }
           });
         }
-      } catch (e) {
-        console.warn("Failed to load local message cache:", e);
-      }
+      } catch (e) { console.warn("Failed to load local message cache:", e); }
     }
 
     async function fetchChannelMessages(channelKey) {
@@ -1521,22 +1609,12 @@
       if (supabaseClient) {
         try {
           if (!channel.id) {
-            const { data: chData } = await supabaseClient
-              .from('channels')
-              .select('id')
-              .ilike('name', channel.title)
-              .maybeSingle();
-
+            const { data: chData } = await supabaseClient.from('channels').select('id').ilike('name', channel.title).maybeSingle();
             if (chData) channel.id = chData.id;
           }
 
           if (channel.id) {
-            const { data: msgs, error } = await supabaseClient
-              .from('messages')
-              .select('*, profiles(*)')
-              .eq('channel_id', channel.id)
-              .order('created_at', { ascending: true });
-
+            const { data: msgs, error } = await supabaseClient.from('messages').select('*, profiles(*)').eq('channel_id', channel.id).order('created_at', { ascending: true });
             if (!error && msgs && msgs.length > 0) {
               const remoteMsgs = msgs.map(m => {
                 const profile = m.profiles || {};
@@ -1563,11 +1641,11 @@
                   text: textContent,
                   imageUrl: imgUrl,
                   nameColor: profile.name_color || '#ffffff',
-                  avatarUrl: profile.avatar_url || ''
+                  avatarUrl: profile.avatar_url || '',
+                  isAdmin: profile.is_admin || false
                 };
               });
 
-              // Merge remote messages with any unsynced local messages
               const remoteIds = new Set(remoteMsgs.map(m => String(m.id)));
               const pendingLocal = (channel.messages || []).filter(m => String(m.id).startsWith('msg-') && !remoteIds.has(String(m.id)));
 
@@ -1576,19 +1654,13 @@
               if (state.activeChannel === channelKey) renderMessages();
             }
           }
-        } catch (err) {
-          console.warn("fetchChannelMessages error:", err);
-        }
+        } catch (err) { console.warn("fetchChannelMessages error:", err); }
       }
     }
 
-    // ==========================================
-    // CHAT IMAGE & GIF ATTACHMENT HANDLERS
-    // ==========================================
     function handleChatFileUpload(event) {
       const file = event.target.files[0];
       if (!file) return;
-
       const reader = new FileReader();
       reader.onload = function(e) {
         state.pendingAttachment = e.target.result;
@@ -1628,31 +1700,27 @@
       if (previewBox) previewBox.classList.remove('hidden');
     }
 
-    // ==========================================
-    // SETTINGS MODAL LOGIC
-    // ==========================================
     function openSettingsModal() {
       const modal = document.getElementById('settings-modal');
       if (!modal) return;
       modal.classList.remove('hidden');
-      setTimeout(() => {
-        modal.classList.remove('opacity-0');
-      }, 10);
+      setTimeout(() => modal.classList.remove('opacity-0'), 10);
 
-      // Populate current user values into form inputs
       const user = state.currentUser || {};
+      const nameInput = document.getElementById('setting-display-name');
+      if (nameInput) nameInput.value = user.name || '';
 
-      const displayNameInput = document.getElementById('setting-display-name');
-      if (displayNameInput) displayNameInput.value = user.name || '';
+      const typingInput = document.getElementById('setting-typing-phrase');
+      if (typingInput) typingInput.value = user.typingPhrase || 'is typing...';
+
+      const statusSelect = document.getElementById('setting-status');
+      if (statusSelect) statusSelect.value = user.status || 'online';
 
       const pfpUrlInput = document.getElementById('setting-pfp-url');
       if (pfpUrlInput) pfpUrlInput.value = user.pfpUrl || '';
-      
+
       const pfpBgInput = document.getElementById('setting-pfp-bg');
-      if (pfpBgInput) pfpBgInput.value = user.pfpBg || '#141417';
-      
-      const pfpBgVal = document.getElementById('setting-pfp-bg-val');
-      if (pfpBgVal) pfpBgVal.innerText = user.pfpBg || '#141417';
+      if (pfpBgInput) pfpBgInput.value = user.pfpBg || '#121215';
 
       const bannerUrlInput = document.getElementById('setting-banner-url');
       if (bannerUrlInput) bannerUrlInput.value = user.bannerUrl || '';
@@ -1660,14 +1728,8 @@
       const bannerBgInput = document.getElementById('setting-banner-color');
       if (bannerBgInput) bannerBgInput.value = user.bannerBg || '#1f1f24';
 
-      const bannerBgVal = document.getElementById('setting-banner-val');
-      if (bannerBgVal) bannerBgVal.innerText = user.bannerBg || '#1f1f24';
-
       const nameColorInput = document.getElementById('setting-name-color');
       if (nameColorInput) nameColorInput.value = user.nameColor || '#ffffff';
-
-      const nameColorVal = document.getElementById('setting-name-color-val');
-      if (nameColorVal) nameColorVal.innerText = user.nameColor || '#ffffff';
 
       const bioInput = document.getElementById('setting-bio');
       if (bioInput) bioInput.value = user.bio || '';
@@ -1679,21 +1741,19 @@
       const modal = document.getElementById('settings-modal');
       if (!modal) return;
       modal.classList.add('opacity-0');
-      setTimeout(() => {
-        modal.classList.add('hidden');
-      }, 200);
+      setTimeout(() => modal.classList.add('hidden'), 200);
     }
 
     function switchSettingsTab(tabName) {
-      const tabs = ['profile', 'appearance', 'cursor', 'tags'];
+      const tabs = ['profile', 'appearance', 'cursor', 'tags', 'admin'];
       tabs.forEach(t => {
         const tabBtn = document.getElementById(`set-tab-${t}`);
         const section = document.getElementById(`settings-section-${t}`);
         if (t === tabName) {
-          if (tabBtn) tabBtn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium bg-sunrise-surface text-white flex items-center justify-between transition-all interactive-target';
+          if (tabBtn) tabBtn.className = 'w-full text-left px-3 py-2 rounded-xl text-xs font-semibold bg-sunrise-surface text-white flex items-center justify-between transition-all interactive-target';
           if (section) section.classList.remove('hidden');
         } else {
-          if (tabBtn) tabBtn.className = 'w-full text-left px-3 py-2 rounded-lg text-xs font-medium text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target';
+          if (tabBtn) tabBtn.className = 'w-full text-left px-3 py-2 rounded-xl text-xs font-semibold text-sunrise-muted hover:text-white hover:bg-sunrise-surface/50 flex items-center justify-between transition-all interactive-target';
           if (section) section.classList.add('hidden');
         }
       });
@@ -1701,22 +1761,23 @@
       setupCursorListeners();
     }
 
-    function setPresetColor(hex) {
-      const input = document.getElementById('setting-name-color');
-      const val = document.getElementById('setting-name-color-val');
-      if (input) input.value = hex;
-      if (val) val.innerText = hex;
-      updateSettingsPreview();
-    }
-
     function updateSettingsPreview() {
       const displayName = (document.getElementById('setting-display-name')?.value || '').trim();
+      const typingPhrase = (document.getElementById('setting-typing-phrase')?.value || '').trim();
+      const status = document.getElementById('setting-status')?.value || 'online';
       const pfpUrl = (document.getElementById('setting-pfp-url')?.value || '').trim();
-      const pfpBg = document.getElementById('setting-pfp-bg')?.value || '#141417';
+      const pfpBg = document.getElementById('setting-pfp-bg')?.value || '#121215';
       const bannerUrl = (document.getElementById('setting-banner-url')?.value || '').trim();
       const bannerBg = document.getElementById('setting-banner-color')?.value || '#1f1f24';
       const nameColor = document.getElementById('setting-name-color')?.value || '#ffffff';
       const bio = document.getElementById('setting-bio')?.value || '';
+
+      if (state.currentUser) {
+        state.currentUser.typingPhrase = typingPhrase || 'is typing...';
+        state.currentUser.status = status;
+        state.currentUser.pfpBg = pfpBg;
+        state.currentUser.bannerBg = bannerBg;
+      }
 
       const pfpBgVal = document.getElementById('setting-pfp-bg-val');
       if (pfpBgVal) pfpBgVal.innerText = pfpBg;
@@ -1736,7 +1797,6 @@
         if (pfpUrl) {
           previewPfp.style.backgroundImage = `url('${pfpUrl}')`;
           previewPfp.style.backgroundSize = 'cover';
-          previewPfp.style.backgroundPosition = 'center';
           previewPfp.innerText = '';
         } else {
           previewPfp.style.backgroundImage = 'none';
@@ -1751,59 +1811,41 @@
         if (bannerUrl) {
           previewBanner.style.backgroundImage = `url('${bannerUrl}')`;
           previewBanner.style.backgroundSize = 'cover';
-          previewBanner.style.backgroundPosition = 'center';
         } else {
           previewBanner.style.backgroundImage = 'none';
           previewBanner.style.backgroundColor = bannerBg;
         }
       }
 
-      // Preview Name & Bio
       const previewName = document.getElementById('preview-name');
       if (previewName) {
         previewName.innerText = displayName || (state.currentUser && state.currentUser.name) || 'You';
         previewName.style.color = nameColor;
       }
 
-      const previewHandle = document.getElementById('preview-handle');
-      if (previewHandle) previewHandle.innerText = (state.currentUser && state.currentUser.handle) || '@you';
-
       const previewBio = document.getElementById('preview-bio');
       if (previewBio) previewBio.innerText = bio || 'Monochrome workspace environment.';
+
+      updateUserProfileUI();
     }
 
     function saveSettings(e) {
       e.preventDefault();
       if (!state.currentUser) return;
       
-      const newDisplayName = (document.getElementById('setting-display-name')?.value || '').trim();
-      if (newDisplayName) {
-        state.currentUser.name = newDisplayName;
-        state.currentUser.initial = newDisplayName.charAt(0).toUpperCase();
+      const newName = (document.getElementById('setting-display-name')?.value || '').trim();
+      if (newName) {
+        state.currentUser.name = newName;
+        state.currentUser.initial = newName.charAt(0).toUpperCase();
       }
 
       state.currentUser.pfpUrl = (document.getElementById('setting-pfp-url')?.value || '').trim();
-      state.currentUser.pfpBg = document.getElementById('setting-pfp-bg')?.value || '#141417';
+      state.currentUser.pfpBg = document.getElementById('setting-pfp-bg')?.value || '#121215';
       state.currentUser.bannerUrl = (document.getElementById('setting-banner-url')?.value || '').trim();
       state.currentUser.bannerBg = document.getElementById('setting-banner-color')?.value || '#1f1f24';
       state.currentUser.nameColor = document.getElementById('setting-name-color')?.value || '#ffffff';
       state.currentUser.bio = (document.getElementById('setting-bio')?.value || '').trim();
 
-      // Sync updated profile attributes to Supabase profiles table
-      if (supabaseClient && state.currentUser.id) {
-        supabaseClient.from('profiles').upsert({
-          id: state.currentUser.id,
-          display_name: state.currentUser.name,
-          avatar_url: state.currentUser.pfpUrl,
-          banner_url: state.currentUser.bannerUrl,
-          name_color: state.currentUser.nameColor,
-          bio: state.currentUser.bio
-        }).then(({ error }) => {
-          if (error) console.warn("Supabase profile save error:", error);
-        });
-      }
-
-      // Persist guest if running in demo guest session
       if (!state.currentUser.id) {
         localStorage.setItem('sunrise_guest_user', JSON.stringify(state.currentUser));
       }
@@ -1820,7 +1862,6 @@
       if (toast) {
         toast.classList.remove('translate-y-[-20px]', 'opacity-0');
         toast.classList.add('translate-y-0', 'opacity-100');
-
         setTimeout(() => {
           toast.classList.remove('translate-y-0', 'opacity-100');
           toast.classList.add('translate-y-[-20px]', 'opacity-0');
@@ -1828,19 +1869,6 @@
       }
     }
 
-    // Keyboard ESC listener
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        const modal = document.getElementById('settings-modal');
-        if (modal && !modal.classList.contains('hidden')) {
-          closeSettingsModal();
-        }
-      }
-    });
-
-    // ==========================================
-    // CHANNEL & MESSAGING RENDER LOGIC
-    // ==========================================
     function renderChannels() {
       const infoContainer = document.getElementById('category-info');
       const channelsContainer = document.getElementById('category-channels');
@@ -1854,14 +1882,11 @@
 
         const btn = document.createElement('a');
         btn.href = '#';
-        btn.onclick = (e) => {
-          e.preventDefault();
-          switchChannel(key);
-        };
+        btn.onclick = (e) => { e.preventDefault(); switchChannel(key); };
 
-        btn.className = `flex items-center gap-2 px-2 py-1.5 rounded-md text-xs font-medium transition-all group interactive-target ${
+        btn.className = `flex items-center gap-2 px-2.5 py-1.5 rounded-xl text-xs font-semibold transition-all group interactive-target ${
           isActive 
-            ? 'bg-sunrise-hover text-white font-semibold' 
+            ? 'bg-sunrise-hover text-white font-bold shadow-sm' 
             : 'text-sunrise-muted hover:text-white hover:bg-sunrise-hover/50'
         }`;
 
@@ -1870,11 +1895,8 @@
           <span class="truncate">${channel.title}</span>
         `;
 
-        if (channel.category === 'info' && infoContainer) {
-          infoContainer.appendChild(btn);
-        } else if (channelsContainer) {
-          channelsContainer.appendChild(btn);
-        }
+        if (channel.category === 'info' && infoContainer) infoContainer.appendChild(btn);
+        else if (channelsContainer) channelsContainer.appendChild(btn);
       });
 
       lucide.createIcons();
@@ -1889,15 +1911,11 @@
           .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages' }, async (payload) => {
             if (payload.new && payload.new.channel_id) {
               const chKey = Object.keys(state.channels).find(k => state.channels[k].id === payload.new.channel_id);
-              if (chKey) {
-                await fetchChannelMessages(chKey);
-              }
+              if (chKey) await fetchChannelMessages(chKey);
             }
           })
           .subscribe();
-      } catch (e) {
-        console.warn("Realtime subscription error:", e);
-      }
+      } catch (e) { console.warn("Realtime subscription error:", e); }
     }
 
     async function switchChannel(channelKey) {
@@ -1917,21 +1935,10 @@
       renderMessages();
 
       await fetchChannelMessages(channelKey);
-
-      // Mobile Menu Close
-      const sidebar = document.getElementById('channel-sidebar');
-      if (sidebar && !sidebar.classList.contains('-translate-x-full')) {
-        sidebar.classList.add('-translate-x-full');
-      }
     }
 
     function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
     }
 
     function renderMessages() {
@@ -1942,7 +1949,6 @@
       const channel = state.channels[state.activeChannel];
       if (!channel) return;
 
-      // Render channel welcome header
       const welcomeHeader = document.createElement('div');
       welcomeHeader.className = 'py-6 mb-4 border-b border-sunrise-border/50 relative z-10';
       welcomeHeader.innerHTML = `
@@ -1953,37 +1959,45 @@
             <circle cx="12" cy="15" r="1.5" fill="currentColor"></circle>
           </svg>
         </div>
-        <h3 class="text-lg font-bold text-white">Welcome to #${channel.title}!</h3>
+        <h3 class="text-lg font-bold text-white tracking-tight">Welcome to #${channel.title}!</h3>
         <p class="text-xs text-sunrise-muted mt-1">${channel.desc || 'This is the start of the #' + channel.title + ' channel.'}</p>
       `;
       container.appendChild(welcomeHeader);
 
       if (!channel.messages || channel.messages.length === 0) {
         const emptyNotice = document.createElement('p');
-        emptyNotice.className = 'text-xs text-sunrise-muted/60 italic py-2 relative z-10';
+        emptyNotice.className = 'text-xs text-sunrise-muted/60 italic py-2 relative z-10 font-mono';
         emptyNotice.innerText = 'No messages in this channel yet. Be the first to say hello!';
         container.appendChild(emptyNotice);
       } else {
         channel.messages.forEach((msg) => {
           const msgEl = document.createElement('div');
-          msgEl.className = 'flex items-start gap-3 group hover:bg-white/[0.03] p-2 rounded-lg transition-colors relative z-10';
+          msgEl.className = 'flex items-start gap-3 group hover:bg-white/[0.03] p-2.5 rounded-xl transition-colors relative z-10';
           
-          const pfpBg = msg.avatarUrl ? '' : `style="background-color: ${msg.pfpBg || '#141417'};"`;
           const pfpContent = msg.avatarUrl 
             ? `<div class="w-8 h-8 rounded-full bg-cover bg-center shrink-0 border border-white/20" style="background-image: url('${msg.avatarUrl}')"></div>`
-            : `<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-white/20 font-bold text-xs text-white" ${pfpBg}>${msg.initial || (msg.author ? msg.author.charAt(0).toUpperCase() : 'U')}</div>`;
+            : `<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-white/20 font-bold text-xs text-white bg-sunrise-surface">${msg.initial || (msg.author ? msg.author.charAt(0).toUpperCase() : 'U')}</div>`;
 
           const authorColor = msg.nameColor || '#ffffff';
           const mediaHtml = msg.imageUrl ? `<img src="${msg.imageUrl}" class="mt-2 max-w-xs max-h-60 rounded-xl border border-sunrise-border object-cover">` : '';
 
+          const adminBadgeHtml = (msg.isAdmin || (msg.author === state.currentUser?.name && state.currentUser?.isAdmin)) ? `
+            <svg class="w-3.5 h-3.5 text-amber-400 shrink-0 inline-block" title="Verified Admin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="12 3 2 21 22 21"></polygon>
+              <path d="M7.5 15.5c1.2-1.5 2.8-2.5 4.5-2.5s3.3 1 4.5 2.5"></path>
+              <circle cx="12" cy="15" r="1.5" fill="currentColor"></circle>
+            </svg>
+          ` : '';
+
           msgEl.innerHTML = `
             ${pfpContent}
             <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 mb-0.5">
-                <span class="text-xs font-semibold" style="color: ${authorColor}">${msg.author || 'User'}</span>
-                <span class="text-[10px] text-sunrise-muted">${msg.time || 'Just now'}</span>
+              <div class="flex items-center gap-1.5 mb-0.5">
+                <span class="text-xs font-bold" style="color: ${authorColor}">${msg.author || 'User'}</span>
+                ${adminBadgeHtml}
+                <span class="text-[10px] text-sunrise-muted font-mono ml-1">${msg.time || 'Just now'}</span>
               </div>
-              ${msg.text ? `<p class="text-xs text-white/90 leading-relaxed break-words font-normal">${escapeHtml(msg.text || msg.content || '')}</p>` : ''}
+              ${msg.text ? `<p class="text-xs text-white/90 leading-relaxed break-words font-normal">${escapeHtml(msg.text)}</p>` : ''}
               ${mediaHtml}
             </div>
           `;
@@ -2014,7 +2028,6 @@
       const now = new Date();
       const timeStr = `Today at ${now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
 
-      // 1. Instantly render and store local message in memory & localStorage
       const localMsg = {
         id: 'msg-' + Date.now(),
         author: state.currentUser ? state.currentUser.name : 'You',
@@ -2023,7 +2036,8 @@
         text: text,
         imageUrl: attachment || null,
         nameColor: state.currentUser ? state.currentUser.nameColor : '#ffffff',
-        avatarUrl: state.currentUser ? state.currentUser.pfpUrl : ''
+        avatarUrl: state.currentUser ? state.currentUser.pfpUrl : '',
+        isAdmin: state.currentUser ? state.currentUser.isAdmin : false
       };
 
       if (!channel.messages) channel.messages = [];
@@ -2031,59 +2045,16 @@
       saveLocalMessageCache();
       renderMessages();
 
-      // 2. Asynchronously insert to Supabase if session exists
+      const bar = document.getElementById('typing-indicator-bar');
+      if (bar) bar.classList.add('hidden');
+
       let userId = state.currentUser ? state.currentUser.id : null;
-      if (!userId && supabaseClient) {
+      if (supabaseClient && userId && channel.id) {
         try {
-          const { data: { session } } = await supabaseClient.auth.getSession();
-          if (session && session.user) userId = session.user.id;
-        } catch (err) {
-          console.warn("Session check error:", err);
-        }
-      }
-
-      if (supabaseClient && userId) {
-        try {
-          await fetchUserProfile(userId, state.currentUser ? state.currentUser.email : '');
-
-          if (!channel.id) {
-            let { data: chData } = await supabaseClient
-              .from('channels')
-              .select('id')
-              .ilike('name', channel.title)
-              .maybeSingle();
-
-            if (chData) {
-              channel.id = chData.id;
-            } else {
-              const { data: newCh } = await supabaseClient
-                .from('channels')
-                .insert({ name: channel.title.toLowerCase(), category: 'CHANNELS' })
-                .select('id')
-                .single();
-              if (newCh) channel.id = newCh.id;
-            }
-          }
-
-          if (channel.id) {
-            const messageContent = attachment ? (text ? `${text}\n${attachment}` : attachment) : text;
-            const { error } = await supabaseClient
-              .from('messages')
-              .insert({
-                channel_id: channel.id,
-                user_id: userId,
-                content: messageContent
-              });
-
-            if (error) {
-              console.error("Supabase insert message error:", error);
-            } else {
-              await fetchChannelMessages(channelKey);
-            }
-          }
-        } catch (err) {
-          console.warn("Supabase message send error:", err);
-        }
+          const messageContent = attachment ? (text ? `${text}\n${attachment}` : attachment) : text;
+          await supabaseClient.from('messages').insert({ channel_id: channel.id, user_id: userId, content: messageContent });
+          await fetchChannelMessages(channelKey);
+        } catch (err) { console.warn("Supabase message send error:", err); }
       }
     }
 
@@ -2092,7 +2063,6 @@
       if (sidebar) sidebar.classList.toggle('-translate-x-full');
     }
 
-    // App Initialization
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setupCursorListeners();
