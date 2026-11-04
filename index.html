@@ -32,7 +32,7 @@
   <!-- Plus Jakarta Sans & JetBrains Mono Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 
   <script>
     tailwind.config = {
@@ -61,12 +61,17 @@
             },
             'bounce-dots': {
               '0%, 100%': { transform: 'translateY(0)' },
-              '50%': { transform: 'translateY(-3px)' }
+              '50%': { transform: 'translateY(-3.5px)' }
+            },
+            'pulse-subtle': {
+              '0%, 100%': { opacity: 1 },
+              '50%': { opacity: 0.5 }
             }
           },
           animation: {
             'spin-slow': 'spin-slow 8s linear infinite',
             'bounce-dots': 'bounce-dots 1.2s infinite ease-in-out',
+            'pulse-subtle': 'pulse-subtle 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
           }
         }
       }
@@ -125,14 +130,14 @@
 
     @keyframes auroraFlow1 {
       0% { transform: translate(-10%, -10%) rotate(0deg) scale(1); opacity: 0.25; }
-      50% { transform: translate(12%, 15%) rotate(180deg) scale(1.35); opacity: 0.60; }
+      50% { transform: translate(12%, 15%) rotate(180deg) scale(1.35); opacity: 0.55; }
       100% { transform: translate(-10%, -10%) rotate(360deg) scale(1); opacity: 0.25; }
     }
 
     @keyframes auroraFlow2 {
-      0% { transform: translate(15%, 10%) rotate(0deg) scale(1.25); opacity: 0.40; }
+      0% { transform: translate(15%, 10%) rotate(0deg) scale(1.25); opacity: 0.35; }
       50% { transform: translate(-15%, -12%) rotate(-180deg) scale(0.85); opacity: 0.20; }
-      100% { transform: translate(15%, 10%) rotate(-360deg) scale(1.25); opacity: 0.40; }
+      100% { transform: translate(15%, 10%) rotate(-360deg) scale(1.25); opacity: 0.35; }
     }
 
     .aurora-bg {
@@ -150,8 +155,8 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.14) 0%, transparent 50%),
-                  radial-gradient(circle at 70% 60%, rgba(220, 220, 230, 0.09) 0%, transparent 45%);
+      background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.12) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 60%, rgba(220, 220, 230, 0.08) 0%, transparent 45%);
       filter: blur(55px);
       animation: auroraFlow1 18s ease-in-out infinite;
       pointer-events: none;
@@ -165,8 +170,8 @@
       left: -50%;
       width: 200%;
       height: 200%;
-      background: radial-gradient(ellipse at 50% 80%, rgba(255, 255, 255, 0.11) 0%, transparent 60%),
-                  radial-gradient(ellipse at 20% 20%, rgba(190, 190, 200, 0.06) 0%, transparent 40%);
+      background: radial-gradient(ellipse at 50% 80%, rgba(255, 255, 255, 0.10) 0%, transparent 60%),
+                  radial-gradient(ellipse at 20% 20%, rgba(190, 190, 200, 0.05) 0%, transparent 40%);
       filter: blur(70px);
       animation: auroraFlow2 25s ease-in-out infinite;
       pointer-events: none;
@@ -182,7 +187,7 @@
 <body class="bg-sunrise-pure text-white font-sans antialiased h-screen overflow-hidden flex select-none relative tracking-tight">
 
   <!-- ========================================== -->
-  <!-- LOADING SCREEN OVERLAY (3 SECONDS)         -->
+  <!-- LOADING SCREEN OVERLAY                     -->
   <!-- ========================================== -->
   <div id="loading-screen" class="fixed inset-0 z-[99999] bg-[#000000] flex flex-col items-center justify-center transition-opacity duration-500">
     <div class="relative w-20 h-20 flex items-center justify-center mb-6">
@@ -208,10 +213,10 @@
   <div id="cursor-ring" class="fixed top-0 left-0 w-8 h-8 border border-white/60 border-dashed rounded-full pointer-events-none z-[9998] cursor-ring-anim transition-transform duration-150 ease-out"></div>
 
   <!-- ========================================== -->
-  <!-- AUTHENTICATION CONTAINER (LOG IN / SIGN UP)-->
+  <!-- AUTHENTICATION CONTAINER                   -->
   <!-- ========================================== -->
   <div id="auth-container" class="fixed inset-0 z-[100] bg-sunrise-pure flex items-center justify-center p-4">
-    <div class="w-full max-w-md bg-sunrise-charcoal border border-sunrise-border rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+    <div class="w-full max-w-md bg-sunrise-charcoal border border-sunrise-border/80 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-xl">
       <div class="absolute -top-12 -left-12 w-32 h-32 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
 
       <!-- Header / Logo -->
@@ -390,7 +395,7 @@
           <div id="user-status-dot" class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-sunrise-pure" title="Online"></div>
         </div>
         
-        <div class="truncate">
+        <div class="truncate min-w-0">
           <div id="user-display-name-wrap" class="flex items-center gap-1 text-xs font-bold text-white leading-tight truncate">
             <span id="user-display-name">You</span>
             <span id="user-admin-badge" class="hidden">
@@ -558,7 +563,7 @@
   </div> <!-- END #main-app -->
 
   <!-- ========================================== -->
-  <!-- 5. FULL SETTINGS MODAL (RESTORED ALL TABS) -->
+  <!-- 5. FULL SETTINGS MODAL                     -->
   <!-- ========================================== -->
   <div id="settings-modal" class="fixed inset-0 z-[200] bg-black/80 backdrop-blur-md hidden flex items-center justify-center p-4 sm:p-6 opacity-0 transition-opacity duration-200">
     <div id="settings-toast" class="fixed top-6 right-6 z-[210] bg-white text-sunrise-pure font-bold text-xs px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 translate-y-[-20px] opacity-0 transition-all duration-300 pointer-events-none">
@@ -618,7 +623,7 @@
       <!-- Settings Content Area -->
       <main class="flex-1 overflow-y-auto p-6 relative">
         
-        <!-- SECTION 1: USER PROFILE (ALL FIELDS RESTORED + NEW TYPING/STATUS) -->
+        <!-- SECTION 1: USER PROFILE -->
         <div id="settings-section-profile" class="space-y-6">
           <div>
             <h3 class="text-base font-bold text-white">User Profile</h3>
@@ -776,7 +781,7 @@
           </form>
         </div>
 
-        <!-- SECTION 2: APPEARANCE (ALL 6 PRESETS & CUSTOM PALETTE CONTROLS RESTORED) -->
+        <!-- SECTION 2: APPEARANCE -->
         <div id="settings-section-appearance" class="space-y-6 hidden">
           <div>
             <h3 class="text-base font-bold text-white">Appearance & Theme Engine</h3>
@@ -893,7 +898,7 @@
 
         </div>
 
-        <!-- SECTION 3: CURSOR (ALL PRESETS, SLIDERS & PICKERS RESTORED) -->
+        <!-- SECTION 3: CURSOR -->
         <div id="settings-section-cursor" class="space-y-6 hidden">
           <div>
             <h3 class="text-base font-bold text-white">Cursor Customization</h3>
@@ -998,7 +1003,7 @@
           </div>
         </div>
 
-        <!-- SECTION 4: SERVER TAGS (RESTORED) -->
+        <!-- SECTION 4: SERVER TAGS -->
         <div id="settings-section-tags" class="space-y-6 hidden">
           <div>
             <h3 class="text-base font-bold text-white">Server Tags</h3>
@@ -1036,7 +1041,7 @@
                   <span>Verify Code</span>
                 </button>
               </div>
-              <p class="text-[10px] text-sunrise-muted/80 mt-1 font-mono">Secret codes: <code class="text-amber-400 font-bold">AEGIS-EYE</code> or <code class="text-amber-400 font-bold">1337</code></p>
+              <p class="text-[10px] text-sunrise-muted/80 mt-1 font-mono">Secret Code: <code class="text-amber-400 font-bold">googoogaga</code></p>
             </div>
 
             <div id="admin-status-card" class="p-3 bg-sunrise-pure border border-sunrise-border rounded-xl flex items-center justify-between">
@@ -1126,7 +1131,7 @@
         bannerBg: '#1f1f24',
         nameColor: '#ffffff',
         bio: 'Monochrome minimal workspace.',
-        typingPhrase: 'is typing...',
+        typingPhrase: 'is yapping...',
         status: 'online',
         isAdmin: false
       },
@@ -1149,7 +1154,7 @@
         setTimeout(() => {
           loadingScreen.classList.add('opacity-0');
           setTimeout(() => loadingScreen.classList.add('hidden'), 500);
-        }, 3000);
+        }, 2000);
       }
     }
 
@@ -1316,19 +1321,20 @@
       }, 2500);
     }
 
-    // SECRET ADMIN VERIFICATION LOGIC
+    // SECRET ADMIN VERIFICATION LOGIC (Updated to googoogaga)
     function verifyAdminCode() {
       const codeInput = document.getElementById('admin-secret-code-input');
       if (!codeInput) return;
-      const code = codeInput.value.trim().toUpperCase();
+      const code = codeInput.value.trim().toLowerCase();
 
-      if (code === 'AEGIS-EYE' || code === '1337' || code === 'ADMIN' || code === 'AEGIS-ADMIN') {
+      if (code === 'googoogaga' || code === 'aegis-eye' || code === '1337' || code === 'admin') {
         state.currentUser.isAdmin = true;
         localStorage.setItem('sunrise_admin_status', 'true');
+        saveUserProfileLocally();
         updateAdminUIState();
         updateUserProfileUI();
         renderMessages();
-        showToast('Secret Admin Access Granted!');
+        showToast('Secret Admin Access Granted! 👁️');
         codeInput.value = '';
       } else {
         showToast('Invalid Secret Code!');
@@ -1338,6 +1344,7 @@
     function toggleAdminManual() {
       state.currentUser.isAdmin = !state.currentUser.isAdmin;
       localStorage.setItem('sunrise_admin_status', state.currentUser.isAdmin ? 'true' : 'false');
+      saveUserProfileLocally();
       updateAdminUIState();
       updateUserProfileUI();
       renderMessages();
@@ -1429,20 +1436,8 @@
     }
 
     function continueAsGuest() {
-      const savedGuest = localStorage.getItem('sunrise_guest_user');
-      let guestUser = null;
-      if (savedGuest) {
-        try { guestUser = JSON.parse(savedGuest); } catch(e){}
-      }
-      if (!guestUser) {
-        guestUser = {
-          id: null, name: 'Guest User', handle: '@guest', initial: 'G', email: 'guest@workspace.app',
-          pfpUrl: '', pfpBg: '#121215', bannerUrl: '', bannerBg: '#1f1f24', nameColor: '#ffffff',
-          bio: 'Monochrome minimal workspace.', typingPhrase: 'is yapping...', status: 'online', isAdmin: false
-        };
-      }
-      state.currentUser = guestUser;
-      enterApp(null, guestUser.name);
+      loadSavedUserProfile();
+      enterApp(null, state.currentUser.name || 'Guest User');
     }
 
     function enterApp(authUser, defaultName) {
@@ -1453,19 +1448,17 @@
       if (authContainer) authContainer.classList.add('hidden');
       if (mainApp) mainApp.classList.remove('opacity-0', 'pointer-events-none');
 
-      if (authUser && !state.currentUser.id) {
+      if (authUser && (!state.currentUser.id || state.currentUser.id.startsWith('guest-'))) {
         state.currentUser.id = authUser.id;
         state.currentUser.email = authUser.email || '';
-        if (defaultName) {
+        if (defaultName && (!state.currentUser.name || state.currentUser.name === 'You')) {
           state.currentUser.name = defaultName;
           state.currentUser.initial = defaultName.charAt(0).toUpperCase();
           state.currentUser.handle = `@${defaultName.toLowerCase().replace(/\s+/g, '')}`;
         }
       }
 
-      const savedAdmin = localStorage.getItem('sunrise_admin_status');
-      if (savedAdmin === 'true') state.currentUser.isAdmin = true;
-
+      loadSavedUserProfile();
       loadLocalMessageCache();
       updateUserProfileUI();
       updateAdminUIState();
@@ -1475,6 +1468,8 @@
     }
 
     async function checkSession() {
+      loadSavedUserProfile();
+
       if (supabaseClient) {
         try {
           const { data: { session } } = await supabaseClient.auth.getSession();
@@ -1486,10 +1481,10 @@
         } catch(e) { console.warn("Check session error:", e); }
       }
 
-      const savedGuest = localStorage.getItem('sunrise_guest_user');
+      const savedGuest = localStorage.getItem('sunrise_user_profile') || localStorage.getItem('sunrise_guest_user');
       if (savedGuest) {
         try {
-          state.currentUser = JSON.parse(savedGuest);
+          state.currentUser = { ...state.currentUser, ...JSON.parse(savedGuest) };
           enterApp(null);
         } catch(e) {}
       }
@@ -1501,18 +1496,44 @@
         const { data } = await supabaseClient.from('profiles').select('*').eq('id', userId).maybeSingle();
         if (data) {
           state.currentUser.id = data.id;
-          state.currentUser.name = data.display_name || userEmail.split('@')[0];
+          state.currentUser.name = data.display_name || state.currentUser.name || userEmail.split('@')[0];
           state.currentUser.initial = state.currentUser.name.charAt(0).toUpperCase();
           state.currentUser.handle = `@${data.username || userEmail.split('@')[0]}`;
-          state.currentUser.pfpUrl = data.avatar_url || '';
-          state.currentUser.bannerUrl = data.banner_url || '';
-          state.currentUser.pfpBg = data.pfp_bg || '#121215';
-          state.currentUser.bannerBg = data.banner_bg || '#1f1f24';
-          state.currentUser.nameColor = data.name_color || '#ffffff';
-          state.currentUser.bio = data.bio || '';
+          state.currentUser.pfpUrl = data.avatar_url || state.currentUser.pfpUrl || '';
+          state.currentUser.bannerUrl = data.banner_url || state.currentUser.bannerUrl || '';
+          state.currentUser.pfpBg = data.pfp_bg || state.currentUser.pfpBg || '#121215';
+          state.currentUser.bannerBg = data.banner_bg || state.currentUser.bannerBg || '#1f1f24';
+          state.currentUser.nameColor = data.name_color || state.currentUser.nameColor || '#ffffff';
+          state.currentUser.bio = data.bio || state.currentUser.bio || '';
+          state.currentUser.typingPhrase = data.typing_phrase || state.currentUser.typingPhrase || 'is yapping...';
+          state.currentUser.status = data.status || state.currentUser.status || 'online';
+          if (typeof data.is_admin === 'boolean') state.currentUser.isAdmin = data.is_admin;
+          
+          saveUserProfileLocally();
         }
       } catch (err) { console.warn("fetchUserProfile error:", err); }
       updateUserProfileUI();
+    }
+
+    function saveUserProfileLocally() {
+      try {
+        localStorage.setItem('sunrise_user_profile', JSON.stringify(state.currentUser));
+        localStorage.setItem('sunrise_guest_user', JSON.stringify(state.currentUser));
+        if (state.currentUser.isAdmin) localStorage.setItem('sunrise_admin_status', 'true');
+        else localStorage.setItem('sunrise_admin_status', 'false');
+      } catch(e) { console.warn("Failed to save local profile:", e); }
+    }
+
+    function loadSavedUserProfile() {
+      try {
+        const saved = localStorage.getItem('sunrise_user_profile') || localStorage.getItem('sunrise_guest_user');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          state.currentUser = { ...state.currentUser, ...parsed };
+        }
+        const savedAdmin = localStorage.getItem('sunrise_admin_status');
+        if (savedAdmin === 'true') state.currentUser.isAdmin = true;
+      } catch(e) { console.warn("Failed to load local profile:", e); }
     }
 
     function updateUserProfileUI() {
@@ -1544,11 +1565,17 @@
         displayNameEl.style.color = user.nameColor || '#ffffff';
       }
 
+      const handleEl = document.getElementById('user-handle');
+      if (handleEl) handleEl.innerText = user.handle || '@you';
+
       const memberNameEl = document.getElementById('member-user-display-name');
       if (memberNameEl) {
         memberNameEl.innerText = user.name || 'You';
         memberNameEl.style.color = user.nameColor || '#ffffff';
       }
+
+      const memberHandleEl = document.getElementById('member-user-handle');
+      if (memberHandleEl) memberHandleEl.innerText = user.handle || '@you';
 
       const statusDots = ['user-status-dot', 'member-status-dot', 'preview-status-dot'];
       const statusColors = {
@@ -1571,6 +1598,8 @@
     function logout() {
       if (supabaseClient) supabaseClient.auth.signOut();
       localStorage.removeItem('sunrise_guest_user');
+      localStorage.removeItem('sunrise_user_profile');
+      localStorage.removeItem('sunrise_admin_status');
       state.isAuthenticated = false;
       state.currentUser.id = null;
 
@@ -1711,7 +1740,7 @@
       if (nameInput) nameInput.value = user.name || '';
 
       const typingInput = document.getElementById('setting-typing-phrase');
-      if (typingInput) typingInput.value = user.typingPhrase || 'is typing...';
+      if (typingInput) typingInput.value = user.typingPhrase || 'is yapping...';
 
       const statusSelect = document.getElementById('setting-status');
       if (statusSelect) statusSelect.value = user.status || 'online';
@@ -1772,13 +1801,6 @@
       const nameColor = document.getElementById('setting-name-color')?.value || '#ffffff';
       const bio = document.getElementById('setting-bio')?.value || '';
 
-      if (state.currentUser) {
-        state.currentUser.typingPhrase = typingPhrase || 'is typing...';
-        state.currentUser.status = status;
-        state.currentUser.pfpBg = pfpBg;
-        state.currentUser.bannerBg = bannerBg;
-      }
-
       const pfpBgVal = document.getElementById('setting-pfp-bg-val');
       if (pfpBgVal) pfpBgVal.innerText = pfpBg;
 
@@ -1823,13 +1845,17 @@
         previewName.style.color = nameColor;
       }
 
+      const previewHandle = document.getElementById('preview-handle');
+      if (previewHandle) {
+        const handle = displayName ? `@${displayName.toLowerCase().replace(/\s+/g, '')}` : (state.currentUser?.handle || '@you');
+        previewHandle.innerText = handle;
+      }
+
       const previewBio = document.getElementById('preview-bio');
       if (previewBio) previewBio.innerText = bio || 'Monochrome workspace environment.';
-
-      updateUserProfileUI();
     }
 
-    function saveSettings(e) {
+    async function saveSettings(e) {
       e.preventDefault();
       if (!state.currentUser) return;
       
@@ -1837,8 +1863,11 @@
       if (newName) {
         state.currentUser.name = newName;
         state.currentUser.initial = newName.charAt(0).toUpperCase();
+        state.currentUser.handle = `@${newName.toLowerCase().replace(/\s+/g, '')}`;
       }
 
+      state.currentUser.typingPhrase = (document.getElementById('setting-typing-phrase')?.value || '').trim() || 'is yapping...';
+      state.currentUser.status = document.getElementById('setting-status')?.value || 'online';
       state.currentUser.pfpUrl = (document.getElementById('setting-pfp-url')?.value || '').trim();
       state.currentUser.pfpBg = document.getElementById('setting-pfp-bg')?.value || '#121215';
       state.currentUser.bannerUrl = (document.getElementById('setting-banner-url')?.value || '').trim();
@@ -1846,13 +1875,34 @@
       state.currentUser.nameColor = document.getElementById('setting-name-color')?.value || '#ffffff';
       state.currentUser.bio = (document.getElementById('setting-bio')?.value || '').trim();
 
-      if (!state.currentUser.id) {
-        localStorage.setItem('sunrise_guest_user', JSON.stringify(state.currentUser));
+      // Persist profile locally
+      saveUserProfileLocally();
+
+      // Sync profile to Supabase if connected
+      if (supabaseClient && state.currentUser.id && !state.currentUser.id.startsWith('guest-')) {
+        try {
+          await supabaseClient.from('profiles').upsert({
+            id: state.currentUser.id,
+            display_name: state.currentUser.name,
+            username: state.currentUser.handle.replace('@', ''),
+            avatar_url: state.currentUser.pfpUrl,
+            banner_url: state.currentUser.bannerUrl,
+            pfp_bg: state.currentUser.pfpBg,
+            banner_bg: state.currentUser.bannerBg,
+            name_color: state.currentUser.nameColor,
+            bio: state.currentUser.bio,
+            typing_phrase: state.currentUser.typingPhrase,
+            status: state.currentUser.status,
+            is_admin: state.currentUser.isAdmin
+          });
+        } catch (err) {
+          console.warn("Supabase profile sync warning:", err);
+        }
       }
 
       updateUserProfileUI();
       renderMessages();
-      showToast('Profile settings saved!');
+      showToast('All profile settings saved & synced!');
     }
 
     function showToast(message) {
@@ -1979,7 +2029,7 @@
             : `<div class="w-8 h-8 rounded-full flex items-center justify-center shrink-0 border border-white/20 font-bold text-xs text-white bg-sunrise-surface">${msg.initial || (msg.author ? msg.author.charAt(0).toUpperCase() : 'U')}</div>`;
 
           const authorColor = msg.nameColor || '#ffffff';
-          const mediaHtml = msg.imageUrl ? `<img src="${msg.imageUrl}" class="mt-2 max-w-xs max-h-60 rounded-xl border border-sunrise-border object-cover">` : '';
+          const mediaHtml = msg.imageUrl ? `<img src="${msg.imageUrl}" class="mt-2 max-w-xs max-h-60 rounded-xl border border-sunrise-border object-cover shadow-lg">` : '';
 
           const adminBadgeHtml = (msg.isAdmin || (msg.author === state.currentUser?.name && state.currentUser?.isAdmin)) ? `
             <svg class="w-3.5 h-3.5 text-amber-400 shrink-0 inline-block" title="Verified Admin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2049,7 +2099,7 @@
       if (bar) bar.classList.add('hidden');
 
       let userId = state.currentUser ? state.currentUser.id : null;
-      if (supabaseClient && userId && channel.id) {
+      if (supabaseClient && userId && channel.id && !userId.startsWith('guest-')) {
         try {
           const messageContent = attachment ? (text ? `${text}\n${attachment}` : attachment) : text;
           await supabaseClient.from('messages').insert({ channel_id: channel.id, user_id: userId, content: messageContent });
@@ -2066,6 +2116,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       lucide.createIcons();
       setupCursorListeners();
+      loadSavedUserProfile();
       loadLocalMessageCache();
       initLoadingScreen();
       checkSession();
